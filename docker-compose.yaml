@@ -1,0 +1,22 @@
+services:
+  web:
+    build:
+      context: src/web
+      dockerfile: Dockerfile
+      args:
+        BUILD_CONFIGURATION: ${ASPNETCORE_ENVIRONMENT:-Development}
+    ports:
+      - "80:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    build:
+      context: src/db
+      dockerfile: Dockerfile
+      args:
+        password: ${MSSQL_SA_PASSWORD}
