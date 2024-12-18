@@ -10,6 +10,7 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - CONNECTION_STRING=Data Source=db,1433;User ID=SA;Password=${MSSQL_SA_PASSWORD};Encrypt=False
     depends_on:
       db:
         condition: service_healthy
@@ -20,3 +21,14 @@ services:
       dockerfile: Dockerfile
       args:
         password: ${MSSQL_SA_PASSWORD}
+
+  db-migrations:
+    build:
+      context: src/web
+      dockerfile: ../db-migrations/Dockerfile
+    environment:
+      - CONNECTION_STRING=Data Source=db,1433;User ID=SA;Password=${MSSQL_SA_PASSWORD};Encrypt=False
+    depends_on:
+      db:
+        condition: service_healthy
+    profiles: [ migrations ]
