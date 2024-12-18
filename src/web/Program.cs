@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using web.Areas.Identity.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration["CONNECTION_STRING"]
+string connectionString = builder.Configuration["CONNECTION_STRING"]
                 ?? throw new InvalidOperationException("Connection string not found.");
 builder.Services
         .AddDbContext<IdentityDbContext>(options => options.UseSqlServer(connectionString));
@@ -11,10 +12,29 @@ builder.Services
         .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
         .AddEntityFrameworkStores<IdentityDbContext>();
 builder.Services.AddControllersWithViews();
+builder.Services.Configure<RazorViewEngineOptions>(o =>
+{
+        /*
+            {2} - area name
+            {1} - controller name
+            {0} - action name
+        */
+        o.ViewLocationFormats.Clear();
+        o.ViewLocationFormats.Add("/features/{2}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/features/{2}/{1}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/features/shared/{0}.cshtml");
+
+        o.AreaPageViewLocationFormats.Clear();
+        o.AreaPageViewLocationFormats.Add("/features/authentication/{2}/{0}.cshtml");
+        o.AreaPageViewLocationFormats.Add("/features/authentication/{2}/{1}/{0}.cshtml");
+        o.AreaPageViewLocationFormats.Add("/features/authentication/{0}.cshtml");
+        o.AreaPageViewLocationFormats.Add("/features/shared/{0}.cshtml");
+});
+
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
         app.UseExceptionHandler("/Home/Error");
