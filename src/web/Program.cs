@@ -22,6 +22,7 @@ builder.Services.Configure<RazorViewEngineOptions>(o =>
         o.ViewLocationFormats.Clear();
         o.ViewLocationFormats.Add("/features/{2}/{0}.cshtml");
         o.ViewLocationFormats.Add("/features/{2}/{1}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/features/{1}/{0}{1}/{0}.cshtml");
         o.ViewLocationFormats.Add("/features/shared/{0}.cshtml");
 
         o.AreaPageViewLocationFormats.Clear();
