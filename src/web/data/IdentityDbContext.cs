@@ -1,11 +1,15 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using web.features.artist;
+using web.features.shared.domain;
 
 namespace web.data;
 
 public class IdentityDbContext : IdentityDbContext<IdentityUser>
 {
+        public DbSet<Artist> Artists { get; set; }
+
         public IdentityDbContext(DbContextOptions<IdentityDbContext> options)
             : base(options)
         {
@@ -14,5 +18,14 @@ public class IdentityDbContext : IdentityDbContext<IdentityUser>
         protected override void OnModelCreating(ModelBuilder builder)
         {
                 base.OnModelCreating(builder);
+
+                builder.Ignore<AggreggateRoot>();
+                builder.Ignore<ValueObject>();
+
+                builder.Entity<Artist>()
+                        .HasKey(a => a.ArtistId);
+                builder.Entity<Artist>()
+                        .Property(a => a.ArtistId)
+                        .HasConversion(id => id.Value, guid => new ArtistId(guid));
         }
 }
