@@ -1,0 +1,17 @@
+name: Tests
+on:
+  [push, pull_request]
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get the repository
+        uses: actions/checkout@v4
+
+      - name: Set up the .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0'
+
+      - name: Run tests
+        run: dotnet test --configuration Release
