@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using web.data;
+using web.features.artist.SetupArtist;
 
 var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration["CONNECTION_STRING"]
@@ -32,6 +33,7 @@ builder.Services.Configure<RazorViewEngineOptions>(o =>
         o.AreaPageViewLocationFormats.Add("/features/shared/{0}.cshtml");
 });
 
+builder.Services.AddTransient<SetupArtistCommand>();
 
 
 var app = builder.Build();

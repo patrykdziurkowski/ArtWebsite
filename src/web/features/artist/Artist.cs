@@ -14,4 +14,9 @@ public class Artist : AggreggateRoot
                 Name = name;
                 Summary = summary;
         }
+
+        public Artist(string name, string summary)
+                : this(new ArtistId(), name, summary)
+        {
+        }
 }

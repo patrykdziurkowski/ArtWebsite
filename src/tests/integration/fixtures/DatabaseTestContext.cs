@@ -2,8 +2,11 @@ using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using web.data;
 
 namespace tests.integration.fixtures;
 
@@ -11,8 +14,8 @@ public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDispo
 {
         private const string DB_TEST_PASSWORD = "exampleP@ssword123";
         private const string TEST_CONNECTION_STRING = $"Data Source=localhost,14332;User ID=SA;Password={DB_TEST_PASSWORD};Encrypt=False";
+        private readonly IContainerImageService _image;
         public IContainerService Database { get; }
-        private IContainerImageService _image;
 
         public DatabaseTestContext()
         {
@@ -30,6 +33,8 @@ public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDispo
                         .WaitForHealthy()
                         .Build()
                         .Start();
+
+                ApplyMigrations();
         }
 
         protected override IHost CreateHost(IHostBuilder builder)
@@ -43,6 +48,14 @@ public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDispo
                         ]);
                 });
                 return base.CreateHost(builder);
+        }
+
+
+        private void ApplyMigrations()
+        {
+                IServiceScope scope = Services.CreateScope();
+                IdentityDbContext dbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+                dbContext.Database.Migrate();
         }
 
         public new void Dispose()

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using web.features.artist.SetupArtist;
 
 namespace web.features.artist
 {
@@ -8,6 +9,12 @@ namespace web.features.artist
                 {
                         return View();
                 }
+
+                // [HttpPost]
+                // public ActionResult Setup(SetupModel model)
+                // {
+
+                // }
 
         }
 }
