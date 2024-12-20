@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
-using web.Areas.Identity.Data;
+using web.data;
 
 var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration["CONNECTION_STRING"]
