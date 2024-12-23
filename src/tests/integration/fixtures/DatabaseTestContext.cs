@@ -54,7 +54,7 @@ public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDispo
         private void ApplyMigrations()
         {
                 IServiceScope scope = Services.CreateScope();
-                IdentityDbContext dbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+                ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 dbContext.Database.Migrate();
         }
 

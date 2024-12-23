@@ -6,11 +6,11 @@ using web.features.shared.domain;
 
 namespace web.data;
 
-public class IdentityDbContext : IdentityDbContext<IdentityUser>
+public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
         public DbSet<Artist> Artists { get; set; }
 
-        public IdentityDbContext(DbContextOptions<IdentityDbContext> options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }

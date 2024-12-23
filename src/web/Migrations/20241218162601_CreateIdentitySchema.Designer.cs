@@ -11,7 +11,7 @@ using web.data;
 
 namespace web.Migrations
 {
-        [DbContext(typeof(IdentityDbContext))]
+        [DbContext(typeof(ApplicationDbContext))]
         [Migration("20241218162601_CreateIdentitySchema")]
         partial class CreateIdentitySchema
         {

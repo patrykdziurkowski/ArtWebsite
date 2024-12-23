@@ -8,10 +8,10 @@ var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration["CONNECTION_STRING"]
                 ?? throw new InvalidOperationException("Connection string not found.");
 builder.Services
-        .AddDbContext<IdentityDbContext>(options => options.UseSqlServer(connectionString));
+        .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services
         .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-        .AddEntityFrameworkStores<IdentityDbContext>();
+        .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<RazorViewEngineOptions>(o =>
 {

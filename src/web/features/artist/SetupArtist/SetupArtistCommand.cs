@@ -6,9 +6,9 @@ namespace web.features.artist.SetupArtist;
 
 public class SetupArtistCommand
 {
-        private readonly IdentityDbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
 
-        public SetupArtistCommand(IdentityDbContext dbContext)
+        public SetupArtistCommand(ApplicationDbContext dbContext)
         {
                 _dbContext = dbContext;
         }
