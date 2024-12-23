@@ -4,12 +4,12 @@ services:
       context: src/web
       dockerfile: Dockerfile
       args:
-        BUILD_CONFIGURATION: ${ASPNETCORE_ENVIRONMENT:-Development}
+        BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:-Release}
     ports:
       - "80:80"
     environment:
       - ASPNETCORE_URLS=http://+:80
-      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Development}
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Release}
       - CONNECTION_STRING=Data Source=db,1433;User ID=SA;Password=${MSSQL_SA_PASSWORD};Encrypt=False
     depends_on:
       db:
