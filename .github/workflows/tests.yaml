@@ -6,12 +6,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Get the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Set up the .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v4.1.0
         with:
           dotnet-version: '9.0'
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+          docker --version
+          docker-compose --version
+
+      - name: Install Chrome Driver
+        uses: nanasess/setup-chromedriver@v2.3.0
 
       - name: Run tests
         run: dotnet test --configuration Release

@@ -19,7 +19,9 @@ public class WebServer : IDisposable
                         .UseCompose()
                         .FromFile(dockerComposePath)
                         .WithEnvironment($"MSSQL_SA_PASSWORD={DB_TEST_PASSWORD}")
+                        .WithEnvironment("ASPNETCORE_ENVIRONMENT=Development")
                         .ForceBuild()
+                        .ForceRecreate()
                         .WaitForHttp("web", "http://localhost")
                         .Build()
                         .Start();

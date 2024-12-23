@@ -1,14 +1,13 @@
-using System;
 using FluentAssertions;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using SeleniumExtras.WaitHelpers;
 using tests.e2e.fixtures;
-using tests.e2e.utils;
+using Xunit.Extensions.Ordering;
 
 namespace tests.e2e;
 
-[TestCaseOrderer("PriorityOrderer", "Tests")]
 [Collection("Web server collection")]
 public class AuthenticationTests : IDisposable
 {
@@ -21,10 +20,13 @@ public class AuthenticationTests : IDisposable
                 _webServer = webServer;
                 ChromeOptions options = new();
                 options.AddArguments("--headless");
-                options.AddArguments("--start-maximized");
-                options.AddArguments("--disable-gpu");
                 options.AddArguments("--no-sandbox");
-                options.AddArguments("--window-size=1920x1080");
+                options.AddArguments("--disable-dev-shm-usage");
+                options.AddArguments("--disable-gpu");
+                options.AddArguments("--window-size=1920,1080");
+                options.AddArguments("--ignore-certificate-errors");
+                options.AddArguments("--disable-web-security");
+                options.AddArguments("--allow-running-insecure-content");
                 _driver = new ChromeDriver(options);
                 _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
         }
@@ -35,7 +37,7 @@ public class AuthenticationTests : IDisposable
                 _driver.Dispose();
         }
 
-        [Fact, TestPriority(0)]
+        [Fact, Order(0)]
         public async Task RegisterPage_Loads()
         {
                 _webServer.ClearData();
@@ -44,7 +46,7 @@ public class AuthenticationTests : IDisposable
                 _driver.Title.Should().Contain("Register");
         }
 
-        [Fact, TestPriority(1)]
+        [Fact, Order(1)]
         public async Task Register_RedirectsToEmailConfirmation_WhenSuccessful()
         {
                 await _driver.Navigate().GoToUrlAsync("http://localhost/Identity/Account/Register");
@@ -54,11 +56,11 @@ public class AuthenticationTests : IDisposable
 
                 _driver.FindElement(By.Id("registerSubmit")).Click();
 
-                _wait.Until(d => d.FindElement(By.Id("confirm-link"))).Click();
+                _wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("confirm-link"))).Click();
                 _wait.Until(d => d.PageSource.Contains("Thank you for confirming your email.")).Should().BeTrue();
         }
 
-        [Fact, TestPriority(2)]
+        [Fact, Order(2)]
         public async Task Login_ShouldWork()
         {
                 await _driver.Navigate().GoToUrlAsync("http://localhost/Identity/Account/Login");
