@@ -15,11 +15,9 @@ public class SetupArtistCommandTests : IDisposable
         private readonly SetupArtistCommand _command;
         private readonly IdentityDbContext _dbContext;
         private readonly IServiceScope _scope;
-        private readonly DatabaseTestContext _databaseContext;
 
         public SetupArtistCommandTests(DatabaseTestContext databaseContext)
         {
-                _databaseContext = databaseContext;
                 _scope = databaseContext.Services.CreateScope();
                 _command = _scope.ServiceProvider.GetRequiredService<SetupArtistCommand>();
                 _dbContext = _scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
