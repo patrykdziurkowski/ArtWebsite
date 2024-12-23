@@ -41,6 +41,9 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
         app.UseDeveloperExceptionPage();
+        using IServiceScope scope = app.Services.CreateScope();
+        ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Database.MigrateAsync();
 }
 else
 {
