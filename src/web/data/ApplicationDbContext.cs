@@ -6,7 +6,7 @@ using web.features.shared.domain;
 
 namespace web.data;
 
-public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
 {
         public DbSet<Artist> Artists { get; set; }
 

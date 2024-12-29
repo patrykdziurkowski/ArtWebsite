@@ -41,9 +41,9 @@ public class ArtistTests : IClassFixture<WebDriverBase>
 
                 _context.Driver.FindElement(By.Id("Name")).SendKeys("SomeArtist");
                 _context.Driver.FindElement(By.Id("Summary")).SendKeys("My description!");
-                _context.Driver.FindElement(By.TagName("form")).FindElement(By.TagName("button")).Click();
+                _context.Driver.FindElement(By.Id("setup-artist")).Click();
 
-                _context.DriverIsAtBaseUrl().Should().BeTrue();
+                _context.Wait.Until(d => d.Url.Contains("/Artist/Index")).Should().BeTrue();
         }
 
         [Fact, Order(3)]
@@ -53,6 +53,14 @@ public class ArtistTests : IClassFixture<WebDriverBase>
 
                 Action action = () => _context.Wait.Until(d => d.Url.Contains("Setup"));
                 action.Should().Throw<WebDriverTimeoutException>();
+        }
+
+        [Fact, Order(4)]
+        public async Task Setup_RedirectsToIndex_WhenUserHasArtistProfile()
+        {
+                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
+
+                _context.Wait.Until(d => d.Url.Contains("Setup") == false);
         }
 
 }

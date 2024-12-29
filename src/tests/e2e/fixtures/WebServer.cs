@@ -8,8 +8,11 @@ namespace tests.e2e.fixtures;
 public class WebServer : IDisposable
 {
         private const string DB_TEST_PASSWORD = "exampleP@ssword123";
-        private const string TRUNCATE_DATA_QUERY = @"EXEC sp_MSForEachTable 'SET QUOTED_IDENTIFIER ON; DELETE FROM ?'
-";
+        private const string TRUNCATE_DATA_QUERY = @"
+                SET QUOTED_IDENTIFIER ON;
+                DELETE FROM [dbo].[AspNetUsers];
+                DELETE FROM [dbo].[Artists];
+                ";
         public ICompositeService Server { get; }
 
         public WebServer()

@@ -11,7 +11,9 @@ builder.Services
         .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services
         .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-        .AddEntityFrameworkStores<ApplicationDbContext>();
+        .AddRoles<IdentityRole>()
+        .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<RazorViewEngineOptions>(o =>
 {
@@ -37,7 +39,6 @@ builder.Services.AddTransient<SetupArtistCommand>();
 
 
 var app = builder.Build();
-
 if (app.Environment.IsDevelopment())
 {
         app.UseDeveloperExceptionPage();
@@ -50,6 +51,20 @@ else
         app.UseExceptionHandler("/Home/Error");
         // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
+}
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+        RoleManager<IdentityRole> roleManager = scope.ServiceProvider
+            .GetRequiredService<RoleManager<IdentityRole>>();
+        string[] roles = ["Admin", "Artist"];
+        foreach (string role in roles)
+        {
+                if (await roleManager.RoleExistsAsync(role) == false)
+                {
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                }
+        }
 }
 
 app.UseHttpsRedirection();
@@ -65,7 +80,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 app.MapRazorPages();
-
 
 await app.RunAsync();
 

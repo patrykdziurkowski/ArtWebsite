@@ -2,9 +2,7 @@ using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using web.features.artist.SetupArtist;
-using web.features.shared;
 
 namespace web.features.artist
 {
@@ -20,20 +18,34 @@ namespace web.features.artist
                         _userManager = userManager;
                 }
 
-                [AuthorizeOrRedirect("Artist", "/Artist/Setup")]
-                public ActionResult Index()
+                public async Task<ActionResult> Index()
                 {
+                        if (await IsArtist() == false)
+                        {
+                                return Redirect("/Artist/Setup");
+                        }
+
                         return Content("Index page");
                 }
 
-                public ActionResult Setup()
+                public async Task<ActionResult> Setup()
                 {
+                        if (await IsArtist())
+                        {
+                                return Redirect("/Artist/Index");
+                        }
+
                         return View();
                 }
 
                 [HttpPost]
                 public async Task<ActionResult> Setup(SetupModel model)
                 {
+                        if (await IsArtist())
+                        {
+                                return Redirect("/Artist/Index");
+                        }
+
                         if (!ModelState.IsValid)
                         {
                                 return View(model);
@@ -52,7 +64,18 @@ namespace web.features.artist
                         }
 
                         await _userManager.AddToRoleAsync(user, "Artist");
-                        return RedirectToAction("Index");
+                        return Redirect("/Artist/Index");
+                }
+
+                private async Task<bool> IsArtist()
+                {
+                        IdentityUser? user = await _userManager.GetUserAsync(HttpContext.User);
+                        if (user is null)
+                        {
+                                return false;
+                        }
+
+                        return await _userManager.IsInRoleAsync(user, "Artist");
                 }
 
         }
