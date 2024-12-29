@@ -37,7 +37,7 @@ public class SetupArtistCommandTests : IDisposable
                         new Artist(new ArtistId(), "ArtistName", "A profile summary for an artist."));
                 await _dbContext.SaveChangesAsync();
 
-                Result<Artist> result = await _command.Execute("ArtistName", "Some other summary for some other artist.");
+                Result<Artist> result = await _command.ExecuteAsync("ArtistName", "Some other summary for some other artist.");
 
                 result.IsFailed.Should().BeTrue();
         }
@@ -45,7 +45,7 @@ public class SetupArtistCommandTests : IDisposable
         [Fact]
         public async Task Execute_ShouldSaveArtist_WhenNameNotTaken()
         {
-                Result<Artist> result = await _command.Execute("ArtistName", "Some other summary for some other artist.");
+                Result<Artist> result = await _command.ExecuteAsync("ArtistName", "Some other summary for some other artist.");
 
                 Artist artist = await _dbContext.Artists.FirstAsync();
                 artist.Name.Should().Be("ArtistName");

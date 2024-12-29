@@ -1,9 +1,12 @@
-using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace web.features.artist.SetupArtist;
 
-public class SetupModel(string name, string summary)
+public class SetupModel
 {
-        public string Name { get; set; } = name;
-        public string Summary { get; set; } = summary;
+        [Required]
+        [StringLength(12, MinimumLength = 3)]
+        public required string Name { get; set; }
+        [Required]
+        public required string Summary { get; set; }
 }

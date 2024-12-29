@@ -13,7 +13,7 @@ public class SetupArtistCommand
                 _dbContext = dbContext;
         }
 
-        public async Task<Result<Artist>> Execute(string name, string summary)
+        public async Task<Result<Artist>> ExecuteAsync(string name, string summary)
         {
                 if (await _dbContext.Artists.AnyAsync(a => a.Name == name))
                 {
