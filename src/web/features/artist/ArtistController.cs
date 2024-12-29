@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -12,7 +13,9 @@ namespace web.features.artist
                 private readonly UserManager<IdentityUser> _userManager;
                 private readonly SetupArtistCommand _setupArtistCommand;
 
-                public ArtistController(SetupArtistCommand setupArtistCommand, UserManager<IdentityUser> userManager)
+                public ArtistController(
+                        SetupArtistCommand setupArtistCommand,
+                        UserManager<IdentityUser> userManager)
                 {
                         _setupArtistCommand = setupArtistCommand;
                         _userManager = userManager;
@@ -51,16 +54,17 @@ namespace web.features.artist
                                 return View(model);
                         }
 
-                        Result<Artist> result = await _setupArtistCommand.ExecuteAsync(model.Name, model.Summary);
-                        if (result.IsFailed)
-                        {
-                                return View(model);
-                        }
-
                         IdentityUser? user = await _userManager.GetUserAsync(HttpContext.User);
                         if (user is null)
                         {
                                 return Unauthorized();
+                        }
+
+                        Result<Artist> result = await _setupArtistCommand.ExecuteAsync(
+                                user.Id, model.Name, model.Summary);
+                        if (result.IsFailed)
+                        {
+                                return View(model);
                         }
 
                         await _userManager.AddToRoleAsync(user, "Artist");
@@ -69,7 +73,7 @@ namespace web.features.artist
 
                 private async Task<bool> IsArtist()
                 {
-                        IdentityUser? user = await _userManager.GetUserAsync(HttpContext.User);
+                        IdentityUser? user = await _userManager.GetUserAsync(User);
                         if (user is null)
                         {
                                 return false;

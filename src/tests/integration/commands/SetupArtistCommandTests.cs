@@ -1,5 +1,6 @@
 using FluentAssertions;
 using FluentResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using tests.integration.fixtures;
@@ -13,6 +14,7 @@ namespace tests.integration.commands;
 public class SetupArtistCommandTests : IDisposable
 {
         private readonly SetupArtistCommand _command;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IServiceScope _scope;
 
@@ -21,6 +23,7 @@ public class SetupArtistCommandTests : IDisposable
                 _scope = databaseContext.Services.CreateScope();
                 _command = _scope.ServiceProvider.GetRequiredService<SetupArtistCommand>();
                 _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
                 _dbContext.Database.BeginTransaction();
         }
 
@@ -33,11 +36,13 @@ public class SetupArtistCommandTests : IDisposable
         [Fact]
         public async Task Execute_ShouldFail_WhenNameAlreadyTaken()
         {
+                IdentityUser user = new("johnSmith");
+                await _userManager.CreateAsync(user);
                 _dbContext.Artists.Add(
-                        new Artist(new ArtistId(), "ArtistName", "A profile summary for an artist."));
+                        new Artist(new ArtistId(), user.Id, "ArtistName", "A profile summary for an artist."));
                 await _dbContext.SaveChangesAsync();
 
-                Result<Artist> result = await _command.ExecuteAsync("ArtistName", "Some other summary for some other artist.");
+                Result<Artist> result = await _command.ExecuteAsync("", "ArtistName", "Some other summary for some other artist.");
 
                 result.IsFailed.Should().BeTrue();
         }
@@ -45,7 +50,10 @@ public class SetupArtistCommandTests : IDisposable
         [Fact]
         public async Task Execute_ShouldSaveArtist_WhenNameNotTaken()
         {
-                Result<Artist> result = await _command.ExecuteAsync("ArtistName", "Some other summary for some other artist.");
+                IdentityUser user = new("johnSmith");
+                await _userManager.CreateAsync(user);
+
+                Result<Artist> result = await _command.ExecuteAsync(user.Id, "ArtistName", "Some other summary for some other artist.");
 
                 Artist artist = await _dbContext.Artists.FirstAsync();
                 artist.Name.Should().Be("ArtistName");

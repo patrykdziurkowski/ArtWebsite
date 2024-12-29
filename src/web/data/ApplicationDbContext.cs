@@ -27,5 +27,9 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole
                 builder.Entity<Artist>()
                         .Property(a => a.ArtistId)
                         .HasConversion(id => id.Value, guid => new ArtistId(guid));
+                builder.Entity<Artist>()
+                        .HasOne<IdentityUser>()
+                        .WithOne()
+                        .HasForeignKey<Artist>(a => a.OwnerId);
         }
 }
