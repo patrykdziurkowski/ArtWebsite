@@ -1,53 +1,58 @@
-using System;
 using FluentAssertions;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
 using tests.e2e.fixtures;
 using Xunit.Extensions.Ordering;
 
 namespace tests.e2e;
 
 [Collection("Web server collection")]
-public class ArtistTests : IDisposable
+public class ArtistTests : IClassFixture<WebDriverBase>
 {
-        private readonly WebServer _webServer;
-        private readonly IWebDriver _driver;
-        private readonly WebDriverWait _wait;
-
-        public ArtistTests(WebServer webServer)
+        private readonly WebDriverBase _context;
+        public ArtistTests(WebDriverBase context)
         {
-                _webServer = webServer;
-                ChromeOptions options = new();
-                options.AddArguments("--headless");
-                options.AddArguments("--no-sandbox");
-                options.AddArguments("--disable-dev-shm-usage");
-                options.AddArguments("--disable-gpu");
-                options.AddArguments("--window-size=1920,1080");
-                options.AddArguments("--ignore-certificate-errors");
-                options.AddArguments("--disable-web-security");
-                options.AddArguments("--allow-running-insecure-content");
-                _driver = new ChromeDriver(options);
-                _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
-        }
-
-        public void Dispose()
-        {
-                _driver.Quit();
-                _driver.Dispose();
+                _context = context;
         }
 
         [Fact, Order(0)]
+        public async Task Index_RedirectsToLogin_WhenNotLoggedIn()
+        {
+                _context.WebServer.ClearData();
+
+                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+
+                _context.Wait.Until(d => d.Url.Contains("Login")).Should().BeTrue();
+        }
+
+        [Fact, Order(1)]
+        public async Task Index_RedirectsToSetup_WhenNoArtistProfile()
+        {
+                await _context.Register();
+                await _context.Login();
+                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+
+                _context.Wait.Until(d => d.Url.Contains("Setup")).Should().BeTrue();
+        }
+
+        [Fact, Order(2)]
         public async Task Setup_RedirectsToIndex_WhenSuccess()
         {
-                _webServer.ClearData();
-                await _driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
+                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
 
-                _driver.FindElement(By.Id("Name")).SendKeys("SomeArtist");
-                _driver.FindElement(By.Id("Summary")).SendKeys("My description!");
-                _driver.FindElement(By.TagName("form")).FindElement(By.TagName("button")).Click();
+                _context.Driver.FindElement(By.Id("Name")).SendKeys("SomeArtist");
+                _context.Driver.FindElement(By.Id("Summary")).SendKeys("My description!");
+                _context.Driver.FindElement(By.TagName("form")).FindElement(By.TagName("button")).Click();
 
-                _wait.Until(d => d.PageSource.Contains("Index")).Should().BeTrue();
+                _context.DriverIsAtBaseUrl().Should().BeTrue();
+        }
+
+        [Fact, Order(3)]
+        public async Task Index_DoesntRedirect_WhenHasArtistProfile()
+        {
+                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+
+                Action action = () => _context.Wait.Until(d => d.Url.Contains("Setup"));
+                action.Should().Throw<WebDriverTimeoutException>();
         }
 
 }

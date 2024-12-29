@@ -8,7 +8,8 @@ namespace tests.e2e.fixtures;
 public class WebServer : IDisposable
 {
         private const string DB_TEST_PASSWORD = "exampleP@ssword123";
-        private const string TRUNCATE_DATA_QUERY = "DECLARE @sql NVARCHAR(MAX)=''; SELECT @sql+= 'TRUNCATE TABLE '+QUOTENAME(s.name)+'.'+QUOTENAME(t.name)+'; ' FROM sys.tables t JOIN sys.schemas s ON t.schema_id=s.schema_id WHERE t.is_ms_shipped=0; EXEC sp_executesql @sql;";
+        private const string TRUNCATE_DATA_QUERY = @"EXEC sp_MSForEachTable 'SET QUOTED_IDENTIFIER ON; DELETE FROM ?'
+";
         public ICompositeService Server { get; }
 
         public WebServer()
