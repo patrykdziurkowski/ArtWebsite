@@ -2,7 +2,17 @@ namespace web.Models;
 
 public class ErrorViewModel
 {
-    public string? RequestId { get; set; }
+        public int? StatusCode { get; }
+        public string? Reason { get; }
+        public bool HasReason => StatusCode.HasValue;
 
-    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+        public ErrorViewModel()
+        {
+        }
+
+        public ErrorViewModel(int statusCode, string reason)
+        {
+                StatusCode = statusCode;
+                Reason = reason;
+        }
 }

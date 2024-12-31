@@ -8,6 +8,7 @@ using web.data;
 using web.features.artist.DeactivateArtist;
 using web.features.artist.Index;
 using web.features.artist.SetupArtist;
+using web.Models;
 
 namespace web.features.artist
 {
@@ -47,10 +48,12 @@ namespace web.features.artist
                 [Route("/Artists/{artistId}")]
                 public async Task<ActionResult> Get(Guid artistId)
                 {
-                        Artist? artist = await _dbContext.Artists.FirstOrDefaultAsync(a => a.Id.Value == artistId);
+                        Artist? artist = await _dbContext.Artists
+                                .FirstOrDefaultAsync(a => a.Id.Value == artistId);
                         if (artist is null)
                         {
-                                return NotFound();
+                                return View("Error", new ErrorViewModel(404,
+                                        "No artist with such id found."));
                         }
 
                         ArtistProfileModel model = new(artist.Id.Value,
