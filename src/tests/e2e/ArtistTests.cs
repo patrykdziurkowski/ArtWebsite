@@ -43,7 +43,7 @@ public class ArtistTests : IClassFixture<WebDriverBase>
                 _context.Driver.FindElement(By.Id("Summary")).SendKeys("My description!");
                 _context.Driver.FindElement(By.Id("setup-artist")).Click();
 
-                _context.Wait.Until(d => d.Url.Contains("/Artist/Index")).Should().BeTrue();
+                _context.Wait.Until(d => d.Url.Contains("/Artist/Index") || d.Url.EndsWith("/Artist/") || d.Url.EndsWith("/Artist")).Should().BeTrue();
         }
 
         [Fact, Order(3)]

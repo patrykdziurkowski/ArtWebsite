@@ -29,7 +29,7 @@ namespace web.features.artist
                 {
                         if (await IsArtistAsync() == false)
                         {
-                                return Redirect("/Artist/Setup");
+                                return RedirectToAction(nameof(Setup));
                         }
 
                         return Content("Index page");
@@ -39,7 +39,7 @@ namespace web.features.artist
                 {
                         if (await IsArtistAsync())
                         {
-                                return Redirect("/Artist/Index");
+                                return RedirectToAction(nameof(Index));
                         }
 
                         return View();
@@ -50,7 +50,7 @@ namespace web.features.artist
                 {
                         if (await IsArtistAsync())
                         {
-                                return Redirect("/Artist/Index");
+                                return RedirectToAction(nameof(Index));
                         }
 
                         Result<Artist> result = await _setupArtistCommand.ExecuteAsync(
@@ -60,7 +60,7 @@ namespace web.features.artist
                                 return View(model);
                         }
 
-                        return Redirect("/Artist/Index");
+                        return RedirectToAction(nameof(Index));
                 }
 
                 [HttpDelete]
@@ -68,7 +68,7 @@ namespace web.features.artist
                 {
                         if (await IsArtistAsync() == false)
                         {
-                                return Redirect("/Artist/Setup");
+                                return RedirectToAction(nameof(Setup));
                         }
 
 
