@@ -5,6 +5,7 @@ using web.data;
 using web.features.artist.DeactivateArtist;
 using web.features.artist.SetupArtist;
 using web.features.shared;
+using web.Features.ArtPiece.UploadArtPiece;
 
 var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration["CONNECTION_STRING"]
@@ -43,6 +44,7 @@ builder.Services.Configure<RazorViewEngineOptions>(o =>
 
 builder.Services.AddTransient<SetupArtistCommand>();
 builder.Services.AddTransient<DeactivateArtistCommand>();
+builder.Services.AddTransient<UploadArtPieceCommand>();
 
 
 var app = builder.Build();
