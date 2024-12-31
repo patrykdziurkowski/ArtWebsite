@@ -47,7 +47,7 @@ public class DeactivateArtistCommandTests : IDisposable
                 IdentityUser user = new("johnSmith");
                 await _userManager.CreateAsync(user);
                 _dbContext.Artists.Add(
-                        new Artist(new ArtistId(), user.Id, "ArtistName",
+                        new Artist(user.Id, "ArtistName",
                                 "A profile summary for an artist."));
                 await _dbContext.SaveChangesAsync();
 
