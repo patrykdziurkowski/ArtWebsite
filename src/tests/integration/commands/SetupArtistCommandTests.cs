@@ -34,7 +34,7 @@ public class SetupArtistCommandTests : IDisposable
         }
 
         [Fact]
-        public async Task Execute_ShouldFail_WhenNameAlreadyTaken()
+        public async Task ExecuteAsync_ShouldFail_WhenNameAlreadyTaken()
         {
                 IdentityUser user = new("johnSmith");
                 await _userManager.CreateAsync(user);
@@ -48,7 +48,7 @@ public class SetupArtistCommandTests : IDisposable
         }
 
         [Fact]
-        public async Task Execute_ShouldSaveArtist_WhenNameNotTaken()
+        public async Task ExecuteAsync_ShouldSaveArtist_WhenNameNotTaken()
         {
                 IdentityUser user = new("johnSmith");
                 await _userManager.CreateAsync(user);

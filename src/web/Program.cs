@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using web.data;
+using web.features.artist.DeactivateArtist;
 using web.features.artist.SetupArtist;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,7 @@ builder.Services.Configure<RazorViewEngineOptions>(o =>
 });
 
 builder.Services.AddTransient<SetupArtistCommand>();
+builder.Services.AddTransient<DeactivateArtistCommand>();
 
 
 var app = builder.Build();
