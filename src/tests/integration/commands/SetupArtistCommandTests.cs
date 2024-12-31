@@ -42,13 +42,13 @@ public class SetupArtistCommandTests : IDisposable
                         new Artist(new ArtistId(), user.Id, "ArtistName", "A profile summary for an artist."));
                 await _dbContext.SaveChangesAsync();
 
-                Result<Artist> result = await _command.ExecuteAsync("", "ArtistName", "Some other summary for some other artist.");
+                Result<Artist> result = await _command.ExecuteAsync(user.Id, "ArtistName", "Some other summary for some other artist.");
 
                 result.IsFailed.Should().BeTrue();
         }
 
         [Fact]
-        public async Task ExecuteAsync_ShouldSaveArtist_WhenNameNotTaken()
+        public async Task ExecuteAsync_ShouldSaveArtistAndAddArtistRole_WhenNameNotTaken()
         {
                 IdentityUser user = new("johnSmith");
                 await _userManager.CreateAsync(user);
@@ -59,5 +59,6 @@ public class SetupArtistCommandTests : IDisposable
                 artist.Name.Should().Be("ArtistName");
                 artist.Summary.Should().Be("Some other summary for some other artist.");
                 result.IsSuccess.Should().BeTrue();
+                (await _userManager.IsInRoleAsync(user, "Artist")).Should().BeTrue();
         }
 }

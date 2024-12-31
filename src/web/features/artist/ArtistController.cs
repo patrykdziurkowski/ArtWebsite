@@ -58,20 +58,13 @@ namespace web.features.artist
                                 return View(model);
                         }
 
-                        IdentityUser? user = await _userManager.GetUserAsync(HttpContext.User);
-                        if (user is null)
-                        {
-                                return Unauthorized();
-                        }
-
                         Result<Artist> result = await _setupArtistCommand.ExecuteAsync(
-                                user.Id, model.Name, model.Summary);
+                                GetUserId(), model.Name, model.Summary);
                         if (result.IsFailed)
                         {
                                 return View(model);
                         }
 
-                        await _userManager.AddToRoleAsync(user, "Artist");
                         return Redirect("/Artist/Index");
                 }
 
