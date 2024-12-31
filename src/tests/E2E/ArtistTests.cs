@@ -38,11 +38,7 @@ public class ArtistTests : IClassFixture<WebDriverBase>
         [Fact, Order(2)]
         public async Task Setup_RedirectsToIndex_WhenSuccess()
         {
-                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
-
-                _context.Driver.FindElement(By.Id("Name")).SendKeys("SomeArtist");
-                _context.Driver.FindElement(By.Id("Summary")).SendKeys("My description!");
-                _context.Driver.FindElement(By.Id("setup-artist")).Click();
+                await _context.CreateArtistProfileAsync();
 
                 _context.Wait.Until(d => d.Url.Contains("/Artist/Index") || d.Url.EndsWith("/Artist/") || d.Url.EndsWith("/Artist")).Should().BeTrue();
         }

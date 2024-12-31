@@ -74,6 +74,20 @@ public class WebDriverBase : IDisposable
                 Driver.FindElement(By.Id("logout")).Click();
         }
 
+        public async Task CreateArtistProfileAsync(string name)
+        {
+                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
+
+                Driver.FindElement(By.Id("Name")).SendKeys(name);
+                Driver.FindElement(By.Id("Summary")).SendKeys("My description!");
+                Driver.FindElement(By.Id("setup-artist")).Click();
+        }
+
+        public async Task CreateArtistProfileAsync()
+        {
+                await CreateArtistProfileAsync("SomeArtist");
+        }
+
         public bool DriverIsAtBaseUrl()
         {
                 return Wait.Until(d =>
