@@ -3,6 +3,7 @@ using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using web.features.artist.DeactivateArtist;
 using web.features.artist.SetupArtist;
 
 namespace web.features.artist
@@ -12,13 +13,16 @@ namespace web.features.artist
         {
                 private readonly UserManager<IdentityUser> _userManager;
                 private readonly SetupArtistCommand _setupArtistCommand;
+                private readonly DeactivateArtistCommand _deactivateArtistCommand;
 
                 public ArtistController(
                         SetupArtistCommand setupArtistCommand,
-                        UserManager<IdentityUser> userManager)
+                        UserManager<IdentityUser> userManager,
+                        DeactivateArtistCommand deactivateArtistCommand)
                 {
                         _setupArtistCommand = setupArtistCommand;
                         _userManager = userManager;
+                        _deactivateArtistCommand = deactivateArtistCommand;
                 }
 
                 public async Task<ActionResult> Index()
@@ -69,6 +73,25 @@ namespace web.features.artist
 
                         await _userManager.AddToRoleAsync(user, "Artist");
                         return Redirect("/Artist/Index");
+                }
+
+                [HttpDelete]
+                public async Task<ActionResult> Deactivate()
+                {
+                        if (await IsArtist() == false)
+                        {
+                                return Redirect("/Artist/Setup");
+                        }
+
+
+                        await _deactivateArtistCommand.ExecuteAsync(GetUserId());
+                        return Redirect("/");
+                }
+
+                private string GetUserId()
+                {
+                        return User.FindFirstValue(ClaimTypes.NameIdentifier)
+                                ?? throw new UnauthorizedAccessException("Could not find the user's id in class when expected.");
                 }
 
                 private async Task<bool> IsArtist()
