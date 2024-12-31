@@ -1,6 +1,9 @@
 FROM mcr.microsoft.com/mssql/server:2022-latest
 EXPOSE 1433
 
+# Add the directory containing sqlcmd to the PATH for easier debugging access
+ENV PATH="/opt/mssql-tools18/bin:${PATH}"
+
 ENV ACCEPT_EULA=Y
 ARG password
 RUN test -n "${password}" || (echo "password not set" && false)
