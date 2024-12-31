@@ -1,4 +1,4 @@
-@using web.features.artist
+@using web.features.artist.Index
 @model ArtistProfileModel
 
 <div class="container mt-4">
@@ -7,8 +7,8 @@
 
     @if (@Model.IsOwner)
     {
-        <button id="deactivate-artist-popup" class="btn btn-danger" data-bs-toggle="modal"
-            data-bs-target="#deleteModal">Delete Profile</button>
+                <button id="deactivate-artist-popup" class="btn btn-danger" data-bs-toggle="modal"
+                    data-bs-target="#deleteModal">Delete Profile</button>
     }
 
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">

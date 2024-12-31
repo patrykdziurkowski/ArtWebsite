@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using web.data;
 using web.features.artist.DeactivateArtist;
+using web.features.artist.Index;
 using web.features.artist.SetupArtist;
 
 namespace web.features.artist
