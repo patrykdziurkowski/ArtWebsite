@@ -27,7 +27,7 @@ namespace web.features.artist
 
                 public async Task<ActionResult> Index()
                 {
-                        if (await IsArtist() == false)
+                        if (await IsArtistAsync() == false)
                         {
                                 return Redirect("/Artist/Setup");
                         }
@@ -37,7 +37,7 @@ namespace web.features.artist
 
                 public async Task<ActionResult> Setup()
                 {
-                        if (await IsArtist())
+                        if (await IsArtistAsync())
                         {
                                 return Redirect("/Artist/Index");
                         }
@@ -48,7 +48,7 @@ namespace web.features.artist
                 [HttpPost]
                 public async Task<ActionResult> Setup(SetupModel model)
                 {
-                        if (await IsArtist())
+                        if (await IsArtistAsync())
                         {
                                 return Redirect("/Artist/Index");
                         }
@@ -78,7 +78,7 @@ namespace web.features.artist
                 [HttpDelete]
                 public async Task<ActionResult> Deactivate()
                 {
-                        if (await IsArtist() == false)
+                        if (await IsArtistAsync() == false)
                         {
                                 return Redirect("/Artist/Setup");
                         }
@@ -94,7 +94,7 @@ namespace web.features.artist
                                 ?? throw new UnauthorizedAccessException("Could not find the user's id in class when expected.");
                 }
 
-                private async Task<bool> IsArtist()
+                private async Task<bool> IsArtistAsync()
                 {
                         IdentityUser? user = await _userManager.GetUserAsync(User);
                         if (user is null)
