@@ -53,6 +53,7 @@ namespace web.features.artist
                 }
 
                 [HttpPost]
+                [ValidateAntiForgeryToken]
                 public async Task<ActionResult> Setup(SetupModel model)
                 {
                         if (await IsArtistAsync())
