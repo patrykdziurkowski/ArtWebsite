@@ -55,7 +55,7 @@ public class UploadArtPieceCommandTests : IDisposable
 
 
                 ArtPiece artPiece = await _command.ExecuteAsync(
-                        GetExampleFile(), "description", artistId);
+                        GetExampleFile(), "description", user.Id);
 
                 _dbContext.ArtPieces.FirstOrDefault(a => a.Description == "description")
                         .Should().NotBeNull();
@@ -73,17 +73,16 @@ public class UploadArtPieceCommandTests : IDisposable
                 await _dbContext.SaveChangesAsync();
 
                 ArtPiece artPiece = await _command.ExecuteAsync(
-                        GetExampleFile(), "description", artistId);
+                        GetExampleFile(), "description", user.Id);
 
-                string path = Path.Combine(_rootDirectory, "wwwroot",
-                        "images", "art-pieces", $"{artistId}", $"{artPiece.Id}");
+                string path = Path.Combine(_rootDirectory, "user-images", "art-pieces",
+                        $"{artistId}", $"{artPiece.Id}");
                 File.Exists(path).Should().BeTrue();
         }
 
         private void RemoveArtPieceImages()
         {
-                string path = Path.Combine(_rootDirectory, "wwwroot",
-                        "images", "art-pieces");
+                string path = Path.Combine(_rootDirectory, "user-images", "art-pieces");
                 Directory.Delete(path, recursive: true);
         }
 
