@@ -39,7 +39,7 @@ namespace web.features.artist
                         }
 
                         Artist artist = _dbContext.Artists.First(a => a.OwnerId == GetUserId());
-                        ArtistProfileModel model = new(artist.ArtistId.Value,
+                        ArtistProfileModel model = new(artist.Id.Value,
                                 artist.Name, artist.Summary, isOwner: true);
                         return View(model);
                 }
@@ -47,13 +47,13 @@ namespace web.features.artist
                 [Route("/Artists/{artistId}")]
                 public async Task<ActionResult> Get(Guid artistId)
                 {
-                        Artist? artist = await _dbContext.Artists.FirstOrDefaultAsync(a => a.ArtistId.Value == artistId);
+                        Artist? artist = await _dbContext.Artists.FirstOrDefaultAsync(a => a.Id.Value == artistId);
                         if (artist is null)
                         {
                                 return NotFound();
                         }
 
-                        ArtistProfileModel model = new(artist.ArtistId.Value,
+                        ArtistProfileModel model = new(artist.Id.Value,
                                 artist.Name, artist.Summary, isOwner: GetUserId() == artist.OwnerId);
                         return View("Index", model);
                 }

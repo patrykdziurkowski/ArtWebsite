@@ -39,10 +39,12 @@ public class SetupArtistCommandTests : IDisposable
                 IdentityUser user = new("johnSmith");
                 await _userManager.CreateAsync(user);
                 _dbContext.Artists.Add(
-                        new Artist(new ArtistId(), user.Id, "ArtistName", "A profile summary for an artist."));
+                        new Artist(new ArtistId(), user.Id, "ArtistName",
+                        "A profile summary for an artist."));
                 await _dbContext.SaveChangesAsync();
 
-                Result<Artist> result = await _command.ExecuteAsync(user.Id, "ArtistName", "Some other summary for some other artist.");
+                Result<Artist> result = await _command.ExecuteAsync(user.Id,
+                        "ArtistName", "Some other summary for some other artist.");
 
                 result.IsFailed.Should().BeTrue();
         }
@@ -53,7 +55,8 @@ public class SetupArtistCommandTests : IDisposable
                 IdentityUser user = new("johnSmith");
                 await _userManager.CreateAsync(user);
 
-                Result<Artist> result = await _command.ExecuteAsync(user.Id, "ArtistName", "Some other summary for some other artist.");
+                Result<Artist> result = await _command.ExecuteAsync(user.Id,
+                        "ArtistName", "Some other summary for some other artist.");
 
                 Artist artist = await _dbContext.Artists.FirstAsync();
                 artist.Name.Should().Be("ArtistName");

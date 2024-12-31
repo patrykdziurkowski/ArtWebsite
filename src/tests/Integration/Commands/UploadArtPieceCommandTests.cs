@@ -28,7 +28,8 @@ public class UploadArtPieceCommandTests : IDisposable
                 _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
 
-                IWebHostEnvironment webHostEnvironment = databaseContext.Services.GetRequiredService<IWebHostEnvironment>();
+                IWebHostEnvironment webHostEnvironment = databaseContext
+                        .Services.GetRequiredService<IWebHostEnvironment>();
                 _rootDirectory = webHostEnvironment.ContentRootPath;
 
                 _dbContext.Database.BeginTransaction();
@@ -48,7 +49,8 @@ public class UploadArtPieceCommandTests : IDisposable
                 await _userManager.CreateAsync(user);
                 ArtistId artistId = new();
                 _dbContext.Artists.Add(
-                        new Artist(artistId, user.Id, "ArtistName", "A profile summary for an artist."));
+                        new Artist(artistId, user.Id, "ArtistName",
+                                "A profile summary for an artist."));
                 await _dbContext.SaveChangesAsync();
 
 
@@ -66,7 +68,8 @@ public class UploadArtPieceCommandTests : IDisposable
                 await _userManager.CreateAsync(user);
                 ArtistId artistId = new();
                 _dbContext.Artists.Add(
-                        new Artist(artistId, user.Id, "ArtistName", "A profile summary for an artist."));
+                        new Artist(artistId, user.Id, "ArtistName",
+                                "A profile summary for an artist."));
                 await _dbContext.SaveChangesAsync();
 
                 ArtPiece artPiece = await _command.ExecuteAsync(
@@ -79,7 +82,8 @@ public class UploadArtPieceCommandTests : IDisposable
 
         private void RemoveArtPieceImages()
         {
-                string path = Path.Combine(_rootDirectory, "wwwroot", "images", "art-pieces");
+                string path = Path.Combine(_rootDirectory, "wwwroot",
+                        "images", "art-pieces");
                 Directory.Delete(path, recursive: true);
         }
 

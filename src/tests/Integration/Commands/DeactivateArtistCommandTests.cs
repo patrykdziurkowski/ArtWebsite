@@ -47,12 +47,14 @@ public class DeactivateArtistCommandTests : IDisposable
                 IdentityUser user = new("johnSmith");
                 await _userManager.CreateAsync(user);
                 _dbContext.Artists.Add(
-                        new Artist(new ArtistId(), user.Id, "ArtistName", "A profile summary for an artist."));
+                        new Artist(new ArtistId(), user.Id, "ArtistName",
+                                "A profile summary for an artist."));
                 await _dbContext.SaveChangesAsync();
 
                 await _command.ExecuteAsync(user.Id);
 
-                (await _dbContext.Artists.FirstOrDefaultAsync(a => a.Name == "ArtistName")).Should().BeNull();
+                (await _dbContext.Artists.FirstOrDefaultAsync(a => a.Name == "ArtistName"))
+                        .Should().BeNull();
                 (await _userManager.IsInRoleAsync(user, "Artist")).Should().BeFalse();
         }
 

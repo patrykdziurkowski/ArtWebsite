@@ -25,9 +25,9 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole
                 builder.Ignore<ValueObject>();
 
                 builder.Entity<Artist>()
-                        .HasKey(a => a.ArtistId);
+                        .HasKey(a => a.Id);
                 builder.Entity<Artist>()
-                        .Property(a => a.ArtistId)
+                        .Property(a => a.Id)
                         .HasConversion(id => id.Value, guid => new ArtistId(guid));
                 builder.Entity<Artist>()
                         .HasOne<IdentityUser>()
