@@ -3,6 +3,7 @@ using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using web.data;
 using web.features.artist.DeactivateArtist;
 using web.features.artist.SetupArtist;
 
@@ -12,17 +13,20 @@ namespace web.features.artist
         public class ArtistController : Controller
         {
                 private readonly UserManager<IdentityUser> _userManager;
+                private readonly ApplicationDbContext _dbContext;
                 private readonly SetupArtistCommand _setupArtistCommand;
                 private readonly DeactivateArtistCommand _deactivateArtistCommand;
 
                 public ArtistController(
                         SetupArtistCommand setupArtistCommand,
                         UserManager<IdentityUser> userManager,
-                        DeactivateArtistCommand deactivateArtistCommand)
+                        DeactivateArtistCommand deactivateArtistCommand,
+                        ApplicationDbContext dbContext)
                 {
                         _setupArtistCommand = setupArtistCommand;
                         _userManager = userManager;
                         _deactivateArtistCommand = deactivateArtistCommand;
+                        _dbContext = dbContext;
                 }
 
                 public async Task<ActionResult> Index()
@@ -32,7 +36,10 @@ namespace web.features.artist
                                 return RedirectToAction(nameof(Setup));
                         }
 
-                        return Content("Index page");
+                        Artist artist = _dbContext.Artists.First(a => a.OwnerId == GetUserId());
+                        ArtistProfileModel model = new(artist.ArtistId.Value,
+                                artist.Name, artist.Summary, isOwner: true);
+                        return View(model);
                 }
 
                 public async Task<ActionResult> Setup()
@@ -63,7 +70,8 @@ namespace web.features.artist
                         return RedirectToAction(nameof(Index));
                 }
 
-                [HttpDelete]
+                [HttpPost]
+                [ValidateAntiForgeryToken]
                 public async Task<ActionResult> Deactivate()
                 {
                         if (await IsArtistAsync() == false)

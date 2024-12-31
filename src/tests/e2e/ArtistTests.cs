@@ -1,5 +1,6 @@
 using FluentAssertions;
 using OpenQA.Selenium;
+using SeleniumExtras.WaitHelpers;
 using tests.e2e.fixtures;
 using Xunit.Extensions.Ordering;
 
@@ -27,8 +28,8 @@ public class ArtistTests : IClassFixture<WebDriverBase>
         [Fact, Order(1)]
         public async Task Index_RedirectsToSetup_WhenNoArtistProfile()
         {
-                await _context.Register();
-                await _context.Login();
+                await _context.RegisterAsync();
+                await _context.LoginAsync();
                 await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
 
                 _context.Wait.Until(d => d.Url.Contains("Setup")).Should().BeTrue();
@@ -61,6 +62,25 @@ public class ArtistTests : IClassFixture<WebDriverBase>
                 await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
 
                 _context.Wait.Until(d => d.Url.Contains("Setup") == false);
+        }
+
+        [Fact, Order(5)]
+        public async Task Deactivate_RedirectsToIndex()
+        {
+                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                _context.Driver.FindElement(By.Id("deactivate-artist-popup")).Click();
+
+                _context.Wait.Until(ExpectedConditions.ElementIsVisible(By.Id("deactivate-artist"))).Click();
+
+                _context.Wait.Until(d => _context.DriverIsAtBaseUrl()).Should().BeTrue();
+        }
+
+        [Fact, Order(6)]
+        public async Task Index_RedirectsAgain_WhenArtistDeactivated()
+        {
+                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+
+                _context.Wait.Until(d => d.Url.Contains("Setup")).Should().BeTrue();
         }
 
 }

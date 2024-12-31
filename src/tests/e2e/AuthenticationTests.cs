@@ -25,7 +25,7 @@ public class AuthenticationTests : IClassFixture<WebDriverBase>
         [Fact, Order(1)]
         public async Task Register_RedirectsToEmailConfirmation_WhenSuccessful()
         {
-                await _context.Register();
+                await _context.RegisterAsync();
 
                 _context.Wait.Until(d => d.PageSource.Contains("Thank you for confirming your email.")).Should().BeTrue();
         }
@@ -33,7 +33,7 @@ public class AuthenticationTests : IClassFixture<WebDriverBase>
         [Fact, Order(2)]
         public async Task Login_ShouldWork()
         {
-                await _context.Login();
+                await _context.LoginAsync();
 
                 _context.Wait.Until(d => d.PageSource.Contains("john@smith.com")).Should().BeTrue();
         }

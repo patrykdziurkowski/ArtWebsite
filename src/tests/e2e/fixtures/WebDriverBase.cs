@@ -34,7 +34,7 @@ public class WebDriverBase : IDisposable
                 Driver.Dispose();
         }
 
-        public async Task Register(string email, string password)
+        public async Task RegisterAsync(string email, string password)
         {
                 await Driver.Navigate().GoToUrlAsync("http://localhost/Identity/Account/Register");
                 Driver.FindElement(By.Id("Input_Email")).SendKeys(email);
@@ -47,12 +47,12 @@ public class WebDriverBase : IDisposable
                 Wait.Until(d => d.PageSource.Contains("Thank you for confirming your email."));
         }
 
-        public async Task Register()
+        public async Task RegisterAsync()
         {
-                await Register("john@smith.com", "Ex@mpl3");
+                await RegisterAsync("john@smith.com", "Ex@mpl3");
         }
 
-        public async Task Login(string email, string password)
+        public async Task LoginAsync(string email, string password)
         {
                 await Driver.Navigate().GoToUrlAsync("http://localhost/Identity/Account/Login");
                 Driver.FindElement(By.Id("Input_Email")).SendKeys(email);
@@ -63,12 +63,12 @@ public class WebDriverBase : IDisposable
                 Wait.Until(d => d.PageSource.Contains(email));
         }
 
-        public async Task Login()
+        public async Task LoginAsync()
         {
-                await Login("john@smith.com", "Ex@mpl3");
+                await LoginAsync("john@smith.com", "Ex@mpl3");
         }
 
-        public async Task Logout()
+        public async Task LogoutAsync()
         {
                 await Driver.Navigate().GoToUrlAsync("http://localhost/");
                 Driver.FindElement(By.Id("logout")).Click();
