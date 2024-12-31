@@ -21,6 +21,7 @@ public class WebServer : IDisposable
                 Server = new Builder()
                         .UseContainer()
                         .UseCompose()
+                        .ServiceName("artwebsite-development")
                         .FromFile(dockerComposePath)
                         .WithEnvironment($"MSSQL_SA_PASSWORD={DB_TEST_PASSWORD}")
                         .WithEnvironment("ASPNETCORE_ENVIRONMENT=Development")
