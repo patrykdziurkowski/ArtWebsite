@@ -3,6 +3,7 @@ using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using web.data;
 using web.features.artist.DeactivateArtist;
 using web.features.artist.SetupArtist;
@@ -40,6 +41,20 @@ namespace web.features.artist
                         ArtistProfileModel model = new(artist.ArtistId.Value,
                                 artist.Name, artist.Summary, isOwner: true);
                         return View(model);
+                }
+
+                [Route("/Artists/{artistId}")]
+                public async Task<ActionResult> Get(Guid artistId)
+                {
+                        Artist? artist = await _dbContext.Artists.FirstOrDefaultAsync(a => a.ArtistId.Value == artistId);
+                        if (artist is null)
+                        {
+                                return NotFound();
+                        }
+
+                        ArtistProfileModel model = new(artist.ArtistId.Value,
+                                artist.Name, artist.Summary, isOwner: GetUserId() == artist.OwnerId);
+                        return View("Index", model);
                 }
 
                 public async Task<ActionResult> Setup()
