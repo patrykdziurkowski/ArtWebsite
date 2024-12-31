@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using web.data;
 using web.features.artist.DeactivateArtist;
 using web.features.artist.SetupArtist;
+using web.features.shared;
 
 var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration["CONNECTION_STRING"]
@@ -15,7 +16,10 @@ builder.Services
         .AddRoles<IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(o =>
+{
+        o.Filters.Add<ValidateModelFilter>();
+});
 builder.Services.Configure<RazorViewEngineOptions>(o =>
 {
         /*

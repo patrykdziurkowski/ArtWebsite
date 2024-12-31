@@ -53,11 +53,6 @@ namespace web.features.artist
                                 return Redirect("/Artist/Index");
                         }
 
-                        if (!ModelState.IsValid)
-                        {
-                                return View(model);
-                        }
-
                         Result<Artist> result = await _setupArtistCommand.ExecuteAsync(
                                 GetUserId(), model.Name, model.Summary);
                         if (result.IsFailed)
