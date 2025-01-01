@@ -12,6 +12,7 @@ public class WebServer : IDisposable
                 SET QUOTED_IDENTIFIER ON;
                 DELETE FROM [dbo].[AspNetUsers];
                 DELETE FROM [dbo].[Artists];
+                DELETE FROM [dbo].[ArtPieces];
                 ";
         public ICompositeService Server { get; }
 
