@@ -1,1 +1,19 @@
-﻿<h1>Art piece!</h1>
+﻿@using web.Features.ArtPiece.Index
+@using web.Features.ArtPiece
+@model ArtPiecesViewModel
+
+<h1>Art pieces!</h1>
+@foreach (ArtPiece artPiece in Model.ArtPieces)
+{
+    <div class="card" style="width: 18rem;">
+    <img src="@artPiece.ImagePath" class="card-img-top" alt="Art Piece Image">
+    <div class="card-body">
+        <h5 class="card-title">Art Piece @artPiece.Id</h5>
+        <p class="card-text">@artPiece.Description</p>
+        <p class="card-text"><small class="text-muted">
+                Uploaded on: @artPiece.UploadDate.ToString("MMMM dd, yyyy")
+            </small></p>
+        <p class="card-text"><small class="text-muted">Artist ID: @artPiece.ArtistId</small></p>
+    </div>
+</div>
+}

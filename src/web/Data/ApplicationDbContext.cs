@@ -43,5 +43,11 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole
                         .HasOne<Artist>()
                         .WithMany()
                         .HasForeignKey(a => a.ArtistId);
+                builder.Entity<ArtPiece>()
+                        .Property(a => a.ImagePath)
+                        .IsRequired();
+                builder.Entity<ArtPiece>()
+                        .Property(a => a.UploadDate)
+                        .IsRequired();
         }
 }

@@ -19,7 +19,6 @@ public class UploadArtPieceCommandTests : IDisposable
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IServiceScope _scope;
-        private readonly string _rootDirectory;
 
         public UploadArtPieceCommandTests(DatabaseTestContext databaseContext)
         {
@@ -27,11 +26,6 @@ public class UploadArtPieceCommandTests : IDisposable
                 _command = _scope.ServiceProvider.GetRequiredService<UploadArtPieceCommand>();
                 _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-
-                IWebHostEnvironment webHostEnvironment = databaseContext
-                        .Services.GetRequiredService<IWebHostEnvironment>();
-                _rootDirectory = webHostEnvironment.ContentRootPath;
-
                 _dbContext.Database.BeginTransaction();
         }
 
@@ -75,14 +69,14 @@ public class UploadArtPieceCommandTests : IDisposable
                 ArtPiece artPiece = await _command.ExecuteAsync(
                         GetExampleFile(), "description", user.Id);
 
-                string path = Path.Combine(_rootDirectory, "user-images", "art-pieces",
+                string path = Path.Combine("user-images", "art-pieces",
                         $"{artistId}", $"{artPiece.Id}");
                 File.Exists(path).Should().BeTrue();
         }
 
         private void RemoveArtPieceImages()
         {
-                string path = Path.Combine(_rootDirectory, "user-images", "art-pieces");
+                string path = Path.Combine("user-images", "art-pieces");
                 Directory.Delete(path, recursive: true);
         }
 

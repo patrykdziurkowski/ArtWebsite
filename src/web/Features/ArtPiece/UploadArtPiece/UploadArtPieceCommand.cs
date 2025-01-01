@@ -23,11 +23,12 @@ public class UploadArtPieceCommand
                 Artist artist = await _dbContext.Artists
                         .FirstAsync(a => a.OwnerId == userId);
 
-                string directoryPath = Path.Combine(_env.ContentRootPath, "user-images", "art-pieces", $"{artist.Id}");
+                string directoryPath = Path.Combine("user-images", "art-pieces", $"{artist.Id}");
                 Directory.CreateDirectory(directoryPath);
 
                 ArtPieceId artPieceId = new();
-                string imagePath = Path.Combine(directoryPath, $"{artPieceId}");
+                string fileExtension = Path.GetExtension(image.FileName);
+                string imagePath = Path.Combine(directoryPath, $"{artPieceId}{fileExtension}");
                 using (FileStream stream = new(imagePath, FileMode.Create))
                 {
                         await image.CopyToAsync(stream);

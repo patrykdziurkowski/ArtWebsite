@@ -1,11 +1,9 @@
-using System;
 using FluentAssertions;
 using OpenQA.Selenium;
-using SeleniumExtras.WaitHelpers;
 using tests.e2e.fixtures;
 using Xunit.Extensions.Ordering;
 
-namespace tests.E2E;
+namespace tests.e2e;
 
 [Collection("Web server collection")]
 public class ArtPieceTests : IClassFixture<WebDriverBase>
@@ -18,7 +16,7 @@ public class ArtPieceTests : IClassFixture<WebDriverBase>
         }
 
         [Fact, Order(0)]
-        public async Task UploadingArtPiece_RedirectsToIndex_WhenSuccess()
+        public async Task UploadingArtPiece_AddsNewArtPiece_WhenSuccess()
         {
                 _context.WebServer.ClearData();
                 await _context.RegisterAsync();
@@ -26,12 +24,13 @@ public class ArtPieceTests : IClassFixture<WebDriverBase>
                 await _context.CreateArtistProfileAsync();
                 string filePath = "../../../resources/exampleImage.png";
                 await _context.Driver.Navigate().GoToUrlAsync("http://localhost/ArtPiece/Upload");
-                IWebElement imageInput = _context.Wait.Until(ExpectedConditions.ElementIsVisible(By.Id("Image")));
-                imageInput.SendKeys(Path.GetFullPath(filePath));
-                _context.Driver.FindElement(By.Id("Description")).SendKeys("Description!");
+                _context.Driver.Navigate().GoToUrl("http://localhost/ArtPiece/Upload"); // this second GoToUrl needs to be here, for some reason...
+                _context.Wait.Until(d => d.FindElement(By.Id("image-input"))).SendKeys(Path.GetFullPath(filePath));
+                _context.Wait.Until(d => d.FindElement(By.Id("description-input"))).SendKeys("Description!");
 
                 _context.Driver.FindElement(By.Id("upload-submit")).Click();
 
                 _context.Wait.Until(d => d.Url.Equals("http://localhost/ArtPiece"));
+                _context.Driver.FindElements(By.TagName("img")).Should().HaveCount(1);
         }
 }

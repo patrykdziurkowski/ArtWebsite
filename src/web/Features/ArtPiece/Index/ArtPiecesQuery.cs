@@ -15,7 +15,6 @@ public class ArtPiecesQuery
         public async Task<List<ArtPiece>> ExecuteAsync(int amount, DateTime lastArtPieceUploadDate)
         {
                 return _dbContext.ArtPieces
-                        .AsEnumerable() // <- workaround for SQL translation errors with DateTime
                         .Where(a => a.UploadDate > lastArtPieceUploadDate)
                         .OrderBy(a => a.UploadDate)
                         .Take(amount)

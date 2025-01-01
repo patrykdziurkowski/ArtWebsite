@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using web.data;
 using web.features.artist.DeactivateArtist;
 using web.features.artist.SetupArtist;
@@ -78,6 +79,15 @@ using (IServiceScope scope = app.Services.CreateScope())
                 }
         }
 }
+
+app.UseStaticFiles();
+Directory.CreateDirectory(Path.Combine(builder.Environment.ContentRootPath, "user-images"));
+app.UseStaticFiles(new StaticFileOptions
+{
+        FileProvider = new PhysicalFileProvider(
+                Path.Combine(builder.Environment.ContentRootPath, "user-images")),
+        RequestPath = "/user-images"
+});
 
 app.UseHttpsRedirection();
 app.UseRouting();

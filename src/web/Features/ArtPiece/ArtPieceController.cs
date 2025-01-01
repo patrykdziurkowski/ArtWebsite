@@ -2,6 +2,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using web.Features.ArtPiece;
+using web.Features.ArtPiece.Index;
 using web.Features.ArtPiece.UploadArtPiece;
 
 namespace web.features.art_piece;
@@ -10,19 +12,26 @@ namespace web.features.art_piece;
 public class ArtPieceController : Controller
 {
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;
+        private readonly ArtPiecesQuery _artPiecesQuery;
         private readonly UserManager<IdentityUser> _userManager;
+
+        private const int NUMBER_OF_ART_PIECES_TO_LOAD = 5;
 
         public ArtPieceController(
                 UploadArtPieceCommand uploadArtPieceCommand,
-                UserManager<IdentityUser> userManager)
+                UserManager<IdentityUser> userManager,
+                ArtPiecesQuery artPiecesQuery)
         {
                 _uploadArtPieceCommand = uploadArtPieceCommand;
                 _userManager = userManager;
+                _artPiecesQuery = artPiecesQuery;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-                return View();
+                List<ArtPiece> artPieces = await _artPiecesQuery
+                        .ExecuteAsync(NUMBER_OF_ART_PIECES_TO_LOAD);
+                return View(new ArtPiecesViewModel(artPieces));
         }
 
         public async Task<ActionResult> Upload()
