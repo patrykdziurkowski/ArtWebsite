@@ -1,37 +1,23 @@
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using tests.E2E.Fixtures;
 
 namespace tests.e2e.fixtures;
 
 [Collection("Web server collection")]
-public class WebDriverBase : IDisposable
+public abstract class WebDriverBase
 {
         public IWebDriver Driver { get; }
         public WebDriverWait Wait { get; }
         public WebServer WebServer { get; }
 
-        public WebDriverBase(WebServer webServer)
+        public WebDriverBase(WebDriverInitializer initializer)
         {
-                WebServer = webServer;
-                ChromeOptions options = new();
-                options.AddArguments("--headless");
-                options.AddArguments("--no-sandbox");
-                options.AddArguments("--disable-dev-shm-usage");
-                options.AddArguments("--disable-gpu");
-                options.AddArguments("--window-size=1920,1080");
-                options.AddArguments("--ignore-certificate-errors");
-                options.AddArguments("--disable-web-security");
-                options.AddArguments("--allow-running-insecure-content");
-                Driver = new ChromeDriver(options);
-                Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(5));
-        }
+                WebServer = initializer.WebServer;
+                Wait = initializer.Wait;
+                Driver = initializer.Driver;
 
-        public void Dispose()
-        {
-                Driver.Quit();
-                Driver.Dispose();
         }
 
         public async Task RegisterAsync(string email, string password)
@@ -68,10 +54,13 @@ public class WebDriverBase : IDisposable
                 await LoginAsync("john@smith.com", "Ex@mpl3");
         }
 
-        public async Task LogoutAsync()
+        public async Task TryLogoutAsync()
         {
                 await Driver.Navigate().GoToUrlAsync("http://localhost/");
-                Driver.FindElement(By.Id("logout")).Click();
+                if (Driver.PageSource.Contains("john@smith.com"))
+                {
+                        Driver.FindElement(By.Id("logout")).Click();
+                }
         }
 
         public async Task CreateArtistProfileAsync(string name)
@@ -95,5 +84,11 @@ public class WebDriverBase : IDisposable
                         Uri uri = new(d.Url);
                         return string.IsNullOrEmpty(uri.AbsolutePath) || uri.AbsolutePath.Equals("/");
                 });
+        }
+
+        public async Task ResetTestContextAsync()
+        {
+                await TryLogoutAsync();
+                WebServer.ClearData();
         }
 }

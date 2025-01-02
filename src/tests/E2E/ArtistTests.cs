@@ -2,81 +2,80 @@ using FluentAssertions;
 using OpenQA.Selenium;
 using SeleniumExtras.WaitHelpers;
 using tests.e2e.fixtures;
+using tests.E2E.Fixtures;
 using Xunit.Extensions.Ordering;
 
 namespace tests.e2e;
 
-[Collection("Web server collection")]
-public class ArtistTests : IClassFixture<WebDriverBase>
+public class ArtistTests : WebDriverBase
 {
-        private readonly WebDriverBase _context;
-        public ArtistTests(WebDriverBase context)
+        public ArtistTests(WebDriverInitializer initializer)
+                : base(initializer)
         {
-                _context = context;
         }
 
         [Fact, Order(0)]
         public async Task Index_RedirectsToLogin_WhenNotLoggedIn()
         {
-                _context.WebServer.ClearData();
+                await ResetTestContextAsync();
 
-                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
 
-                _context.Wait.Until(d => d.Url.Contains("Login")).Should().BeTrue();
+                Wait.Until(d => d.Url.Contains("Login")).Should().BeTrue();
         }
 
         [Fact, Order(1)]
         public async Task Index_RedirectsToSetup_WhenNoArtistProfile()
         {
-                await _context.RegisterAsync();
-                await _context.LoginAsync();
-                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                await RegisterAsync();
+                await LoginAsync();
+                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
 
-                _context.Wait.Until(d => d.Url.Contains("Setup")).Should().BeTrue();
+                Wait.Until(d => d.Url.Contains("Setup")).Should().BeTrue();
         }
 
         [Fact, Order(2)]
         public async Task Setup_RedirectsToIndex_WhenSuccess()
         {
-                await _context.CreateArtistProfileAsync();
+                await CreateArtistProfileAsync();
 
-                _context.Wait.Until(d => d.Url.Contains("/Artist/Index") || d.Url.EndsWith("/Artist/") || d.Url.EndsWith("/Artist")).Should().BeTrue();
+                Wait.Until(d => d.Url.Contains("/Artist/Index") || d.Url.EndsWith("/Artist/") || d.Url.EndsWith("/Artist")).Should().BeTrue();
         }
 
         [Fact, Order(3)]
         public async Task Index_DoesntRedirect_WhenHasArtistProfile()
         {
-                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
 
-                Action action = () => _context.Wait.Until(d => d.Url.Contains("Setup"));
+                Action action = () => Wait.Until(d => d.Url.Contains("Setup"));
                 action.Should().Throw<WebDriverTimeoutException>();
         }
 
         [Fact, Order(4)]
         public async Task Setup_RedirectsToIndex_WhenUserHasArtistProfile()
         {
-                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
+                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
 
-                _context.Wait.Until(d => d.Url.Contains("Setup") == false);
+                Wait.Until(d => d.Url.Contains("Setup") == false);
         }
 
         [Fact, Order(5)]
         public async Task Deactivate_RedirectsToIndex()
         {
-                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
-                _context.Driver.FindElement(By.Id("deactivate-artist-popup")).Click();
+                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                Driver.FindElement(By.Id("deactivate-artist-popup")).Click();
 
-                _context.Wait.Until(ExpectedConditions.ElementIsVisible(By.Id("deactivate-artist"))).Click();
+                Wait.Until(ExpectedConditions.ElementIsVisible(By.Id("deactivate-artist"))).Click();
 
-                _context.Wait.Until(d => _context.DriverIsAtBaseUrl()).Should().BeTrue();
+                Wait.Until(d => DriverIsAtBaseUrl()).Should().BeTrue();
         }
 
         [Fact, Order(6)]
         public async Task Index_RedirectsAgain_WhenArtistDeactivated()
         {
-                await _context.Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
 
-                _context.Wait.Until(d => d.Url.Contains("Setup")).Should().BeTrue();
+                Wait.Until(d => d.Url.Contains("Setup")).Should().BeTrue();
         }
 
 }
