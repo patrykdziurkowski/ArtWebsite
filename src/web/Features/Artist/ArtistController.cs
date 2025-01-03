@@ -15,14 +15,14 @@ namespace web.features.artist;
 [Authorize]
 public class ArtistController : Controller
 {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly SetupArtistCommand _setupArtistCommand;
         private readonly DeactivateArtistCommand _deactivateArtistCommand;
 
         public ArtistController(
                 SetupArtistCommand setupArtistCommand,
-                UserManager<IdentityUser> userManager,
+                UserManager<IdentityUser<Guid>> userManager,
                 DeactivateArtistCommand deactivateArtistCommand,
                 ApplicationDbContext dbContext)
         {
@@ -104,15 +104,16 @@ public class ArtistController : Controller
                 return Redirect("/");
         }
 
-        private string GetUserId()
+        private Guid GetUserId()
         {
-                return User.FindFirstValue(ClaimTypes.NameIdentifier)
+                string idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier)
                         ?? throw new UnauthorizedAccessException("Could not find the user's id in class when expected.");
+                return Guid.Parse(idClaim);
         }
 
         private async Task<bool> IsArtistAsync()
         {
-                IdentityUser? user = await _userManager.GetUserAsync(User);
+                IdentityUser<Guid>? user = await _userManager.GetUserAsync(User);
                 if (user is null)
                 {
                         return false;

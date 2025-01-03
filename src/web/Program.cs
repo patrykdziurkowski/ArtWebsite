@@ -15,8 +15,8 @@ string connectionString = builder.Configuration["CONNECTION_STRING"]
 builder.Services
         .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services
-        .AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-        .AddRoles<IdentityRole>()
+        .AddDefaultIdentity<IdentityUser<Guid>>(options => options.SignIn.RequireConfirmedAccount = true)
+        .AddRoles<IdentityRole<Guid>>()
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews(o =>
@@ -68,14 +68,14 @@ else
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
-        RoleManager<IdentityRole> roleManager = scope.ServiceProvider
-            .GetRequiredService<RoleManager<IdentityRole>>();
+        RoleManager<IdentityRole<Guid>> roleManager = scope.ServiceProvider
+            .GetRequiredService<RoleManager<IdentityRole<Guid>>>();
         string[] roles = ["Admin", "Artist"];
         foreach (string role in roles)
         {
                 if (await roleManager.RoleExistsAsync(role) == false)
                 {
-                        await roleManager.CreateAsync(new IdentityRole(role));
+                        await roleManager.CreateAsync(new IdentityRole<Guid>(role));
                 }
         }
 }

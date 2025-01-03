@@ -7,7 +7,7 @@ using web.Features.ArtPiece;
 
 namespace web.data;
 
-public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
+public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>
 {
         public DbSet<Artist> Artists { get; set; } = null!;
         public DbSet<ArtPiece> ArtPieces { get; set; } = null!;
@@ -30,7 +30,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole
                         .Property(a => a.Id)
                         .HasConversion(id => id.Value, guid => new ArtistId(guid));
                 builder.Entity<Artist>()
-                        .HasOne<IdentityUser>()
+                        .HasOne<IdentityUser<Guid>>()
                         .WithOne()
                         .HasForeignKey<Artist>(a => a.OwnerId);
 

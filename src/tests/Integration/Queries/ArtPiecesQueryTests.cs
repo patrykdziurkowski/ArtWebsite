@@ -15,7 +15,7 @@ namespace tests.Integration.Queries;
 public class ArtPiecesQueryTests : IDisposable
 {
         private readonly ArtPiecesQuery _command;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IServiceScope _scope;
 
@@ -24,7 +24,7 @@ public class ArtPiecesQueryTests : IDisposable
                 _scope = databaseContext.Services.CreateScope();
                 _command = _scope.ServiceProvider.GetRequiredService<ArtPiecesQuery>();
                 _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
                 _dbContext.Database.BeginTransaction();
         }
 
@@ -79,7 +79,7 @@ public class ArtPiecesQueryTests : IDisposable
 
         private async Task<ArtistId> CreateUserWithArtistProfile()
         {
-                IdentityUser user = new("johnSmith");
+                IdentityUser<Guid> user = new("johnSmith");
                 await _userManager.CreateAsync(user);
                 ArtistId artistId = new();
                 _dbContext.Artists.Add(

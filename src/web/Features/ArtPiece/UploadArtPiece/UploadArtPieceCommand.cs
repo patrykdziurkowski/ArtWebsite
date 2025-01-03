@@ -18,7 +18,7 @@ public class UploadArtPieceCommand
         }
 
         public async Task<ArtPiece> ExecuteAsync(IFormFile image,
-                string description, string userId)
+                string description, Guid userId)
         {
                 Artist artist = await _dbContext.Artists
                         .FirstAsync(a => a.OwnerId == userId);

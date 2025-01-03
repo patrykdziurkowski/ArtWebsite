@@ -8,18 +8,18 @@ namespace web.features.artist.SetupArtist;
 public class SetupArtistCommand
 {
         private readonly ApplicationDbContext _dbContext;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
 
         public SetupArtistCommand(ApplicationDbContext dbContext,
-                UserManager<IdentityUser> userManager)
+                UserManager<IdentityUser<Guid>> userManager)
         {
                 _dbContext = dbContext;
                 _userManager = userManager;
         }
 
-        public async Task<Result<Artist>> ExecuteAsync(string ownerId, string name, string summary)
+        public async Task<Result<Artist>> ExecuteAsync(Guid ownerId, string name, string summary)
         {
-                IdentityUser user = await _userManager.FindByIdAsync(ownerId)
+                IdentityUser<Guid> user = await _userManager.FindByIdAsync(ownerId.ToString())
                         ?? throw new InvalidOperationException("Could not setup artist profile - user with such id does not exist.");
 
                 if (await _dbContext.Artists.AnyAsync(a => a.Name == name))

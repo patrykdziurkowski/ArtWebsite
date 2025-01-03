@@ -14,7 +14,7 @@ namespace tests.integration.commands;
 public class SetupArtistCommandTests : IDisposable
 {
         private readonly SetupArtistCommand _command;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IServiceScope _scope;
 
@@ -23,7 +23,7 @@ public class SetupArtistCommandTests : IDisposable
                 _scope = databaseContext.Services.CreateScope();
                 _command = _scope.ServiceProvider.GetRequiredService<SetupArtistCommand>();
                 _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
                 _dbContext.Database.BeginTransaction();
         }
 
@@ -36,7 +36,7 @@ public class SetupArtistCommandTests : IDisposable
         [Fact]
         public async Task ExecuteAsync_ShouldFail_WhenNameAlreadyTaken()
         {
-                IdentityUser user = new("johnSmith");
+                IdentityUser<Guid> user = new("johnSmith");
                 await _userManager.CreateAsync(user);
                 _dbContext.Artists.Add(
                         new Artist(user.Id, "ArtistName",
@@ -52,7 +52,7 @@ public class SetupArtistCommandTests : IDisposable
         [Fact]
         public async Task ExecuteAsync_ShouldSaveArtistAndAddArtistRole_WhenNameNotTaken()
         {
-                IdentityUser user = new("johnSmith");
+                IdentityUser<Guid> user = new("johnSmith");
                 await _userManager.CreateAsync(user);
 
                 Result<Artist> result = await _command.ExecuteAsync(user.Id,

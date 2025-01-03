@@ -16,7 +16,7 @@ namespace tests.Integration.Commands;
 public class UploadArtPieceCommandTests : IDisposable
 {
         private readonly UploadArtPieceCommand _command;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IServiceScope _scope;
 
@@ -25,7 +25,7 @@ public class UploadArtPieceCommandTests : IDisposable
                 _scope = databaseContext.Services.CreateScope();
                 _command = _scope.ServiceProvider.GetRequiredService<UploadArtPieceCommand>();
                 _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
                 _dbContext.Database.BeginTransaction();
         }
 
@@ -39,7 +39,7 @@ public class UploadArtPieceCommandTests : IDisposable
         [Fact]
         public async Task ExecuteAsync_SavesImageObject()
         {
-                IdentityUser user = new("johnSmith");
+                IdentityUser<Guid> user = new("johnSmith");
                 await _userManager.CreateAsync(user);
                 ArtistId artistId = new();
                 _dbContext.Artists.Add(
@@ -58,7 +58,7 @@ public class UploadArtPieceCommandTests : IDisposable
         [Fact]
         public async Task ExecuteAsync_SavesImageAsAFile()
         {
-                IdentityUser user = new("johnSmith");
+                IdentityUser<Guid> user = new("johnSmith");
                 await _userManager.CreateAsync(user);
                 ArtistId artistId = new();
                 _dbContext.Artists.Add(

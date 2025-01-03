@@ -13,13 +13,13 @@ public class ArtPieceController : Controller
 {
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;
         private readonly ArtPiecesQuery _artPiecesQuery;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
 
         private const int NUMBER_OF_ART_PIECES_TO_LOAD = 5;
 
         public ArtPieceController(
                 UploadArtPieceCommand uploadArtPieceCommand,
-                UserManager<IdentityUser> userManager,
+                UserManager<IdentityUser<Guid>> userManager,
                 ArtPiecesQuery artPiecesQuery)
         {
                 _uploadArtPieceCommand = uploadArtPieceCommand;
@@ -54,15 +54,16 @@ public class ArtPieceController : Controller
                 return RedirectToAction(nameof(Index));
         }
 
-        private string GetUserId()
+        private Guid GetUserId()
         {
-                return User.FindFirstValue(ClaimTypes.NameIdentifier)
+                string idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier)
                         ?? throw new UnauthorizedAccessException("Could not find the user's id in class when expected.");
+                return Guid.Parse(idClaim);
         }
 
         private async Task<bool> IsArtistAsync()
         {
-                IdentityUser? user = await _userManager.GetUserAsync(User);
+                IdentityUser<Guid>? user = await _userManager.GetUserAsync(User);
                 if (user is null)
                 {
                         return false;

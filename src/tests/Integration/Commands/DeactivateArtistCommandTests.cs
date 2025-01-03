@@ -14,7 +14,7 @@ namespace tests.integration.commands;
 public class DeactivateArtistCommandTests : IDisposable
 {
         private readonly DeactivateArtistCommand _command;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IServiceScope _scope;
 
@@ -23,7 +23,7 @@ public class DeactivateArtistCommandTests : IDisposable
                 _scope = databaseContext.Services.CreateScope();
                 _command = _scope.ServiceProvider.GetRequiredService<DeactivateArtistCommand>();
                 _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
                 _dbContext.Database.BeginTransaction();
         }
 
@@ -36,7 +36,7 @@ public class DeactivateArtistCommandTests : IDisposable
         [Fact]
         public async Task ExecuteAsync_ShouldThrow_WhenUserIdDoesntExist()
         {
-                Func<Task> action = async () => await _command.ExecuteAsync("invalidId");
+                Func<Task> action = async () => await _command.ExecuteAsync(Guid.Empty);
 
                 await action.Should().ThrowAsync<InvalidOperationException>();
         }
@@ -44,7 +44,7 @@ public class DeactivateArtistCommandTests : IDisposable
         [Fact]
         public async Task ExecuteAsync_ShouldRemoveArtistEntityAndRole_WhenExists()
         {
-                IdentityUser user = new("johnSmith");
+                IdentityUser<Guid> user = new("johnSmith");
                 await _userManager.CreateAsync(user);
                 _dbContext.Artists.Add(
                         new Artist(user.Id, "ArtistName",
