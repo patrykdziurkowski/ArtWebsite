@@ -23,8 +23,8 @@ public class ArtPieceTests : WebDriverBase
                 string filePath = "../../../resources/exampleImage.png";
                 await Driver.Navigate().GoToUrlAsync("http://localhost/ArtPiece/Upload");
                 Driver.Navigate().GoToUrl("http://localhost/ArtPiece/Upload"); // this second GoToUrl needs to be here, for some reason...
-                Wait.Until(d => d.FindElement(By.Id("image-input"))).SendKeys(Path.GetFullPath(filePath));
-                Wait.Until(d => d.FindElement(By.Id("description-input"))).SendKeys("Description!");
+                Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
+                Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
 
                 Driver.FindElement(By.Id("upload-submit")).Click();
 
