@@ -7,6 +7,7 @@ public class UploadArtPieceModel
 {
         [Required(ErrorMessage = "Please choose an image.")]
         [DataType(DataType.Upload)]
+        [SupportedImage]
         public required IFormFile Image { get; set; }
 
         [Required(ErrorMessage = "Please provide a description.")]
