@@ -1,4 +1,20 @@
 services:
+  https-proxy:
+    build:
+      context: src/https-proxy
+      dockerfile: Dockerfile
+      args:
+        SERVER_DOMAIN: ${SERVER_DOMAIN:-localhost}
+        WEB_MODULE_ADDRESS: ${WEB_MODULE_ADDRESS:-web:8080}
+    ports:
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+
   web:
     build:
       context: src/web
@@ -6,9 +22,9 @@ services:
       args:
         BUILD_CONFIGURATION: ${BUILD_CONFIGURATION:-Release}
     ports:
-      - "80:80"
+      - "8080:8080"
     environment:
-      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Release}
       - CONNECTION_STRING=Data Source=db,1433;User ID=SA;Password=${MSSQL_SA_PASSWORD};Encrypt=False
     depends_on:
@@ -32,3 +48,7 @@ services:
       db:
         condition: service_healthy
     profiles: [ migrations ]
+
+volumes:
+  caddy_data:
+  caddy_config:

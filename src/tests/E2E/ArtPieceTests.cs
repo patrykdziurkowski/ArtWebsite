@@ -21,8 +21,8 @@ public class ArtPieceTests : WebDriverBase
                 await LoginAsync();
                 await CreateArtistProfileAsync();
                 string filePath = "../../../resources/exampleNonImage.txt";
-                await Driver.Navigate().GoToUrlAsync("http://localhost/ArtPiece/Upload");
-                Driver.Navigate().GoToUrl("http://localhost/ArtPiece/Upload"); // this second GoToUrl needs to be here, for some reason...
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload"); // this second GoToUrl needs to be here, for some reason...
                 Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
                 Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
 
@@ -35,13 +35,13 @@ public class ArtPieceTests : WebDriverBase
         public void UploadingArtPiece_AddsNewArtPiece_WhenUploadingImage()
         {
                 string filePath = "../../../resources/exampleImage.png";
-                Driver.Navigate().GoToUrl("http://localhost/ArtPiece/Upload");
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
                 Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
                 Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
 
                 Driver.FindElement(By.Id("upload-submit")).Click();
 
-                Wait.Until(d => d.Url.Equals("http://localhost/ArtPiece"));
+                Wait.Until(d => d.Url.Equals($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece"));
                 Driver.FindElements(By.TagName("img")).Should().HaveCount(1);
         }
 }

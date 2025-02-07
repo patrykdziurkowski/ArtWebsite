@@ -27,7 +27,7 @@ public class WebServer : IDisposable
                         .WithEnvironment("ASPNETCORE_ENVIRONMENT=Development")
                         .ForceBuild()
                         .ForceRecreate()
-                        .WaitForHttp("web", "http://localhost")
+                        .WaitForHttp("web", "http://localhost:8080")
                         .Build()
                         .Start();
         }

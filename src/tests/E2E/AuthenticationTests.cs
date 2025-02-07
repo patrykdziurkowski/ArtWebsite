@@ -18,7 +18,7 @@ public class AuthenticationTests : WebDriverBase
         {
                 await ResetTestContextAsync();
 
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Identity/Account/Register");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Identity/Account/Register");
 
                 Driver.Title.Should().Contain("Register");
         }

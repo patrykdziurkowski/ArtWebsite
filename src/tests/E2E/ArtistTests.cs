@@ -19,7 +19,7 @@ public class ArtistTests : WebDriverBase
         {
                 await ResetTestContextAsync();
 
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
 
                 Wait.Until(d => d.Url.Contains("Login")).Should().BeTrue();
         }
@@ -29,7 +29,7 @@ public class ArtistTests : WebDriverBase
         {
                 await RegisterAsync();
                 await LoginAsync();
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
 
                 Wait.Until(d => d.Url.Contains("Setup")).Should().BeTrue();
         }
@@ -45,7 +45,7 @@ public class ArtistTests : WebDriverBase
         [Fact, Order(3)]
         public async Task Index_DoesntRedirect_WhenHasArtistProfile()
         {
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
 
                 Action action = () => Wait.Until(d => d.Url.Contains("Setup"));
                 action.Should().Throw<WebDriverTimeoutException>();
@@ -54,7 +54,7 @@ public class ArtistTests : WebDriverBase
         [Fact, Order(4)]
         public async Task Setup_RedirectsToIndex_WhenUserHasArtistProfile()
         {
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Setup");
 
                 Wait.Until(d => d.Url.Contains("Setup") == false);
         }
@@ -62,7 +62,7 @@ public class ArtistTests : WebDriverBase
         [Fact, Order(5)]
         public async Task Deactivate_RedirectsToIndex()
         {
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
                 Driver.FindElement(By.Id("deactivate-artist-popup")).Click();
 
                 Wait.Until(ExpectedConditions.ElementIsVisible(By.Id("deactivate-artist"))).Click();
@@ -73,7 +73,7 @@ public class ArtistTests : WebDriverBase
         [Fact, Order(6)]
         public async Task Index_RedirectsAgain_WhenArtistDeactivated()
         {
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Index");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
 
                 Wait.Until(d => d.Url.Contains("Setup")).Should().BeTrue();
         }

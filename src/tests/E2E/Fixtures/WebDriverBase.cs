@@ -8,6 +8,7 @@ namespace tests.e2e.fixtures;
 [Collection("Web server collection")]
 public abstract class WebDriverBase
 {
+        public const string HTTP_PROTOCOL_PREFIX = "https://";
         public IWebDriver Driver { get; }
         public WebDriverWait Wait { get; }
         public WebServer WebServer { get; }
@@ -22,7 +23,7 @@ public abstract class WebDriverBase
 
         public async Task RegisterAsync(string email, string password)
         {
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Identity/Account/Register");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Identity/Account/Register");
                 Driver.FindElement(By.Id("Input_Email")).SendKeys(email);
                 Driver.FindElement(By.Id("Input_Password")).SendKeys(password);
                 Driver.FindElement(By.Id("Input_ConfirmPassword")).SendKeys(password);
@@ -40,7 +41,7 @@ public abstract class WebDriverBase
 
         public async Task LoginAsync(string email, string password)
         {
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Identity/Account/Login");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Identity/Account/Login");
                 Driver.FindElement(By.Id("Input_Email")).SendKeys(email);
                 Driver.FindElement(By.Id("Input_Password")).SendKeys(password);
 
@@ -56,7 +57,7 @@ public abstract class WebDriverBase
 
         public async Task TryLogoutAsync()
         {
-                await Driver.Navigate().GoToUrlAsync("http://localhost/");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/");
                 if (Driver.PageSource.Contains("john@smith.com"))
                 {
                         Driver.FindElement(By.Id("logout")).Click();
@@ -65,7 +66,7 @@ public abstract class WebDriverBase
 
         public async Task CreateArtistProfileAsync(string name)
         {
-                await Driver.Navigate().GoToUrlAsync("http://localhost/Artist/Setup");
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Setup");
 
                 Driver.FindElement(By.Id("Name")).SendKeys(name);
                 Driver.FindElement(By.Id("Summary")).SendKeys("My description!");
