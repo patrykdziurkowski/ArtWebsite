@@ -21,7 +21,7 @@ public abstract class WebDriverBase
 
         }
 
-        public async Task RegisterAsync(string email, string password)
+        public async Task RegisterAsync(string email = "john@smith.com", string password = "Ex@mpl3")
         {
                 await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Identity/Account/Register");
                 Driver.FindElement(By.Id("Input_Email")).SendKeys(email);
@@ -34,12 +34,7 @@ public abstract class WebDriverBase
                 Wait.Until(d => d.PageSource.Contains("Thank you for confirming your email."));
         }
 
-        public async Task RegisterAsync()
-        {
-                await RegisterAsync("john@smith.com", "Ex@mpl3");
-        }
-
-        public async Task LoginAsync(string email, string password)
+        public async Task LoginAsync(string email = "john@smith.com", string password = "Ex@mpl3")
         {
                 await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Identity/Account/Login");
                 Driver.FindElement(By.Id("Input_Email")).SendKeys(email);
@@ -48,11 +43,6 @@ public abstract class WebDriverBase
                 Driver.FindElement(By.Id("login-submit")).Click();
 
                 Wait.Until(d => d.PageSource.Contains(email));
-        }
-
-        public async Task LoginAsync()
-        {
-                await LoginAsync("john@smith.com", "Ex@mpl3");
         }
 
         public async Task TryLogoutAsync()
@@ -64,18 +54,13 @@ public abstract class WebDriverBase
                 }
         }
 
-        public async Task CreateArtistProfileAsync(string name)
+        public async Task CreateArtistProfileAsync(string name = "SomeArtist")
         {
                 await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Setup");
 
                 Driver.FindElement(By.Id("Name")).SendKeys(name);
                 Driver.FindElement(By.Id("Summary")).SendKeys("My description!");
                 Driver.FindElement(By.Id("setup-artist")).Click();
-        }
-
-        public async Task CreateArtistProfileAsync()
-        {
-                await CreateArtistProfileAsync("SomeArtist");
         }
 
         public bool DriverIsAtBaseUrl()
