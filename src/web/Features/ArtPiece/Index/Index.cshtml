@@ -1,19 +1,44 @@
 ﻿@using web.Features.ArtPiece.Index
 @using web.Features.ArtPiece
-@model ArtPiecesViewModel
+@model ArtPiece
 
-<h1>Art pieces!</h1>
-@foreach (ArtPiece artPiece in Model.ArtPieces)
-{
-    <div class="card" style="width: 18rem;">
-    <img src="@artPiece.ImagePath" class="card-img-top" alt="Art Piece Image">
-    <div class="card-body">
-        <h5 class="card-title">Art Piece @artPiece.Id</h5>
-        <p class="card-text">@artPiece.Description</p>
-        <p class="card-text"><small class="text-muted">
-                Uploaded on: @artPiece.UploadDate.ToString("MMMM dd, yyyy")
-            </small></p>
-        <p class="card-text"><small class="text-muted">Artist ID: @artPiece.ArtistId</small></p>
+<div class="container position-relative w-50 text-center">
+    @if (Model == null)
+    {
+        <h1>No More Images Found</h1>
+    }
+    else
+    {
+        <img src="@Model.ImagePath" alt="Art Piece" class="img-fluid rounded">
+        <div class="position-absolute bottom-0 start-0 text-white p-2">
+            <p>@Model.Description</p>
+        </div>
+        <button class="btn btn-light position-absolute top-0 end-0 m-2" data-bs-toggle="modal"
+            data-bs-target="#reviewModal">Review</button>
+    }
+</div>
+
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Review Art</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="reviewForm">
+                    <textarea name="review" class="form-control mb-2" placeholder="Write your review"
+                        required></textarea>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
-}
+
+<script>
+    document.getElementById("reviewForm").addEventListener("submit", function (e) {
+        e.preventDefault();
+        setTimeout(() => { window.location.reload(); }, 1000);
+    });
+</script>

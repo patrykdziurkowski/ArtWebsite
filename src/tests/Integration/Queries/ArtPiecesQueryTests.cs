@@ -1,6 +1,4 @@
-using System;
 using FluentAssertions;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using tests.integration.fixtures;
@@ -12,17 +10,17 @@ using web.Features.ArtPiece.Index;
 namespace tests.Integration.Queries;
 
 [Collection("Database collection")]
-public class ArtPiecesQueryTests : IDisposable
+public class ArtPieceQueryTests : IDisposable
 {
-        private readonly ArtPiecesQuery _command;
+        private readonly ArtPieceQuery _command;
         private readonly UserManager<IdentityUser<Guid>> _userManager;
         private readonly ApplicationDbContext _dbContext;
         private readonly IServiceScope _scope;
 
-        public ArtPiecesQueryTests(DatabaseTestContext databaseContext)
+        public ArtPieceQueryTests(DatabaseTestContext databaseContext)
         {
                 _scope = databaseContext.Services.CreateScope();
-                _command = _scope.ServiceProvider.GetRequiredService<ArtPiecesQuery>();
+                _command = _scope.ServiceProvider.GetRequiredService<ArtPieceQuery>();
                 _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
                 _dbContext.Database.BeginTransaction();
@@ -35,36 +33,22 @@ public class ArtPiecesQueryTests : IDisposable
         }
 
         [Fact]
-        public async Task ExecuteAsync_ShouldReturnEmpty_WhenNoArtPiecesInDatabase()
+        public void Execute_ShouldReturnNull_WhenNoArtPiecesInDatabase()
         {
-                List<ArtPiece> artPieces = await _command.ExecuteAsync(5);
+                ArtPiece? artPiece = _command.Execute();
 
-                artPieces.Count.Should().Be(0);
+                artPiece.Should().BeNull();
         }
 
         [Fact]
-        public async Task ExecuteAsync_ShouldReturn5Results_When6Exist()
+        public async Task Execute_ShouldReturnAnArtPiece_WhenOneExists()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 await Create6ArtPiecesForArtist(artistId);
 
-                List<ArtPiece> artPieces = await _command.ExecuteAsync(5);
+                ArtPiece? artPiece = _command.Execute();
 
-                artPieces.Count.Should().Be(5);
-        }
-
-        [Fact]
-        public async Task ExecuteAsync_ShouldReturn3NewerResults_When6Exist()
-        {
-                ArtistId artistId = await CreateUserWithArtistProfile();
-                await Create6ArtPiecesForArtist(artistId);
-                List<ArtPiece> totalArtPieces = await _command.ExecuteAsync(6);
-                DateTime lastArtPieceUploadDate = totalArtPieces.ElementAt(2).UploadDate;
-
-                List<ArtPiece> artPieces = await _command.ExecuteAsync(5, lastArtPieceUploadDate);
-
-                artPieces.Count.Should().Be(3);
-                artPieces.Any(a => a.UploadDate == lastArtPieceUploadDate).Should().BeFalse();
+                artPiece.Should().NotBeNull();
         }
 
         private async Task Create6ArtPiecesForArtist(ArtistId artistId)

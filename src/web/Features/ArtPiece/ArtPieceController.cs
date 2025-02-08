@@ -12,26 +12,23 @@ namespace web.features.art_piece;
 public class ArtPieceController : Controller
 {
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;
-        private readonly ArtPiecesQuery _artPiecesQuery;
+        private readonly ArtPieceQuery _artPieceQuery;
         private readonly UserManager<IdentityUser<Guid>> _userManager;
-
-        private const int NUMBER_OF_ART_PIECES_TO_LOAD = 5;
 
         public ArtPieceController(
                 UploadArtPieceCommand uploadArtPieceCommand,
                 UserManager<IdentityUser<Guid>> userManager,
-                ArtPiecesQuery artPiecesQuery)
+                ArtPieceQuery artPieceQuery)
         {
                 _uploadArtPieceCommand = uploadArtPieceCommand;
                 _userManager = userManager;
-                _artPiecesQuery = artPiecesQuery;
+                _artPieceQuery = artPieceQuery;
         }
 
-        public async Task<ActionResult> Index()
+        public ActionResult Index()
         {
-                List<ArtPiece> artPieces = await _artPiecesQuery
-                        .ExecuteAsync(NUMBER_OF_ART_PIECES_TO_LOAD);
-                return View(new ArtPiecesViewModel(artPieces));
+                ArtPiece? artPiece = _artPieceQuery.Execute();
+                return View(artPiece);
         }
 
         public async Task<ActionResult> Upload()

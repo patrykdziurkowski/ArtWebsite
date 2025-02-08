@@ -47,7 +47,7 @@ builder.Services.Configure<RazorViewEngineOptions>(o =>
 builder.Services.AddTransient<SetupArtistCommand>();
 builder.Services.AddTransient<DeactivateArtistCommand>();
 builder.Services.AddTransient<UploadArtPieceCommand>();
-builder.Services.AddTransient<ArtPiecesQuery>();
+builder.Services.AddTransient<ArtPieceQuery>();
 
 
 var app = builder.Build();
