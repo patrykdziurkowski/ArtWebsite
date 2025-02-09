@@ -13,7 +13,7 @@ public class ArtPieceQuery
         public ArtPiece? Execute()
         {
                 return _dbContext.ArtPieces
-                        .OrderBy(a => a.UploadDate)
+                        .OrderByDescending(a => a.UploadDate)
                         .FirstOrDefault();
         }
 

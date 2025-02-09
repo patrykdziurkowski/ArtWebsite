@@ -11,23 +11,18 @@ namespace web.Features.ArtPieces;
 public class ArtPieceController : Controller
 {
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;
-        private readonly ArtPieceQuery _artPieceQuery;
         private readonly UserManager<IdentityUser<Guid>> _userManager;
 
-        public ArtPieceController(
-                UploadArtPieceCommand uploadArtPieceCommand,
-                UserManager<IdentityUser<Guid>> userManager,
-                ArtPieceQuery artPieceQuery)
+        public ArtPieceController(UploadArtPieceCommand uploadArtPieceCommand,
+                UserManager<IdentityUser<Guid>> userManager)
         {
                 _uploadArtPieceCommand = uploadArtPieceCommand;
                 _userManager = userManager;
-                _artPieceQuery = artPieceQuery;
         }
 
         public ActionResult Index()
         {
-                ArtPiece? artPiece = _artPieceQuery.Execute();
-                return View(artPiece);
+                return View();
         }
 
         public async Task<ActionResult> Upload()
