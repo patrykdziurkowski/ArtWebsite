@@ -12,6 +12,7 @@ public class WebServer : IDisposable
                 DELETE FROM [dbo].[AspNetUsers];
                 DELETE FROM [dbo].[Artists];
                 DELETE FROM [dbo].[ArtPieces];
+                DELETE FROM [dbo].[Reviews];
                 ";
         public ICompositeService Server { get; }
 
