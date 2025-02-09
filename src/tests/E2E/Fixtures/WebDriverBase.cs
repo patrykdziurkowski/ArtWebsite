@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
@@ -60,6 +61,16 @@ public abstract class WebDriverBase
                 Driver.FindElement(By.Id("Name")).SendKeys(name);
                 Driver.FindElement(By.Id("Summary")).SendKeys("My description!");
                 Driver.FindElement(By.Id("setup-artist")).Click();
+        }
+
+        public async Task UploadArtPiece()
+        {
+                string filePath = "../../../resources/exampleImage.png";
+                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
+                Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
+                Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
+
+                Driver.FindElement(By.Id("upload-submit")).Click();
         }
 
         public bool DriverIsAtBaseUrl()

@@ -31,14 +31,9 @@ public class ArtPiecesTests : WebDriverBase
         }
 
         [Fact, Order(1)]
-        public void UploadingArtPiece_AddsNewArtPiece_WhenUploadingImage()
+        public async Task UploadingArtPiece_AddsNewArtPiece_WhenUploadingImage()
         {
-                string filePath = "../../../resources/exampleImage.png";
-                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
-                Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
-                Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
-
-                Driver.FindElement(By.Id("upload-submit")).Click();
+                await UploadArtPiece();
 
                 Wait.Until(d => d.Url.Equals($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece"));
                 Driver.FindElements(By.TagName("img")).Should().HaveCount(1);
