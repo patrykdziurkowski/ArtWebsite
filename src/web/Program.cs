@@ -7,6 +7,7 @@ using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.SetupArtist;
 using web.Features.ArtPieces.Index;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Reviews.ReviewArtPiece;
 using web.Features.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,6 +53,7 @@ builder.Services.AddTransient<SetupArtistCommand>();
 builder.Services.AddTransient<DeactivateArtistCommand>();
 builder.Services.AddTransient<UploadArtPieceCommand>();
 builder.Services.AddTransient<ArtPieceQuery>();
+builder.Services.AddTransient<ReviewArtPieceCommand>();
 
 
 var app = builder.Build();
