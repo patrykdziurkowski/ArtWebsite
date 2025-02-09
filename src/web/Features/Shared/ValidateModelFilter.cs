@@ -2,9 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using web.Models;
 
-namespace web.features.shared;
+namespace web.Features.Shared;
 
 public class ValidateModelFilter : IActionFilter
 {

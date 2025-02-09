@@ -2,7 +2,7 @@ using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Services;
 using Ductus.FluentDocker.Services.Extensions;
 
-namespace tests.e2e.fixtures;
+namespace tests.E2E.Fixtures;
 
 public class WebServer : IDisposable
 {

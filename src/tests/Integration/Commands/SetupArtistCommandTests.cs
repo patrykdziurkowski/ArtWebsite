@@ -3,12 +3,12 @@ using FluentResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using tests.integration.fixtures;
-using web.data;
-using web.features.artist;
-using web.features.artist.SetupArtist;
+using tests.Integration.Fixtures;
+using web.Data;
+using web.Features.Artists;
+using web.Features.Artists.SetupArtist;
 
-namespace tests.integration.commands;
+namespace tests.Integration.Commands;
 
 [Collection("Database collection")]
 public class SetupArtistCommandTests : IDisposable

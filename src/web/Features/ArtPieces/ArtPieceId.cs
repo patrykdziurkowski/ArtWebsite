@@ -1,7 +1,6 @@
-using System;
-using web.features.shared.domain;
+using web.Features.Shared.domain;
 
-namespace web.Features.ArtPiece;
+namespace web.Features.ArtPieces;
 
 public class ArtPieceId : DomainId
 {

@@ -1,8 +1,6 @@
-using System;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
-using tests.e2e.fixtures;
 
 namespace tests.E2E.Fixtures;
 

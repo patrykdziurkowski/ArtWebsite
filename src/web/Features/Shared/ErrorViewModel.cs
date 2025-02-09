@@ -1,4 +1,4 @@
-namespace web.Models;
+namespace web.Features.Shared;
 
 public class ErrorViewModel
 {

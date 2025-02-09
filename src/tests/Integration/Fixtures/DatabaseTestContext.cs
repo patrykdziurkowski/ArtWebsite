@@ -1,14 +1,13 @@
 using Ductus.FluentDocker.Builders;
 using Ductus.FluentDocker.Services;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using web.data;
+using web.Data;
 
-namespace tests.integration.fixtures;
+namespace tests.Integration.Fixtures;
 
 public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDisposable
 {

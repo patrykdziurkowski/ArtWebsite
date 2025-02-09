@@ -1,14 +1,13 @@
 using FluentAssertions;
 using OpenQA.Selenium;
-using tests.e2e.fixtures;
 using tests.E2E.Fixtures;
 using Xunit.Extensions.Ordering;
 
-namespace tests.e2e;
+namespace tests.E2E;
 
-public class ArtPieceTests : WebDriverBase
+public class ArtPiecesTests : WebDriverBase
 {
-        public ArtPieceTests(WebDriverInitializer initializer)
+        public ArtPiecesTests(WebDriverInitializer initializer)
                 : base(initializer)
         {
         }

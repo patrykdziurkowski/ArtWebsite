@@ -2,12 +2,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using web.data;
-using web.features.artist.DeactivateArtist;
-using web.features.artist.SetupArtist;
-using web.features.shared;
-using web.Features.ArtPiece.Index;
-using web.Features.ArtPiece.UploadArtPiece;
+using web.Data;
+using web.Features.Artists.DeactivateArtist;
+using web.Features.Artists.SetupArtist;
+using web.Features.ArtPieces.Index;
+using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 string connectionString = builder.Configuration["CONNECTION_STRING"]
@@ -35,6 +35,10 @@ builder.Services.Configure<RazorViewEngineOptions>(o =>
         o.ViewLocationFormats.Add("/features/{2}/{1}/{0}.cshtml");
         o.ViewLocationFormats.Add("/features/{1}/{0}{1}/{0}.cshtml");
         o.ViewLocationFormats.Add("/features/{1}/{0}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/features/{2}/{1}s/{0}.cshtml");
+        o.ViewLocationFormats.Add("/features/{1}s/{0}{1}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/features/{1}s/{0}{1}s/{0}.cshtml");
+        o.ViewLocationFormats.Add("/features/{1}s/{0}/{0}.cshtml");
         o.ViewLocationFormats.Add("/features/shared/{0}.cshtml");
 
         o.AreaPageViewLocationFormats.Clear();

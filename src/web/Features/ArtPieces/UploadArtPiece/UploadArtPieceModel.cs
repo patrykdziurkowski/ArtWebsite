@@ -1,7 +1,6 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace web.Features.ArtPiece.UploadArtPiece;
+namespace web.Features.ArtPieces.UploadArtPiece;
 
 public class UploadArtPieceModel
 {

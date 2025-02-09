@@ -1,6 +1,6 @@
 using System;
 
-namespace web.features.shared.domain;
+namespace web.Features.Shared.domain;
 
 public interface IDomainEvent
 {

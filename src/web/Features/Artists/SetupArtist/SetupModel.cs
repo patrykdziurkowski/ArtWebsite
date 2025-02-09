@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace web.features.artist.SetupArtist;
+namespace web.Features.Artists.SetupArtist;
 
 public class SetupModel
 {

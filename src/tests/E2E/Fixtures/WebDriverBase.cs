@@ -1,9 +1,8 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
-using tests.E2E.Fixtures;
 
-namespace tests.e2e.fixtures;
+namespace tests.E2E.Fixtures;
 
 [Collection("Web server collection")]
 public abstract class WebDriverBase

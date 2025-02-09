@@ -1,14 +1,13 @@
-using System;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using tests.integration.fixtures;
-using web.data;
-using web.features.artist;
-using web.features.artist.DeactivateArtist;
+using tests.Integration.Fixtures;
+using web.Data;
+using web.Features.Artists;
+using web.Features.Artists.DeactivateArtist;
 
-namespace tests.integration.commands;
+namespace tests.Integration.Commands;
 
 [Collection("Database collection")]
 public class DeactivateArtistCommandTests : IDisposable

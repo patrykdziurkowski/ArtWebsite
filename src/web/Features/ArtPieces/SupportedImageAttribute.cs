@@ -1,9 +1,7 @@
-using System;
 using System.ComponentModel.DataAnnotations;
-using FluentResults;
 using Microsoft.IdentityModel.Tokens;
 
-namespace web.Features.ArtPiece;
+namespace web.Features.ArtPieces;
 
 public class SupportedImageAttribute : ValidationAttribute
 {

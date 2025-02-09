@@ -2,11 +2,10 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using web.Features.ArtPiece;
-using web.Features.ArtPiece.Index;
-using web.Features.ArtPiece.UploadArtPiece;
+using web.Features.ArtPieces.Index;
+using web.Features.ArtPieces.UploadArtPiece;
 
-namespace web.features.art_piece;
+namespace web.Features.ArtPieces;
 
 [Authorize]
 public class ArtPieceController : Controller

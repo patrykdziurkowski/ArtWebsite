@@ -1,4 +1,4 @@
-namespace web.features.artist.Index;
+namespace web.Features.Artists.Index;
 
 public class ArtistProfileModel
 {

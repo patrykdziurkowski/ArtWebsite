@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using web.data;
-using web.features.artist.DeactivateArtist;
-using web.features.artist.Index;
-using web.features.artist.SetupArtist;
-using web.Models;
+using web.Data;
+using web.Features.Artists.DeactivateArtist;
+using web.Features.Artists.Index;
+using web.Features.Artists.SetupArtist;
+using web.Features.Shared;
 
-namespace web.features.artist;
+namespace web.Features.Artists;
 
 [Authorize]
 public class ArtistController : Controller

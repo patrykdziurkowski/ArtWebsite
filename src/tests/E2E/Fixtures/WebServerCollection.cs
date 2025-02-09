@@ -1,7 +1,4 @@
-using System;
-using tests.E2E.Fixtures;
-
-namespace tests.e2e.fixtures;
+namespace tests.E2E.Fixtures;
 
 [CollectionDefinition("Web server collection", DisableParallelization = true)]
 [TestCaseOrderer("Xunit.Extensions.Ordering.TestCaseOrderer", "Xunit.Extensions.Ordering")]

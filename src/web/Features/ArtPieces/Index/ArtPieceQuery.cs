@@ -1,6 +1,6 @@
-using web.data;
+using web.Data;
 
-namespace web.Features.ArtPiece.Index;
+namespace web.Features.ArtPieces.Index;
 
 public class ArtPieceQuery
 {

@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using web.features.artist;
-using web.features.shared.domain;
-using web.Features.ArtPiece;
+using web.Features.Artists;
+using web.Features.ArtPieces;
+using web.Features.Shared.domain;
 
-namespace web.data;
+namespace web.Data;
 
 public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>
 {

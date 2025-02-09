@@ -1,11 +1,11 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
-using tests.integration.fixtures;
-using web.data;
-using web.features.artist;
-using web.Features.ArtPiece;
-using web.Features.ArtPiece.Index;
+using tests.Integration.Fixtures;
+using web.Data;
+using web.Features.Artists;
+using web.Features.ArtPieces;
+using web.Features.ArtPieces.Index;
 
 namespace tests.Integration.Queries;
 

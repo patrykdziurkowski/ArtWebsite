@@ -1,6 +1,6 @@
-using web.features.shared.domain;
+using web.Features.Shared.domain;
 
-namespace web.features.artist;
+namespace web.Features.Artists;
 
 public class Artist : AggreggateRoot
 {

@@ -1,9 +1,8 @@
 using FluentAssertions;
-using tests.e2e.fixtures;
 using tests.E2E.Fixtures;
 using Xunit.Extensions.Ordering;
 
-namespace tests.e2e;
+namespace tests.E2E;
 
 public class AuthenticationTests : WebDriverBase
 {

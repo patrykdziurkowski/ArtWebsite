@@ -1,4 +1,4 @@
-namespace tests.unit;
+namespace tests.Unit;
 
 public class DummyTests
 {

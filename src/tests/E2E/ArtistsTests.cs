@@ -1,15 +1,14 @@
 using FluentAssertions;
 using OpenQA.Selenium;
 using SeleniumExtras.WaitHelpers;
-using tests.e2e.fixtures;
 using tests.E2E.Fixtures;
 using Xunit.Extensions.Ordering;
 
-namespace tests.e2e;
+namespace tests.E2E;
 
-public class ArtistTests : WebDriverBase
+public class ArtistsTests : WebDriverBase
 {
-        public ArtistTests(WebDriverInitializer initializer)
+        public ArtistsTests(WebDriverInitializer initializer)
                 : base(initializer)
         {
         }
@@ -39,7 +38,7 @@ public class ArtistTests : WebDriverBase
         {
                 await CreateArtistProfileAsync();
 
-                Wait.Until(d => d.Url.Contains("/Artist/Index") || d.Url.EndsWith("/Artist/") || d.Url.EndsWith("/Artist")).Should().BeTrue();
+                Wait.Until(d => d.Url.Contains("/Artists/Index") || d.Url.EndsWith("/Artist/") || d.Url.EndsWith("/Artist")).Should().BeTrue();
         }
 
         [Fact, Order(3)]

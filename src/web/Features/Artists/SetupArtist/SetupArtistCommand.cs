@@ -1,9 +1,9 @@
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using web.data;
+using web.Data;
 
-namespace web.features.artist.SetupArtist;
+namespace web.Features.Artists.SetupArtist;
 
 public class SetupArtistCommand
 {

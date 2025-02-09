@@ -1,10 +1,8 @@
-using System;
-using FluentResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using web.data;
+using web.Data;
 
-namespace web.features.artist.DeactivateArtist;
+namespace web.Features.Artists.DeactivateArtist;
 
 public class DeactivateArtistCommand
 {
