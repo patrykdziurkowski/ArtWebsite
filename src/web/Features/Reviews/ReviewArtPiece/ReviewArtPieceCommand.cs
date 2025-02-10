@@ -20,7 +20,7 @@ public class ReviewArtPieceCommand
                         ArtPieceId = artPieceId,
                         ReviewerId = reviewerId,
                 };
-                _dbContext.Add(review);
+                await _dbContext.AddAsync(review);
                 await _dbContext.SaveChangesAsync();
                 return review;
         }

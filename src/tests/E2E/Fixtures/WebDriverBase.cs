@@ -67,10 +67,12 @@ public abstract class WebDriverBase
         {
                 string filePath = "../../../resources/exampleImage.png";
                 await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
                 Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
                 Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
 
                 Driver.FindElement(By.Id("upload-submit")).Click();
+                Wait.Until(d => d.Url.Contains("/ArtPiece/Upload") == false);
         }
 
         public bool DriverIsAtBaseUrl()

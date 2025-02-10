@@ -1,25 +1,36 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Features.ArtPieces.Index;
 
-namespace web.Features.ArtPieces
+namespace web.Features.ArtPieces;
+
+[Route("api/artpiece")]
+[ApiController]
+[Authorize]
+public class ArtPieceApiController : ControllerBase
 {
-        [Route("api/artpiece")]
-        [ApiController]
-        [Authorize]
-        public class ArtPieceApiController : ControllerBase
+        private readonly ArtPieceQuery _artPieceQuery;
+
+        public ArtPieceApiController(ArtPieceQuery artPieceQuery)
         {
-                private readonly ArtPieceQuery _artPieceQuery;
+                _artPieceQuery = artPieceQuery;
+        }
 
-                public ArtPieceApiController(ArtPieceQuery artPieceQuery)
+        public IActionResult Index()
+        {
+                ArtPiece? artPiece = _artPieceQuery.Execute(GetUserId());
+                if (artPiece is null)
                 {
-                        _artPieceQuery = artPieceQuery;
+                        return NoContent();
                 }
+                return Ok(artPiece);
+        }
 
-                public ArtPiece? Index()
-                {
-                        ArtPiece? artPiece = _artPieceQuery.Execute();
-                        return artPiece;
-                }
+        private Guid GetUserId()
+        {
+                string idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                        ?? throw new UnauthorizedAccessException("Could not find the user's id in class when expected.");
+                return Guid.Parse(idClaim);
         }
 }

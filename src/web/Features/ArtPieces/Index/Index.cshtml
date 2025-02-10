@@ -11,8 +11,9 @@
             </div>
             <div class="modal-body">
                 <form method="post" id="reviewForm">
-                    <textarea name="review" class="form-control mb-2" placeholder="Write your review"
+                    <textarea name="comment" class="form-control mb-2" placeholder="Review this art piece"
                         required></textarea>
+                    <input type="hidden" name="artPieceId" value="">
                     <button type="submit" class="btn btn-primary">Submit Review</button>
                 </form>
             </div>
@@ -23,31 +24,61 @@
 <script>
     function loadArtPiece() {
         fetch("/api/artpiece")
-            .then(response => response.json())
+            .then(response => {
+                if (response.status === 204) {
+                    return null;
+                }
+                return response.json();
+            })
             .then(data => {
-                const artContainer = document.getElementById("artContainer");
+                const artContainer = document.getElementById('artContainer');
                 if (!data || !data.imagePath) {
-                    artContainer.innerHTML = '<h1 class="text-white">No more images to review.</h1>';
+                    artContainer.innerHTML = '<h1>No more images to review.</h1>';
                     return;
                 }
 
                 artContainer.innerHTML = `
-                        <img src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded">
+                        <img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded">
                         <div class="position-absolute bottom-0 start-0 text-white p-2">
                             <p>${data.description}</p>
                         </div>
-                        <button class="btn btn-light position-absolute top-0 end-0 m-2" data-bs-toggle="modal" data-bs-target="#reviewModal">Review</button>
+                        <button id="reviewArt" class="btn btn-light position-absolute top-0 end-0 m-2" data-bs-toggle="modal" data-bs-target="#reviewModal">Review</button>
                     `;
+                document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
             })
-            .catch(error => console.error("Error fetching art piece:", error));
+            .catch(error => console.error('Error fetching art piece:', error));
     }
 
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener('DOMContentLoaded', function () {
         loadArtPiece();
 
-        document.getElementById("reviewForm").addEventListener("submit", function (e) {
+        document.querySelector('#reviewForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            setTimeout(() => { loadArtPiece(); }, 1000);
+
+            const form = new FormData(document.querySelector("#reviewForm"));
+            const data = {
+                comment: form.get('comment'),
+                artPieceId: form.get('artPieceId')
+            };
+
+            try {
+                const response = await fetch('/api/review', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!response.ok) {
+                    throw new Error(response);
+                }
+
+                loadArtPiece();
+                document.querySelector("#reviewModal .btn-close").click();
+            } catch (error) {
+                console.error('Error:', error);
+            }
         });
     });
 </script>
