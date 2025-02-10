@@ -13,15 +13,14 @@ public class ArtPiecesTests : WebDriverBase
         }
 
         [Fact, Order(0)]
-        public async Task UploadingArtPiece_Fails_WhenUploadedNonImageFile()
+        public void UploadingArtPiece_Fails_WhenUploadedNonImageFile()
         {
-                await ResetTestContextAsync();
-                await RegisterAsync();
-                await LoginAsync();
-                await CreateArtistProfileAsync();
+                ResetTestContext();
+                Register();
+                Login();
+                CreateArtistProfile();
                 string filePath = "../../../resources/exampleNonImage.txt";
-                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
-                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload"); // this second GoToUrl needs to be here, for some reason...
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
                 Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
                 Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
 
@@ -31,9 +30,9 @@ public class ArtPiecesTests : WebDriverBase
         }
 
         [Fact, Order(1)]
-        public async Task UploadingArtPiece_AddsNewArtPiece_WhenUploadingImage()
+        public void UploadingArtPiece_AddsNewArtPiece_WhenUploadingImage()
         {
-                await UploadArtPiece();
+                UploadArtPiece();
 
                 Wait.Until(d => d.Url.Equals($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece"));
                 Driver.FindElements(By.TagName("img")).Should().HaveCount(1);

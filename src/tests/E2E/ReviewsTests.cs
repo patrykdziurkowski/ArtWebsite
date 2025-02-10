@@ -14,15 +14,15 @@ public class ReviewsTests : WebDriverBase
         }
 
         [Fact, Order(0)]
-        public async Task ReviewingArtPiece_ChangesArtPiece_WhenReviewed()
+        public void ReviewingArtPiece_ChangesArtPiece_WhenReviewed()
         {
-                await ResetTestContextAsync();
-                await RegisterAsync();
-                await LoginAsync();
-                await CreateArtistProfileAsync();
-                await UploadArtPiece();
-                await UploadArtPiece();
-                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");
+                ResetTestContext();
+                Register();
+                Login();
+                CreateArtistProfile();
+                UploadArtPiece();
+                UploadArtPiece();
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");
                 string imagePathBeforeReview = Wait.Until(d => d.FindElement(By.Id("artPieceImage"))
                         .GetDomAttribute("src"));
                 Driver.FindElement(By.Id("reviewArt")).Click();

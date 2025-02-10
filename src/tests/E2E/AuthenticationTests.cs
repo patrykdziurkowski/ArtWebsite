@@ -13,27 +13,27 @@ public class AuthenticationTests : WebDriverBase
 
 
         [Fact, Order(0)]
-        public async Task RegisterPage_Loads()
+        public void RegisterPage_Loads()
         {
-                await ResetTestContextAsync();
+                ResetTestContext();
 
-                await Driver.Navigate().GoToUrlAsync($"{HTTP_PROTOCOL_PREFIX}localhost/Identity/Account/Register");
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Identity/Account/Register");
 
                 Driver.Title.Should().Contain("Register");
         }
 
         [Fact, Order(1)]
-        public async Task Register_RedirectsToEmailConfirmation_WhenSuccessful()
+        public void Register_RedirectsToEmailConfirmation_WhenSuccessful()
         {
-                await RegisterAsync();
+                Register();
 
                 Wait.Until(d => d.PageSource.Contains("Thank you for confirming your email.")).Should().BeTrue();
         }
 
         [Fact, Order(2)]
-        public async Task Login_ShouldWork()
+        public void Login_ShouldWork()
         {
-                await LoginAsync();
+                Login();
 
                 Wait.Until(d => d.PageSource.Contains("john@smith.com")).Should().BeTrue();
         }
