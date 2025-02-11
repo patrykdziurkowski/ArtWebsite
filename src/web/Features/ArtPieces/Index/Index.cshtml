@@ -1,4 +1,6 @@
-﻿<div class="container position-relative w-50 text-center" id="artContainer">
+﻿@using web.Features.Reviews.ReviewArtPiece
+@model ReviewArtPieceModel
+<div class="container position-relative w-50 text-center" id="artContainer">
     <h1>Loading...</h1>
 </div>
 
@@ -10,10 +12,15 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="post" id="reviewForm">
-                    <textarea name="comment" class="form-control mb-2" placeholder="Review this art piece"
-                        required></textarea>
-                    <input type="hidden" name="artPieceId" value="">
+                <form asp-action="ReviewArtPiece" method="post" id="reviewForm">
+                    <div class="form-group">
+                        <textarea name="comment" class="form-control mb-2" placeholder="Review this art piece" required
+                            asp-for="Comment"></textarea>
+                        <span asp-validation-for="Comment" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" name="artPieceId" value="">
+                    </div>
                     <button type="submit" class="btn btn-primary">Submit Review</button>
                 </form>
             </div>
@@ -55,30 +62,37 @@
         document.querySelector('#reviewForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const form = new FormData(document.querySelector("#reviewForm"));
+            const form = new FormData(document.querySelector('#reviewForm'));
             const data = {
                 comment: form.get('comment'),
                 artPieceId: form.get('artPieceId')
             };
 
-            try {
-                const response = await fetch('/api/review', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
+            await fetch('/api/review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(async response => {
+                    if (response.status !== 200) {
+                        const data = await response.json();
+                        throw data;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadArtPiece();
+                    document.querySelector('#reviewModal .btn-close').click();
+                })
+                .catch(error => {
+                    const validationErrorsText = document.querySelector('#reviewForm *[name="comment"] + span');
+                    validationErrorsText.innerText = error.errors.Comment;
                 });
 
-                if (!response.ok) {
-                    throw new Error(response);
-                }
 
-                loadArtPiece();
-                document.querySelector("#reviewModal .btn-close").click();
-            } catch (error) {
-                console.error('Error:', error);
-            }
+
         });
     });
 </script>
