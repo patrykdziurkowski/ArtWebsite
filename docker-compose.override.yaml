@@ -1,0 +1,9 @@
+services:
+  web:
+    build:
+      context: src/web
+      dockerfile: development.Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    volumes:
+      - ./src/web:/web

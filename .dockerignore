@@ -1,0 +1,11 @@
+**/bin/
+**/obj/
+**/*Dockerfile
+**/.git/
+**/.github
+**/docker-compose.yaml
+**/docker-compose.override.yaml
+**/README.md
+**/.gitignore
+**/.env
+**/.vscode

@@ -4,6 +4,9 @@
 2. Set the required environment variables in a `.env` file in project root.
 3. Run `docker compose up --build`.
 ## Environment variables
+### Local development (Docker Compose override)
+* `MSSQL_SA_PASSWORD` - the password used for SQL Server's admin account.
+### Deployment
 * `MSSQL_SA_PASSWORD` - the password used for SQL Server's admin account.
 * `SERVER_DOMAIN` - application's domain name (i.e. example.com). Defaults to localhost for local deployment.
 * `WEB_MODULE_ADDRESS` - the internal address of the web server. Used to redirect HTTPS traffic to it. Defaults to web:8080 which is the docker container name.

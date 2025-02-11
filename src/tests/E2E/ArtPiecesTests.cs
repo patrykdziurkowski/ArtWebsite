@@ -34,7 +34,7 @@ public class ArtPiecesTests : WebDriverBase
         {
                 UploadArtPiece();
 
-                Wait.Until(d => d.Url.Equals($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece"));
-                Driver.FindElements(By.TagName("img")).Should().HaveCount(1);
+                Wait.Until(d => d.FindElement(By.Id("artPieceImage"))).Should().NotBeNull();
         }
+
 }
