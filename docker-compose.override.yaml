@@ -5,5 +5,7 @@ services:
       dockerfile: development.Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+    ports:
+      - "8080:8080" # Used for test startup wait
     volumes:
-      - ./src/web:/web
+      - ./src/web:/web # Used for live reloading

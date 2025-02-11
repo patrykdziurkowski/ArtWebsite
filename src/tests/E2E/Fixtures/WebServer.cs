@@ -19,13 +19,14 @@ public class WebServer : IDisposable
         public WebServer()
         {
                 string dockerComposePath = Path.GetFullPath("../../../../../docker-compose.yaml");
+                string dockerComposeOverridePath = Path.GetFullPath("../../../../../docker-compose.override.yaml");
                 Server = new Builder()
                         .UseContainer()
                         .UseCompose()
                         .ServiceName("artwebsite-development")
-                        .FromFile(dockerComposePath)
+                        .FromFile(dockerComposePath, dockerComposeOverridePath)
                         .WithEnvironment($"MSSQL_SA_PASSWORD={DB_TEST_PASSWORD}")
-                        .WithEnvironment("ASPNETCORE_ENVIRONMENT=Development")
+                        .RemoveOrphans()
                         .ForceBuild()
                         .ForceRecreate()
                         .WaitForHttp("web", "http://localhost:8080")
