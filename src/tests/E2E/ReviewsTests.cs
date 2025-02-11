@@ -17,9 +17,7 @@ public class ReviewsTests : WebDriverBase
         public void ReviewingArtPiece_ChangesArtPiece_WhenReviewed()
         {
                 ResetTestContext();
-                Register();
-                Login();
-                CreateArtistProfile();
+                CreateUserWithArtistProfile();
                 UploadArtPiece();
                 UploadArtPiece();
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");

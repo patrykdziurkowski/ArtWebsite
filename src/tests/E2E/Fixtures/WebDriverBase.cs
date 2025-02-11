@@ -63,6 +63,14 @@ public abstract class WebDriverBase
                 Wait.Until(d => d.Url.Contains("/Artist/Setup") == false);
         }
 
+        public void CreateUserWithArtistProfile(string email = "john@smith.com",
+                string password = "Ex@mpl3", string name = "SomeArtist")
+        {
+                Register(email, password);
+                Login(email, password);
+                CreateArtistProfile(name);
+        }
+
         public void UploadArtPiece()
         {
                 string filePath = "../../../resources/exampleImage.png";

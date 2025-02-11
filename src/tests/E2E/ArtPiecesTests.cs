@@ -16,9 +16,7 @@ public class ArtPiecesTests : WebDriverBase
         public void UploadingArtPiece_Fails_WhenUploadedNonImageFile()
         {
                 ResetTestContext();
-                Register();
-                Login();
-                CreateArtistProfile();
+                CreateUserWithArtistProfile();
                 string filePath = "../../../resources/exampleNonImage.txt";
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
                 Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
