@@ -9,10 +9,10 @@ namespace web.Features.Reviews;
 [Route("api/review")]
 [ApiController]
 [Authorize]
-public class ReviewsApiController : ControllerBase
+public class ReviewApiController : ControllerBase
 {
         private readonly ReviewArtPieceCommand _reviewArtPieceCommand;
-        public ReviewsApiController(ReviewArtPieceCommand reviewArtPieceCommand)
+        public ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand)
         {
                 _reviewArtPieceCommand = reviewArtPieceCommand;
         }
