@@ -12,7 +12,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form asp-action="ReviewArtPiece" method="post" id="reviewForm">
+                <form asp-controller="Review" asp-action="ReviewArtPiece" method="post" id="reviewForm">
                     <div class="form-group">
                         <textarea name="comment" class="form-control mb-2" placeholder="Review this art piece" required
                             asp-for="Comment"></textarea>
