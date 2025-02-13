@@ -1,7 +1,11 @@
 ﻿@using web.Features.Reviews.ReviewArtPiece
 @model ReviewArtPieceModel
-<div class="container position-relative w-50 text-center" id="artContainer">
-    <h1>Loading...</h1>
+<div class="container">
+    <div id="artContainer" class="position-relative w-50 text-center">
+        <h1>Loading...</h1>
+    </div>
+    <button id="reviewArt" class="btn btn-light position-absolute top-0 end-0 m-2" data-bs-toggle="modal"
+        data-bs-target="#reviewModal">Review</button>
 </div>
 
 <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
@@ -48,9 +52,7 @@
                         <img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded">
                         <div class="position-absolute bottom-0 start-0 text-white p-2">
                             <p>${data.description}</p>
-                        </div>
-                        <button id="reviewArt" class="btn btn-light position-absolute top-0 end-0 m-2" data-bs-toggle="modal" data-bs-target="#reviewModal">Review</button>
-                    `;
+                        </div>`;
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
             })
             .catch(error => console.error('Error fetching art piece:', error));
