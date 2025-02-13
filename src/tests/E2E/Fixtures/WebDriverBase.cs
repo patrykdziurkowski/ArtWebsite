@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
 
@@ -90,6 +91,13 @@ public abstract class WebDriverBase
                         Uri uri = new(d.Url);
                         return string.IsNullOrEmpty(uri.AbsolutePath) || uri.AbsolutePath.Equals("/");
                 });
+        }
+
+        public void ScrollIntoView(IWebElement element)
+        {
+                Actions actions = new(Driver);
+                actions.MoveToElement(element);
+                actions.Perform();
         }
 
         public void ResetTestContext()

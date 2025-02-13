@@ -59,6 +59,35 @@ public class ArtistsTests : WebDriverBase
         }
 
         [Fact, Order(5)]
+        public void Index_ShouldInitiallyShow5ArtistsArtPieces_WhenArtistHas8ArtPieces()
+        {
+                for (int i = 0; i < 8; ++i)
+                {
+                        UploadArtPiece();
+                }
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
+
+                bool has5ArtPieces = Wait.Until(d => d.FindElements(By.CssSelector("#artPiecesList > *")).Count == 5);
+                has5ArtPieces.Should().BeTrue();
+        }
+
+        [Fact, Order(6)]
+        public void Index_ShouldShowAllArtistsArtPieces_WhenMoreLoaded()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
+
+                Wait.Until(d => d.FindElement(By.Id("loadMoreButton")));
+                IWebElement loadMoreButton = Driver.FindElement(By.Id("loadMoreButton"));
+                ScrollIntoView(loadMoreButton);
+                loadMoreButton.Click();
+
+                bool has8ArtPieces = Wait.Until(d => d.FindElements(By.CssSelector("#artPiecesList > *")).Count == 8);
+                has8ArtPieces.Should().BeTrue();
+        }
+
+
+        [Fact, Order(7)]
         public void Deactivate_RedirectsToIndex()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
@@ -69,7 +98,7 @@ public class ArtistsTests : WebDriverBase
                 Wait.Until(d => DriverIsAtBaseUrl()).Should().BeTrue();
         }
 
-        [Fact, Order(6)]
+        [Fact, Order(8)]
         public void Index_RedirectsAgain_WhenArtistDeactivated()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
