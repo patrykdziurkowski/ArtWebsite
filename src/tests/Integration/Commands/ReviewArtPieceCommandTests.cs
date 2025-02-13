@@ -69,7 +69,6 @@ public class ReviewArtPieceCommandTests : IDisposable
 
         private void RemoveArtPieceImages()
         {
-                string path = Path.Combine("user-images", "art-pieces");
-                Directory.Delete(path, recursive: true);
+                Directory.Delete("user-images", recursive: true);
         }
 }

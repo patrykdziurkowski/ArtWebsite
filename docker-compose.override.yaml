@@ -9,3 +9,4 @@ services:
       - "8080:8080" # Used for test startup wait
     volumes:
       - ./src/web:/web # Used for live reloading
+      - /tmp/user-images:/web/user-images # Prevent saving user-images on host machine when ran locally
