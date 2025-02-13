@@ -1,1 +1,50 @@
-﻿<h1>Reviewer profile</h1>
+﻿<div class="container mt-5">
+    <h2>Review profile</h2>
+    <div id="reviewsList" class="list-group">Loading...</div>
+    <button id="loadMoreButton" class="btn btn-primary mt-3 d-none">Load More</button>
+</div>
+
+<script>
+    let offset = 0;
+    const reviewsPerPage = 10;
+
+    function fetchReviews() {
+        const list = document.querySelector('#reviewsList');
+        const loadMore = document.querySelector('#loadMoreButton');
+
+        fetch(`/api/review/?offset=${offset}`)
+            .then(response => response.json())
+            .then(data => {
+                if (offset == 0) {
+                    list.innerText = '';
+                }
+                if (offset == 0 && data.length === 0) {
+                    list.innerText = 'No reviews found.';
+                }
+
+                // If loaded less reviews than requested, hide the button since we're at the end
+                if (data.length < reviewsPerPage) {
+                    loadMore.style.display = 'none';
+                } else {
+                    loadMore.style.display = 'block';
+                }
+
+                data.forEach(review => {
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('list-group-item');
+                    reviewItem.innerHTML = `
+                        <strong>${new Date(review.date).toLocaleDateString()}</strong>
+                        <p>${review.comment}</p>
+                    `;
+                    list.appendChild(reviewItem);
+                });
+                offset += reviewsPerPage;
+            });
+    }
+
+    document.querySelector('#loadMoreButton').addEventListener('click', function () {
+        fetchReviews();
+    });
+
+    fetchReviews();
+</script>

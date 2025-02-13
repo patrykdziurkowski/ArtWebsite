@@ -35,4 +35,13 @@ public class ReviewsTests : WebDriverBase
                 imagePathAfterReview.Should().NotBe(imagePathBeforeReview);
         }
 
+        [Fact, Order(1)]
+        public void ReviewerProfile_ShowsReviews_WhenReviewed()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
+
+                bool hasOneReview = Wait.Until(d => d.FindElements(By.CssSelector("#reviewsList > *")).Count == 1);
+                hasOneReview.Should().BeTrue();
+        }
+
 }

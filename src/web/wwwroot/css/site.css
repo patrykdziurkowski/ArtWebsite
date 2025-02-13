@@ -33,6 +33,11 @@ body {
         transition: transform 0.3s ease-in-out;
 }
 
+p {
+        word-wrap: break-word;
+        white-space: normal;
+}
+
 @media (max-width: 1140px) {
         #sidebar {
                 transform: translateX(-200%);
