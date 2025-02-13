@@ -6,6 +6,7 @@ using web.Data;
 using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.SetupArtist;
 using web.Features.ArtPieces.Index;
+using web.Features.ArtPieces.LoadArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Reviews.LoadReviews;
 using web.Features.Reviews.ReviewArtPiece;
@@ -54,6 +55,7 @@ builder.Services.AddTransient<SetupArtistCommand>();
 builder.Services.AddTransient<DeactivateArtistCommand>();
 builder.Services.AddTransient<UploadArtPieceCommand>();
 builder.Services.AddTransient<ArtPieceQuery>();
+builder.Services.AddTransient<ArtPiecesQuery>();
 builder.Services.AddTransient<ReviewsQuery>();
 builder.Services.AddTransient<ReviewArtPieceCommand>();
 
