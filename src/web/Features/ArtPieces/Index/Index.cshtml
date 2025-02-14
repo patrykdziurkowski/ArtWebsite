@@ -1,10 +1,10 @@
 ﻿@using web.Features.Reviews.ReviewArtPiece
 @model ReviewArtPieceModel
 <div class="container">
-    <div id="artContainer" class="position-relative w-50 text-center">
+    <div id="artContainer" class="m-auto text-center">
         <h1>Loading...</h1>
     </div>
-    <button id="reviewArt" class="btn btn-light position-absolute top-0 end-0 m-2" data-bs-toggle="modal"
+    <button id="reviewArt" class="btn btn-light m-3" data-bs-toggle="modal"
         data-bs-target="#reviewModal">Review</button>
 </div>
 
@@ -50,7 +50,7 @@
 
                 artContainer.innerHTML = `
                         <img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded">
-                        <div class="position-absolute bottom-0 start-0 text-white p-2">
+                        <div class="p-2">
                             <p>${data.description}</p>
                         </div>`;
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
