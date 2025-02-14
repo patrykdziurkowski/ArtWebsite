@@ -1,8 +1,6 @@
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
-using web.Data;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.Index;
@@ -10,27 +8,14 @@ using web.Features.Reviews;
 
 namespace tests.Integration.Queries;
 
-[Collection("Database collection")]
-public class ArtPieceQueryTests : IDisposable
+public class ArtPieceQueryTests : DatabaseBase
 {
         private readonly ArtPieceQuery _command;
-        private readonly UserManager<IdentityUser<Guid>> _userManager;
-        private readonly ApplicationDbContext _dbContext;
-        private readonly IServiceScope _scope;
 
         public ArtPieceQueryTests(DatabaseTestContext databaseContext)
+                : base(databaseContext)
         {
-                _scope = databaseContext.Services.CreateScope();
-                _command = _scope.ServiceProvider.GetRequiredService<ArtPieceQuery>();
-                _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
-                _dbContext.Database.BeginTransaction();
-        }
-
-        public void Dispose()
-        {
-                _dbContext.Database.RollbackTransaction();
-                _scope.Dispose();
+                _command = Scope.ServiceProvider.GetRequiredService<ArtPieceQuery>();
         }
 
         [Fact]
@@ -57,39 +42,18 @@ public class ArtPieceQueryTests : IDisposable
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 ArtPiece artPiece = new($"somePath1", "description", artistId);
-                await _dbContext.ArtPieces.AddAsync(artPiece);
-                await _dbContext.Reviews.AddAsync(new Review
+                await DbContext.ArtPieces.AddAsync(artPiece);
+                await DbContext.Reviews.AddAsync(new Review
                 {
                         Comment = "Some review comment!",
                         ArtPieceId = artPiece.Id,
-                        ReviewerId = _dbContext.Users.First().Id,
+                        ReviewerId = DbContext.Users.First().Id,
                 });
-                await _dbContext.SaveChangesAsync();
+                await DbContext.SaveChangesAsync();
 
                 ArtPiece? returnedArtPiece = _command.Execute(artistId.Value);
 
                 returnedArtPiece.Should().NotBeNull();
         }
 
-        private async Task Create6ArtPiecesForArtist(ArtistId artistId)
-        {
-                for (int i = 0; i < 6; ++i)
-                {
-                        ArtPiece artPiece = new($"somePath{i}", "description", artistId);
-                        await _dbContext.ArtPieces.AddAsync(artPiece);
-                        await _dbContext.SaveChangesAsync();
-                }
-        }
-
-        private async Task<ArtistId> CreateUserWithArtistProfile()
-        {
-                IdentityUser<Guid> user = new("johnSmith");
-                await _userManager.CreateAsync(user);
-                ArtistId artistId = new();
-                _dbContext.Artists.Add(
-                        new Artist(artistId, user.Id, "ArtistName",
-                                "A profile summary for an artist."));
-                await _dbContext.SaveChangesAsync();
-                return artistId;
-        }
 }

@@ -4,44 +4,30 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
-using web.Data;
 using web.Features.Artists;
 using web.Features.Artists.SetupArtist;
 
 namespace tests.Integration.Commands;
 
-[Collection("Database collection")]
-public class SetupArtistCommandTests : IDisposable
+public class SetupArtistCommandTests : DatabaseBase
 {
         private readonly SetupArtistCommand _command;
-        private readonly UserManager<IdentityUser<Guid>> _userManager;
-        private readonly ApplicationDbContext _dbContext;
-        private readonly IServiceScope _scope;
 
         public SetupArtistCommandTests(DatabaseTestContext databaseContext)
+                : base(databaseContext)
         {
-                _scope = databaseContext.Services.CreateScope();
-                _command = _scope.ServiceProvider.GetRequiredService<SetupArtistCommand>();
-                _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
-                _dbContext.Database.BeginTransaction();
-        }
-
-        public void Dispose()
-        {
-                _dbContext.Database.RollbackTransaction();
-                _scope.Dispose();
+                _command = Scope.ServiceProvider.GetRequiredService<SetupArtistCommand>();
         }
 
         [Fact]
         public async Task ExecuteAsync_ShouldFail_WhenNameAlreadyTaken()
         {
                 IdentityUser<Guid> user = new("johnSmith");
-                await _userManager.CreateAsync(user);
-                _dbContext.Artists.Add(
+                await UserManager.CreateAsync(user);
+                DbContext.Artists.Add(
                         new Artist(user.Id, "ArtistName",
                         "A profile summary for an artist."));
-                await _dbContext.SaveChangesAsync();
+                await DbContext.SaveChangesAsync();
 
                 Result<Artist> result = await _command.ExecuteAsync(user.Id,
                         "ArtistName", "Some other summary for some other artist.");
@@ -53,15 +39,15 @@ public class SetupArtistCommandTests : IDisposable
         public async Task ExecuteAsync_ShouldSaveArtistAndAddArtistRole_WhenNameNotTaken()
         {
                 IdentityUser<Guid> user = new("johnSmith");
-                await _userManager.CreateAsync(user);
+                await UserManager.CreateAsync(user);
 
                 Result<Artist> result = await _command.ExecuteAsync(user.Id,
                         "ArtistName", "Some other summary for some other artist.");
 
-                Artist artist = await _dbContext.Artists.FirstAsync();
+                Artist artist = await DbContext.Artists.FirstAsync();
                 artist.Name.Should().Be("ArtistName");
                 artist.Summary.Should().Be("Some other summary for some other artist.");
                 result.IsSuccess.Should().BeTrue();
-                (await _userManager.IsInRoleAsync(user, "Artist")).Should().BeTrue();
+                (await UserManager.IsInRoleAsync(user, "Artist")).Should().BeTrue();
         }
 }

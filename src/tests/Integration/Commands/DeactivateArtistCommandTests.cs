@@ -3,33 +3,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
-using web.Data;
 using web.Features.Artists;
 using web.Features.Artists.DeactivateArtist;
 
 namespace tests.Integration.Commands;
 
-[Collection("Database collection")]
-public class DeactivateArtistCommandTests : IDisposable
+public class DeactivateArtistCommandTests : DatabaseBase
 {
         private readonly DeactivateArtistCommand _command;
-        private readonly UserManager<IdentityUser<Guid>> _userManager;
-        private readonly ApplicationDbContext _dbContext;
-        private readonly IServiceScope _scope;
 
         public DeactivateArtistCommandTests(DatabaseTestContext databaseContext)
+                : base(databaseContext)
         {
-                _scope = databaseContext.Services.CreateScope();
-                _command = _scope.ServiceProvider.GetRequiredService<DeactivateArtistCommand>();
-                _dbContext = _scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                _userManager = _scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
-                _dbContext.Database.BeginTransaction();
-        }
-
-        public void Dispose()
-        {
-                _dbContext.Database.RollbackTransaction();
-                _scope.Dispose();
+                _command = Scope.ServiceProvider.GetRequiredService<DeactivateArtistCommand>();
         }
 
         [Fact]
@@ -44,17 +30,17 @@ public class DeactivateArtistCommandTests : IDisposable
         public async Task ExecuteAsync_ShouldRemoveArtistEntityAndRole_WhenExists()
         {
                 IdentityUser<Guid> user = new("johnSmith");
-                await _userManager.CreateAsync(user);
-                _dbContext.Artists.Add(
+                await UserManager.CreateAsync(user);
+                DbContext.Artists.Add(
                         new Artist(user.Id, "ArtistName",
                                 "A profile summary for an artist."));
-                await _dbContext.SaveChangesAsync();
+                await DbContext.SaveChangesAsync();
 
                 await _command.ExecuteAsync(user.Id);
 
-                (await _dbContext.Artists.FirstOrDefaultAsync(a => a.Name == "ArtistName"))
+                (await DbContext.Artists.FirstOrDefaultAsync(a => a.Name == "ArtistName"))
                         .Should().BeNull();
-                (await _userManager.IsInRoleAsync(user, "Artist")).Should().BeFalse();
+                (await UserManager.IsInRoleAsync(user, "Artist")).Should().BeFalse();
         }
 
 }
