@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -18,13 +19,22 @@ string connectionString = builder.Configuration["CONNECTION_STRING"]
 builder.Services
         .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 builder.Services
-        .AddDefaultIdentity<IdentityUser<Guid>>(options => options.SignIn.RequireConfirmedAccount = true)
-        .AddRoles<IdentityRole<Guid>>()
+        .AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
+                options.SignIn.RequireConfirmedAccount = true)
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
+builder.Services.AddRazorPages(o => // Pages are used for Identity only
+{
+        o.RootDirectory = "/Features/Authentication"; // Make Razor look for Identity Pages in the right place
+});
+builder.Services.ConfigureApplicationCookie(o =>
+{
+        o.LoginPath = "/Login";
+});
+
 builder.Services.AddControllersWithViews(o =>
 {
-        o.Filters.Add<ValidateModelFilter>();
+        o.Filters.Add<ValidateModelFilter>(); // Globally require a valid ModelState with a default error view
 });
 builder.Services.Configure<RazorViewEngineOptions>(o =>
 {
@@ -34,21 +44,27 @@ builder.Services.Configure<RazorViewEngineOptions>(o =>
             {0} - action name
         */
         o.ViewLocationFormats.Clear();
-        o.ViewLocationFormats.Add("/features/{2}/{0}.cshtml");
-        o.ViewLocationFormats.Add("/features/{2}/{1}/{0}.cshtml");
-        o.ViewLocationFormats.Add("/features/{1}/{0}{1}/{0}.cshtml");
-        o.ViewLocationFormats.Add("/features/{1}/{0}/{0}.cshtml");
-        o.ViewLocationFormats.Add("/features/{2}/{1}s/{0}.cshtml");
-        o.ViewLocationFormats.Add("/features/{1}s/{0}{1}/{0}.cshtml");
-        o.ViewLocationFormats.Add("/features/{1}s/{0}{1}s/{0}.cshtml");
-        o.ViewLocationFormats.Add("/features/{1}s/{0}/{0}.cshtml");
-        o.ViewLocationFormats.Add("/features/shared/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{2}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{2}/{1}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{1}/{0}{1}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{1}/{0}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{2}/{1}s/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{1}s/{0}{1}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{1}s/{0}{1}s/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{1}s/{0}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/Shared/{0}.cshtml");
 
         o.AreaPageViewLocationFormats.Clear();
-        o.AreaPageViewLocationFormats.Add("/features/authentication/{2}/{0}.cshtml");
-        o.AreaPageViewLocationFormats.Add("/features/authentication/{2}/{1}/{0}.cshtml");
-        o.AreaPageViewLocationFormats.Add("/features/authentication/{0}.cshtml");
-        o.AreaPageViewLocationFormats.Add("/features/shared/{0}.cshtml");
+        o.AreaPageViewLocationFormats.Add("/Features/Authentication/{2}/{0}.cshtml");
+        o.AreaPageViewLocationFormats.Add("/Features/Authentication/{2}/{1}/{0}.cshtml");
+        o.AreaPageViewLocationFormats.Add("/Features/Authentication/{0}.cshtml");
+        o.AreaPageViewLocationFormats.Add("/Features/Shared/{0}.cshtml");
+
+        o.PageViewLocationFormats.Clear();
+        o.PageViewLocationFormats.Add("/Features/Authentication/{2}/{0}.cshtml");
+        o.PageViewLocationFormats.Add("/Features/Authentication/{2}/{1}/{0}.cshtml");
+        o.PageViewLocationFormats.Add("/Features/Authentication/{0}.cshtml");
+        o.PageViewLocationFormats.Add("/Features/Shared/{0}.cshtml");
 });
 
 builder.Services.AddTransient<SetupArtistCommand>();
@@ -58,7 +74,7 @@ builder.Services.AddTransient<ArtPieceQuery>();
 builder.Services.AddTransient<ArtPiecesQuery>();
 builder.Services.AddTransient<ReviewsQuery>();
 builder.Services.AddTransient<ReviewArtPieceCommand>();
-
+builder.Services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

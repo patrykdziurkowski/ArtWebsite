@@ -17,7 +17,7 @@ public class AuthenticationTests : WebDriverBase
         {
                 ResetTestContext();
 
-                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Identity/Account/Register");
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Register");
 
                 Driver.Title.Should().Contain("Register");
         }
