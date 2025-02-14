@@ -36,7 +36,7 @@
                     const reviewItem = document.createElement('div');
                     reviewItem.classList.add('list-group-item');
                     reviewItem.innerHTML = `
-                        <strong>${new Date(review.date).toLocaleDateString()}</strong>
+                        <strong>${new Date(review.date).toLocaleString()}</strong>
                         <p>${review.comment}</p>
                         <img src="${review.imagePath}">
                     `;
