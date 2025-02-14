@@ -1,6 +1,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using tests.E2E.Utils;
 
 namespace tests.E2E.Fixtures;
 
@@ -13,7 +14,16 @@ public class WebDriverInitializer : IDisposable
         public WebDriverInitializer()
         {
                 ChromeOptions options = new();
-                options.AddArguments("--headless=new");
+                // Headless if variable is not set or set to true. The Selenium browser window opens otherwise.
+                DotEnv.Load("../../../../../.env"); // Load variables from .env file
+                string? headlessString = Environment.GetEnvironmentVariable("SELENIUM_HEADLESS");
+                if (bool.TryParse(headlessString, out bool isHeadless))
+                {
+                        if (headlessString is null || isHeadless)
+                        {
+                                options.AddArguments("--headless=new");
+                        }
+                }
                 options.AddArguments("--no-sandbox");
                 options.AddArguments("--disable-dev-shm-usage");
                 options.AddArguments("--disable-gpu");

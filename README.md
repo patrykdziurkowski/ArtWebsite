@@ -4,8 +4,9 @@
 2. Set the required environment variables in a `.env` file in project root.
 3. Run `docker compose up --build`.
 ## Environment variables
-### Local development (Docker Compose override)
+### Local development
 * `MSSQL_SA_PASSWORD` - the password used for SQL Server's admin account.
+* `SELENIUM_HEADLESS` - (optional) set this to false to have the browser window open when running Selenium tests. Useful for debugging.
 ### Deployment
 * `MSSQL_SA_PASSWORD` - the password used for SQL Server's admin account.
 * `SERVER_DOMAIN` - application's domain name (i.e. example.com). Defaults to localhost for local deployment.
