@@ -1,8 +1,9 @@
-﻿@using web.Features.Reviewers.Index
-@model ReviewerProfileModel
+﻿@using web.Features.Reviewers
+@model Reviewer
 
 <div class="container mt-5">
-    <h2>Reviewer profile</h2>
+    <h2>@Model.Name's profile</h2>
+    <p>Joined: <span id="reviewerJoinDate">@Model.JoinDate UTC</span> | @Model.ReviewCount total reviews</p>
     <div id="reviewsList" class="list-group">Loading...</div>
     <button id="loadMoreButton" class="btn btn-primary mt-3" style="display: none;">Load More</button>
 </div>
@@ -15,7 +16,7 @@
         const list = document.querySelector('#reviewsList');
         const loadMore = document.querySelector('#loadMoreButton');
 
-        fetch(`/api/reviewers/@Model.ReviewerId/reviews?offset=${offset}`)
+        fetch(`/api/reviewers/@Model.Id/reviews?offset=${offset}`)
             .then(response => response.json())
             .then(data => {
                 if (offset == 0) {

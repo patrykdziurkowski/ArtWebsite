@@ -83,6 +83,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .Property(r => r.JoinDate)
                         .IsRequired();
                 builder.Entity<Reviewer>()
+                        .Ignore(r => r.ReviewCount);
+                builder.Entity<Reviewer>()
                         .HasOne<IdentityUser<Guid>>()
                         .WithOne()
                         .HasForeignKey<Reviewer>(r => r.UserId);

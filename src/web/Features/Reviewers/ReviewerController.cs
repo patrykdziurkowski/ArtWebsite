@@ -17,11 +17,8 @@ public class ReviewerController : Controller
 
         public ActionResult Index()
         {
-                Guid reviewerId = _userReviewerQuery.Execute(GetUserId()).Value;
-                return View(new ReviewerProfileModel()
-                {
-                        ReviewerId = reviewerId
-                });
+                Reviewer reviewer = _userReviewerQuery.Execute(GetUserId());
+                return View(reviewer);
         }
 
         private Guid GetUserId()

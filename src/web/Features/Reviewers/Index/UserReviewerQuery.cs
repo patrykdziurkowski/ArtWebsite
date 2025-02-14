@@ -11,8 +11,21 @@ public class UserReviewerQuery
                 _dbContext = dbContext;
         }
 
-        public ReviewerId Execute(Guid userId)
+        public Reviewer Execute(Guid userId)
         {
-                return _dbContext.Reviewers.First(r => r.UserId == userId).Id;
+                return _dbContext.Reviewers
+                        .Where(reviewer => reviewer.UserId == userId)
+                        .Select(reviewer => new Reviewer
+                        {
+                                Id = reviewer.Id,
+                                Name = reviewer.Name,
+                                JoinDate = reviewer.JoinDate,
+                                ReviewCount = _dbContext.Reviews
+                                        .Select(review => review.ReviewerId)
+                                        .Where(reviewerId => reviewerId == reviewer.Id)
+                                        .Count(),
+                                UserId = reviewer.UserId,
+                        })
+                        .First();
         }
 }

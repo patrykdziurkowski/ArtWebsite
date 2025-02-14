@@ -17,7 +17,7 @@ public class UserReviewerQueryTests : DatabaseBase
         }
 
         [Fact]
-        public async Task Execute_ShouldReturnReviewerId_WhenGivenUserId()
+        public async Task Execute_ShouldReturnReviewer_WhenGivenUserId()
         {
                 IdentityUser<Guid> user = new("JohnSmith");
                 await UserManager.CreateAsync(user);
@@ -31,9 +31,9 @@ public class UserReviewerQueryTests : DatabaseBase
                 await DbContext.SaveChangesAsync();
 
 
-                ReviewerId obtainedReviewerId = _command.Execute(user.Id);
+                Reviewer obtainedReviewer = _command.Execute(user.Id);
 
-                obtainedReviewerId.Should().Be(reviewerId);
+                obtainedReviewer.Id.Should().Be(reviewerId);
         }
 
 }
