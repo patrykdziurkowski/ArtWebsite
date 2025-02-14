@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using web.Features.Artists;
 using web.Features.ArtPieces;
+using web.Features.Reviewers;
 using web.Features.Reviews;
 using web.Features.Shared.domain;
 
@@ -68,5 +69,22 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(r => r.ArtPieceId);
+
+                builder.Entity<Reviewer>()
+                        .HasKey(r => r.Id);
+                builder.Entity<Reviewer>()
+                       .Property(r => r.Id)
+                       .HasConversion(id => id.Value, guid => new ReviewerId(guid));
+                builder.Entity<Reviewer>()
+                        .Property(r => r.Name)
+                        .IsRequired();
+                builder.Entity<Reviewer>()
+                        .Property(r => r.JoinDate)
+                        .IsRequired();
+                builder.Entity<Reviewer>()
+                        .HasOne<IdentityUser<Guid>>()
+                        .WithOne()
+                        .HasForeignKey<Reviewer>(r => r.OwnerId);
+
         }
 }
