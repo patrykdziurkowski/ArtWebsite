@@ -37,9 +37,9 @@
                     const reviewItem = document.createElement('div');
                     reviewItem.classList.add('list-group-item');
                     reviewItem.innerHTML = `
-                        <strong>${new Date(review.date).toLocaleString()}</strong>
-                        <p>${review.comment}</p>
-                        <img src="${review.imagePath}">
+                        <strong>${new Date(review.date + 'Z').toLocaleString()}</strong>
+                        <p> ${review.comment}</p>
+                            <img src="${review.imagePath}">
                     `;
                     list.appendChild(reviewItem);
                 });
@@ -52,4 +52,6 @@
     });
 
     fetchReviews();
+
+    document.querySelector('#reviewerJoinDate').innerText = new Date('@Model.JoinDate UTC').toLocaleString();
 </script>
