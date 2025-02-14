@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore.Storage;
+using web.Data;
+using web.Features.Reviewers;
 
 namespace web.Features.Authentication;
 
@@ -20,6 +23,7 @@ public class RegisterModel : PageModel
         private readonly UserManager<IdentityUser<Guid>> _userManager;
         private readonly IUserStore<IdentityUser<Guid>> _userStore;
         private readonly IUserEmailStore<IdentityUser<Guid>> _emailStore;
+        private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
@@ -28,7 +32,8 @@ public class RegisterModel : PageModel
             IUserStore<IdentityUser<Guid>> userStore,
             SignInManager<IdentityUser<Guid>> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext dbContext)
         {
                 _userManager = userManager;
                 _userStore = userStore;
@@ -36,6 +41,7 @@ public class RegisterModel : PageModel
                 _signInManager = signInManager;
                 _logger = logger;
                 _emailSender = emailSender;
+                _dbContext = dbContext;
         }
 
         /// <summary>
@@ -63,6 +69,11 @@ public class RegisterModel : PageModel
         /// </summary>
         public class InputModel
         {
+                [Required]
+                [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 4)]
+                [Display(Name = "Username")]
+                public string UserName { get; set; }
+
                 /// <summary>
                 ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
                 ///     directly from your code. This API may change or be removed in future releases.
@@ -103,48 +114,57 @@ public class RegisterModel : PageModel
         {
                 returnUrl ??= Url.Content("~/");
                 ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-                if (ModelState.IsValid)
+                if (ModelState.IsValid == false)
                 {
-                        var user = CreateUser();
+                        return Page();
+                }
 
-                        await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                        await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                        var result = await _userManager.CreateAsync(user, Input.Password);
+                var user = CreateUser();
+                using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                var result = await _userManager.CreateAsync(user, Input.Password);
+                Reviewer reviewer = new()
+                {
+                        Name = Input.UserName,
+                        OwnerId = user.Id,
+                };
+                await _dbContext.Reviewers.AddAsync(reviewer);
+                await _dbContext.SaveChangesAsync();
 
-                        if (result.Succeeded)
-                        {
-                                _logger.LogInformation("User created a new account with password.");
-
-                                var userId = await _userManager.GetUserIdAsync(user);
-                                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                                var callbackUrl = Url.Page(
-                                    "/Account/ConfirmEmail",
-                                    pageHandler: null,
-                                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                                    protocol: Request.Scheme);
-
-                                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                                if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                                {
-                                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                                }
-                                else
-                                {
-                                        await _signInManager.SignInAsync(user, isPersistent: false);
-                                        return LocalRedirect(returnUrl);
-                                }
-                        }
+                if (result.Succeeded == false)
+                {
+                        await transaction.RollbackAsync();
                         foreach (var error in result.Errors)
                         {
                                 ModelState.AddModelError(string.Empty, error.Description);
                         }
+                        return Page();
                 }
 
-                // If we got this far, something failed, redisplay form
-                return Page();
+                await transaction.CommitAsync();
+                _logger.LogInformation("User created a new account with password.");
+                var userId = await _userManager.GetUserIdAsync(user);
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                        protocol: Request.Scheme);
+
+                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                {
+                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
+                }
+                else
+                {
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        return LocalRedirect(returnUrl);
+                }
         }
 
         private IdentityUser<Guid> CreateUser()

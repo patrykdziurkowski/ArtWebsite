@@ -14,6 +14,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
         public required DbSet<Artist> Artists { get; set; }
         public required DbSet<ArtPiece> ArtPieces { get; set; }
         public required DbSet<Review> Reviews { get; set; }
+        public required DbSet<Reviewer> Reviewers { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

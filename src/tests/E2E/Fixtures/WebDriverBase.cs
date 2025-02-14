@@ -21,9 +21,10 @@ public abstract class WebDriverBase
 
         }
 
-        public void Register(string email = "john@smith.com", string password = "Ex@mpl3")
+        public void Register(string userName = "SomeUser123", string email = "john@smith.com", string password = "Ex@mpl3")
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Register");
+                Driver.FindElement(By.Id("Input_UserName")).SendKeys(userName);
                 Driver.FindElement(By.Id("Input_Email")).SendKeys(email);
                 Driver.FindElement(By.Id("Input_Password")).SendKeys(password);
                 Driver.FindElement(By.Id("Input_ConfirmPassword")).SendKeys(password);
@@ -63,10 +64,11 @@ public abstract class WebDriverBase
                 Wait.Until(d => d.Url.Contains("/Artist/Setup") == false);
         }
 
-        public void CreateUserWithArtistProfile(string email = "john@smith.com",
-                string password = "Ex@mpl3", string name = "SomeArtist")
+        public void CreateUserWithArtistProfile(string userName = "SomeUser123",
+                string email = "john@smith.com", string password = "Ex@mpl3",
+                string name = "SomeArtist")
         {
-                Register(email, password);
+                Register(userName, email, password);
                 Login(email, password);
                 CreateArtistProfile(name);
         }
