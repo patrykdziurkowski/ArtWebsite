@@ -1,5 +1,5 @@
 ﻿<div class="container mt-5">
-    <h2>Review profile</h2>
+    <h2>Reviewer profile</h2>
     <div id="reviewsList" class="list-group">Loading...</div>
     <button id="loadMoreButton" class="btn btn-primary mt-3" style="display: none;">Load More</button>
 </div>
@@ -35,6 +35,7 @@
                     reviewItem.innerHTML = `
                         <strong>${new Date(review.date).toLocaleDateString()}</strong>
                         <p>${review.comment}</p>
+                        <img src="${review.imagePath}">
                     `;
                     list.appendChild(reviewItem);
                 });

@@ -21,7 +21,7 @@ public class ReviewsQueryTests : DatabaseBase
         [Fact]
         public void Execute_ShouldReturnEmpty_WhenNoReviewsForGivenUser()
         {
-                List<Review> reviews = _command.Execute(Guid.NewGuid(), 10);
+                List<ReviewedArtPiece> reviews = _command.Execute(Guid.NewGuid(), 10);
 
                 reviews.Should().BeEmpty();
         }
@@ -32,7 +32,7 @@ public class ReviewsQueryTests : DatabaseBase
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid reviewerId = await CreateUserWith20Reviews(artPieceIds);
 
-                List<Review> reviews = _command.Execute(reviewerId, 10);
+                List<ReviewedArtPiece> reviews = _command.Execute(reviewerId, 10);
 
                 reviews.Should().HaveCount(10);
         }
@@ -43,7 +43,7 @@ public class ReviewsQueryTests : DatabaseBase
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid reviewerId = await CreateUserWith20Reviews(artPieceIds);
 
-                List<Review> reviews = _command.Execute(reviewerId, 10, 17);
+                List<ReviewedArtPiece> reviews = _command.Execute(reviewerId, 10, 17);
 
                 reviews.Should().HaveCount(3);
         }
@@ -54,7 +54,7 @@ public class ReviewsQueryTests : DatabaseBase
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 await CreateUserWith20Reviews(artPieceIds);
 
-                List<Review> reviews = _command.Execute(Guid.NewGuid(), 10, 0);
+                List<ReviewedArtPiece> reviews = _command.Execute(Guid.NewGuid(), 10, 0);
 
                 reviews.Should().BeEmpty();
         }

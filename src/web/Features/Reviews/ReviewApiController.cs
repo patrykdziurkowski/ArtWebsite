@@ -25,7 +25,7 @@ public class ReviewApiController : ControllerBase
 
         public IActionResult LoadReviews([Range(0, int.MaxValue)] int offset = 0)
         {
-                List<Review> reviews = _reviewsQuery.Execute(GetUserId(),
+                List<ReviewedArtPiece> reviews = _reviewsQuery.Execute(GetUserId(),
                         REVIEWS_TO_LOAD, offset);
                 return Ok(reviews);
         }
