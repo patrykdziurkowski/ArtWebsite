@@ -1,5 +1,6 @@
 using web.Data;
 using web.Features.ArtPieces;
+using web.Features.Reviewers;
 
 namespace web.Features.Reviews.ReviewArtPiece;
 
@@ -12,8 +13,11 @@ public class ReviewArtPieceCommand
         }
 
         public async Task<Review> ExecuteAsync(string comment,
-                ArtPieceId artPieceId, Guid reviewerId)
+                ArtPieceId artPieceId, Guid userId)
         {
+                ReviewerId reviewerId = _dbContext.Reviewers
+                        .First(r => r.UserId == userId).Id;
+
                 Review review = new()
                 {
                         Comment = comment,

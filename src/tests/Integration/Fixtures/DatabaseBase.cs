@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using web.Data;
 using web.Features.Artists;
 using web.Features.ArtPieces;
+using web.Features.Reviewers;
 using web.Features.Reviews;
 
 namespace tests.Integration.Fixtures;
@@ -44,6 +45,11 @@ public class DatabaseBase : IDisposable
         {
                 IdentityUser<Guid> user = new(username);
                 await UserManager.CreateAsync(user);
+                DbContext.Reviewers.Add(new Reviewer()
+                {
+                        Name = "SomeUser123",
+                        UserId = user.Id,
+                });
                 ArtistId artistId = new();
                 DbContext.Artists.Add(new Artist
                 {
@@ -75,6 +81,11 @@ public class DatabaseBase : IDisposable
         {
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
+                DbContext.Reviewers.Add(new Reviewer()
+                {
+                        Name = "SomeUser123",
+                        UserId = user.Id,
+                });
                 ArtistId artistId = new();
                 DbContext.Artists.Add(new Artist
                 {
@@ -99,22 +110,29 @@ public class DatabaseBase : IDisposable
                 return artPieceIds;
         }
 
-        public async Task<Guid> CreateUserWith20Reviews(List<ArtPieceId> artPiecesToReview)
+        public async Task<ReviewerId> CreateReviewerWith20Reviews(List<ArtPieceId> artPiecesToReview)
         {
                 IdentityUser<Guid> user = new("johnSmith2");
                 await UserManager.CreateAsync(user);
+                ReviewerId reviewerId = new();
+                DbContext.Reviewers.Add(new Reviewer()
+                {
+                        Id = reviewerId,
+                        Name = "SomeUser123",
+                        UserId = user.Id,
+                });
                 foreach (ArtPieceId artPieceId in artPiecesToReview)
                 {
                         Review review = new()
                         {
                                 Comment = "Some comment with a descriptive opinion that's long enough. Some comment with a descriptive opinion that's long enough.",
                                 ArtPieceId = artPieceId,
-                                ReviewerId = user.Id,
+                                ReviewerId = reviewerId,
                         };
                         await DbContext.AddAsync(review);
                 }
                 await DbContext.SaveChangesAsync();
-                return user.Id;
+                return reviewerId;
         }
 
         public FormFile GetExampleFile()

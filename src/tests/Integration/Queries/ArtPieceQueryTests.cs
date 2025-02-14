@@ -19,9 +19,12 @@ public class ArtPieceQueryTests : DatabaseBase
         }
 
         [Fact]
-        public void Execute_ShouldReturnNull_WhenNoArtPiecesInDatabase()
+        public async Task Execute_ShouldReturnNull_WhenNoArtPiecesInDatabase()
         {
-                ArtPiece? artPiece = _command.Execute(Guid.NewGuid());
+                await CreateUserWithArtistProfile();
+                Guid currentUserId = DbContext.Users.First().Id;
+
+                ArtPiece? artPiece = _command.Execute(currentUserId);
 
                 artPiece.Should().BeNull();
         }
@@ -31,8 +34,9 @@ public class ArtPieceQueryTests : DatabaseBase
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 await Create6ArtPiecesForArtist(artistId);
+                Guid currentUserId = DbContext.Users.First().Id;
 
-                ArtPiece? artPiece = _command.Execute(Guid.NewGuid());
+                ArtPiece? artPiece = _command.Execute(currentUserId);
 
                 artPiece.Should().NotBeNull();
         }
@@ -52,13 +56,14 @@ public class ArtPieceQueryTests : DatabaseBase
                 {
                         Comment = "Some review comment!",
                         ArtPieceId = artPiece.Id,
-                        ReviewerId = DbContext.Users.First().Id,
+                        ReviewerId = DbContext.Reviewers.First().Id,
                 });
                 await DbContext.SaveChangesAsync();
+                Guid currentUserId = DbContext.Users.First().Id;
 
-                ArtPiece? returnedArtPiece = _command.Execute(artistId.Value);
+                ArtPiece? returnedArtPiece = _command.Execute(currentUserId);
 
-                returnedArtPiece.Should().NotBeNull();
+                returnedArtPiece.Should().BeNull();
         }
 
 }

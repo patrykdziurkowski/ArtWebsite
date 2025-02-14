@@ -1,4 +1,7 @@
-﻿<div class="container mt-5">
+﻿@using web.Features.Reviewers.Index
+@model ReviewerProfileModel
+
+<div class="container mt-5">
     <h2>Reviewer profile</h2>
     <div id="reviewsList" class="list-group">Loading...</div>
     <button id="loadMoreButton" class="btn btn-primary mt-3" style="display: none;">Load More</button>
@@ -12,7 +15,7 @@
         const list = document.querySelector('#reviewsList');
         const loadMore = document.querySelector('#loadMoreButton');
 
-        fetch(`/api/review/?offset=${offset}`)
+        fetch(`/api/reviewers/@Model.ReviewerId/reviews?offset=${offset}`)
             .then(response => response.json())
             .then(data => {
                 if (offset == 0) {

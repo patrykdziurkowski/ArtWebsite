@@ -1,4 +1,5 @@
 using web.Data;
+using web.Features.Reviewers;
 
 namespace web.Features.Reviews.LoadReviews;
 
@@ -10,7 +11,8 @@ public class ReviewsQuery
                 _dbContext = dbContext;
         }
 
-        public List<ReviewedArtPiece> Execute(Guid reviewerId, int count, int offset = 0)
+        public List<ReviewedArtPiece> Execute(ReviewerId reviewerId,
+                int count, int offset = 0)
         {
                 return _dbContext.Reviews
                         .Where(r => r.ReviewerId == reviewerId)

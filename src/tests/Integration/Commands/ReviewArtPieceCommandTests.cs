@@ -5,6 +5,7 @@ using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Reviewers;
 using web.Features.Reviews.ReviewArtPiece;
 
 namespace tests.Integration.Commands;
@@ -26,6 +27,11 @@ public class ReviewArtPieceCommandTests : DatabaseBase
         {
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
+                DbContext.Reviewers.Add(new Reviewer()
+                {
+                        Name = "SomeUser123",
+                        UserId = user.Id,
+                });
                 DbContext.Artists.Add(new Artist()
                 {
                         UserId = user.Id,

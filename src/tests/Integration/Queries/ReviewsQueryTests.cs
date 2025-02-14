@@ -2,9 +2,8 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.ArtPieces;
-using web.Features.Reviews;
+using web.Features.Reviewers;
 using web.Features.Reviews.LoadReviews;
-using web.Features.Reviews.ReviewArtPiece;
 
 namespace tests.Integration.Queries;
 
@@ -21,7 +20,7 @@ public class ReviewsQueryTests : DatabaseBase
         [Fact]
         public void Execute_ShouldReturnEmpty_WhenNoReviewsForGivenUser()
         {
-                List<ReviewedArtPiece> reviews = _command.Execute(Guid.NewGuid(), 10);
+                List<ReviewedArtPiece> reviews = _command.Execute(new ReviewerId(), 10);
 
                 reviews.Should().BeEmpty();
         }
@@ -30,7 +29,7 @@ public class ReviewsQueryTests : DatabaseBase
         public async Task Execute_ShouldReturnReviews_WhenTheyExist()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Guid reviewerId = await CreateUserWith20Reviews(artPieceIds);
+                ReviewerId reviewerId = await CreateReviewerWith20Reviews(artPieceIds);
 
                 List<ReviewedArtPiece> reviews = _command.Execute(reviewerId, 10);
 
@@ -41,7 +40,7 @@ public class ReviewsQueryTests : DatabaseBase
         public async Task Execute_ShouldReturnSomeReviews_WhenOffset()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Guid reviewerId = await CreateUserWith20Reviews(artPieceIds);
+                ReviewerId reviewerId = await CreateReviewerWith20Reviews(artPieceIds);
 
                 List<ReviewedArtPiece> reviews = _command.Execute(reviewerId, 10, 17);
 
@@ -52,9 +51,9 @@ public class ReviewsQueryTests : DatabaseBase
         public async Task Execute_ShouldReturnEmpty_WhenReviewsExistButForADifferentUser()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                await CreateUserWith20Reviews(artPieceIds);
+                await CreateReviewerWith20Reviews(artPieceIds);
 
-                List<ReviewedArtPiece> reviews = _command.Execute(Guid.NewGuid(), 10, 0);
+                List<ReviewedArtPiece> reviews = _command.Execute(new ReviewerId(), 10, 0);
 
                 reviews.Should().BeEmpty();
         }

@@ -63,7 +63,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .Property(r => r.Date)
                         .IsRequired();
                 builder.Entity<Review>()
-                        .HasOne<IdentityUser<Guid>>()
+                        .HasOne<Reviewer>()
                         .WithMany()
                         .HasForeignKey(r => r.ReviewerId);
                 builder.Entity<Review>()

@@ -3,12 +3,12 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Features.ArtPieces;
+using web.Features.Reviewers;
 using web.Features.Reviews.LoadReviews;
 using web.Features.Reviews.ReviewArtPiece;
 
 namespace web.Features.Reviews;
 
-[Route("api/review")]
 [ApiController]
 [Authorize]
 public class ReviewApiController : ControllerBase
@@ -23,14 +23,16 @@ public class ReviewApiController : ControllerBase
                 _reviewsQuery = reviewsQuery;
         }
 
-        public IActionResult LoadReviews([Range(0, int.MaxValue)] int offset = 0)
+        [HttpGet("/api/reviewers/{reviewerId}/reviews")]
+        public IActionResult LoadReviews(Guid reviewerId,
+                [Range(0, int.MaxValue)] int offset = 0)
         {
-                List<ReviewedArtPiece> reviews = _reviewsQuery.Execute(GetUserId(),
-                        REVIEWS_TO_LOAD, offset);
+                List<ReviewedArtPiece> reviews = _reviewsQuery.Execute(
+                        new ReviewerId(reviewerId), REVIEWS_TO_LOAD, offset);
                 return Ok(reviews);
         }
 
-        [HttpPost]
+        [HttpPost("/api/reviews")]
         public async Task<IActionResult> ReviewArtPiece(ReviewArtPieceModel model)
         {
                 Review review = await _reviewArtPieceCommand.ExecuteAsync(
