@@ -4,30 +4,8 @@ namespace web.Features.Artists;
 
 public class Artist : AggreggateRoot
 {
-        public ArtistId Id { get; }
-        public Guid OwnerId { get; }
-        public string Name { get; set; }
-        public string Summary { get; set; }
-
-        private Artist()
-        {
-                Id = new ArtistId(Guid.Empty);
-                OwnerId = Guid.Empty;
-                Name = string.Empty;
-                Summary = string.Empty;
-        }
-
-        public Artist(ArtistId artistId, Guid ownerId,
-                string name, string summary)
-        {
-                Id = artistId;
-                OwnerId = ownerId;
-                Name = name;
-                Summary = summary;
-        }
-
-        public Artist(Guid ownerId, string name, string summary)
-                : this(new ArtistId(), ownerId, name, summary)
-        {
-        }
+        public ArtistId Id { get; init; } = new ArtistId();
+        public required string Name { get; set; }
+        public required string Summary { get; set; }
+        public required Guid UserId { get; init; }
 }

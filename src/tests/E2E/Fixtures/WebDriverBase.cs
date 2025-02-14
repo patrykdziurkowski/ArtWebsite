@@ -21,7 +21,8 @@ public abstract class WebDriverBase
 
         }
 
-        public void Register(string userName = "SomeUser123", string email = "john@smith.com", string password = "Ex@mpl3")
+        public void Register(string userName = "SomeUser123",
+                string email = "john@smith.com", string password = "Ex@mpl3")
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Register");
                 Driver.FindElement(By.Id("Input_UserName")).SendKeys(userName);

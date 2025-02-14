@@ -24,9 +24,12 @@ public class SetupArtistCommandTests : DatabaseBase
         {
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
-                DbContext.Artists.Add(
-                        new Artist(user.Id, "ArtistName",
-                        "A profile summary for an artist."));
+                DbContext.Artists.Add(new Artist
+                {
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                });
                 await DbContext.SaveChangesAsync();
 
                 Result<Artist> result = await _command.ExecuteAsync(user.Id,

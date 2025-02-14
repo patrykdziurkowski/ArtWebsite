@@ -36,7 +36,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                 builder.Entity<Artist>()
                         .HasOne<IdentityUser<Guid>>()
                         .WithOne()
-                        .HasForeignKey<Artist>(a => a.OwnerId);
+                        .HasForeignKey<Artist>(a => a.UserId);
 
                 builder.Entity<ArtPiece>()
                         .HasKey(a => a.Id);
@@ -85,7 +85,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                 builder.Entity<Reviewer>()
                         .HasOne<IdentityUser<Guid>>()
                         .WithOne()
-                        .HasForeignKey<Reviewer>(r => r.OwnerId);
+                        .HasForeignKey<Reviewer>(r => r.UserId);
 
         }
 }

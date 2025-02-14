@@ -26,9 +26,12 @@ public class ReviewArtPieceCommandTests : DatabaseBase
         {
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
-                DbContext.Artists.Add(
-                        new Artist(new ArtistId(), user.Id, "ArtistName",
-                                "A profile summary for an artist."));
+                DbContext.Artists.Add(new Artist()
+                {
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                });
                 await DbContext.SaveChangesAsync();
                 ArtPiece artPiece = await _uploadArtPiece.ExecuteAsync(
                         GetExampleFile(), "description", user.Id);

@@ -127,7 +127,7 @@ public class RegisterModel : PageModel
                 Reviewer reviewer = new()
                 {
                         Name = Input.UserName,
-                        OwnerId = user.Id,
+                        UserId = user.Id,
                 };
                 await _dbContext.Reviewers.AddAsync(reviewer);
                 await _dbContext.SaveChangesAsync();

@@ -20,7 +20,7 @@ public class DeactivateArtistCommand
         {
                 IdentityUser<Guid> user = await _userManager.FindByIdAsync(userId.ToString())
                                               ?? throw new InvalidOperationException("Could not deactivate artist profile - user with such id does not exist.");
-                Artist artist = await _dbContext.Artists.FirstAsync(a => a.OwnerId == user.Id);
+                Artist artist = await _dbContext.Artists.FirstAsync(a => a.UserId == user.Id);
                 _dbContext.Artists.Remove(artist);
                 await _dbContext.SaveChangesAsync();
                 await _userManager.RemoveFromRoleAsync(user, "Artist");

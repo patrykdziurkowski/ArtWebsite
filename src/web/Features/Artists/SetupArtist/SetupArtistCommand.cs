@@ -17,9 +17,9 @@ public class SetupArtistCommand
                 _userManager = userManager;
         }
 
-        public async Task<Result<Artist>> ExecuteAsync(Guid ownerId, string name, string summary)
+        public async Task<Result<Artist>> ExecuteAsync(Guid userId, string name, string summary)
         {
-                IdentityUser<Guid> user = await _userManager.FindByIdAsync(ownerId.ToString())
+                IdentityUser<Guid> user = await _userManager.FindByIdAsync(userId.ToString())
                         ?? throw new InvalidOperationException("Could not setup artist profile - user with such id does not exist.");
 
                 if (await _dbContext.Artists.AnyAsync(a => a.Name == name))
@@ -27,7 +27,12 @@ public class SetupArtistCommand
                         return Result.Fail($"An artist with name '{name}' already exists.");
                 }
 
-                _dbContext.Add(new Artist(ownerId, name, summary));
+                _dbContext.Add(new Artist
+                {
+                        UserId = userId,
+                        Name = name,
+                        Summary = summary,
+                });
                 await _dbContext.SaveChangesAsync();
                 await _userManager.AddToRoleAsync(user, "Artist");
                 return Result.Ok();

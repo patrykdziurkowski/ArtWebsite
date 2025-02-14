@@ -6,21 +6,18 @@ namespace web.Features.ArtPieces.UploadArtPiece;
 public class UploadArtPieceCommand
 {
         private readonly ApplicationDbContext _dbContext;
-        private readonly IWebHostEnvironment _env;
 
         public UploadArtPieceCommand(
-                ApplicationDbContext dbContext,
-                IWebHostEnvironment env)
+                ApplicationDbContext dbContext)
         {
                 _dbContext = dbContext;
-                _env = env;
         }
 
         public async Task<ArtPiece> ExecuteAsync(IFormFile image,
                 string description, Guid userId)
         {
                 Artists.Artist artist = await _dbContext.Artists
-                        .FirstAsync(a => a.OwnerId == userId);
+                        .FirstAsync(a => a.UserId == userId);
 
                 string directoryPath = Path.Combine("user-images", "art-pieces", $"{artist.Id}");
                 Directory.CreateDirectory(directoryPath);
@@ -33,8 +30,13 @@ public class UploadArtPieceCommand
                         await image.CopyToAsync(stream);
                 }
 
-                ArtPiece artPiece = new(artPieceId, imagePath,
-                        description, DateTime.UtcNow, artist.Id);
+                ArtPiece artPiece = new()
+                {
+                        Id = artPieceId,
+                        Description = description,
+                        ImagePath = imagePath,
+                        ArtistId = artist.Id,
+                };
                 await _dbContext.ArtPieces.AddAsync(artPiece);
                 await _dbContext.SaveChangesAsync();
                 return artPiece;

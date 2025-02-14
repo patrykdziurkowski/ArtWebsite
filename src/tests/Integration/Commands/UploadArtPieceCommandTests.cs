@@ -23,10 +23,13 @@ public class UploadArtPieceCommandTests : DatabaseBase
         {
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
-                ArtistId artistId = new();
-                DbContext.Artists.Add(
-                        new Artist(artistId, user.Id, "ArtistName",
-                                "A profile summary for an artist."));
+                DbContext.Artists.Add(new Artist
+                {
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                });
+
                 await DbContext.SaveChangesAsync();
 
 
@@ -43,9 +46,13 @@ public class UploadArtPieceCommandTests : DatabaseBase
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
                 ArtistId artistId = new();
-                DbContext.Artists.Add(
-                        new Artist(artistId, user.Id, "ArtistName",
-                                "A profile summary for an artist."));
+                DbContext.Artists.Add(new Artist
+                {
+                        Id = artistId,
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                });
                 await DbContext.SaveChangesAsync();
 
                 ArtPiece artPiece = await _command.ExecuteAsync(

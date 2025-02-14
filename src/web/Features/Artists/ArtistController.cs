@@ -39,7 +39,7 @@ public class ArtistController : Controller
                         return RedirectToAction(nameof(Setup));
                 }
 
-                Artist artist = _dbContext.Artists.First(a => a.OwnerId == GetUserId());
+                Artist artist = _dbContext.Artists.First(a => a.UserId == GetUserId());
                 ArtistProfileModel model = new(artist.Id.Value,
                         artist.Name, artist.Summary, isOwner: true);
                 return View(model);
@@ -57,7 +57,7 @@ public class ArtistController : Controller
                 }
 
                 ArtistProfileModel model = new(artist.Id.Value,
-                        artist.Name, artist.Summary, isOwner: GetUserId() == artist.OwnerId);
+                        artist.Name, artist.Summary, isOwner: GetUserId() == artist.UserId);
                 return View("Index", model);
         }
 

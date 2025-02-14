@@ -41,7 +41,12 @@ public class ArtPieceQueryTests : DatabaseBase
         public async Task Execute_ShouldReturnNull_WhenOneExistsButWasReviewed()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
-                ArtPiece artPiece = new($"somePath1", "description", artistId);
+                ArtPiece artPiece = new()
+                {
+                        ImagePath = "somePath1",
+                        Description = "description",
+                        ArtistId = artistId,
+                };
                 await DbContext.ArtPieces.AddAsync(artPiece);
                 await DbContext.Reviews.AddAsync(new Review
                 {

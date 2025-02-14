@@ -45,9 +45,13 @@ public class DatabaseBase : IDisposable
                 IdentityUser<Guid> user = new(username);
                 await UserManager.CreateAsync(user);
                 ArtistId artistId = new();
-                DbContext.Artists.Add(
-                        new Artist(artistId, user.Id, artistName,
-                                "A profile summary for an artist."));
+                DbContext.Artists.Add(new Artist
+                {
+                        Id = artistId,
+                        UserId = user.Id,
+                        Name = artistName,
+                        Summary = "A profile summary for an artist.",
+                });
                 await DbContext.SaveChangesAsync();
                 return artistId;
         }
@@ -56,7 +60,12 @@ public class DatabaseBase : IDisposable
         {
                 for (int i = 0; i < 6; ++i)
                 {
-                        ArtPiece artPiece = new($"somePath{i}", "description", artistId);
+                        ArtPiece artPiece = new()
+                        {
+                                ImagePath = $"somePath{i}",
+                                Description = "description",
+                                ArtistId = artistId,
+                        };
                         await DbContext.ArtPieces.AddAsync(artPiece);
                         await DbContext.SaveChangesAsync();
                 }
@@ -67,13 +76,22 @@ public class DatabaseBase : IDisposable
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
                 ArtistId artistId = new();
-                DbContext.Artists.Add(
-                        new Artist(artistId, user.Id, "ArtistName",
-                                "A profile summary for an artist."));
+                DbContext.Artists.Add(new Artist
+                {
+                        Id = artistId,
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                });
                 List<ArtPieceId> artPieceIds = [];
                 for (int i = 0; i < 20; ++i)
                 {
-                        ArtPiece artPiece = new($"somePath", "description", artistId);
+                        ArtPiece artPiece = new()
+                        {
+                                ImagePath = "somePath",
+                                Description = "description",
+                                ArtistId = artistId,
+                        };
                         await DbContext.ArtPieces.AddAsync(artPiece);
                         artPieceIds.Add(artPiece.Id);
                 }
