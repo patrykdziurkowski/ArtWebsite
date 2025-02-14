@@ -3,7 +3,8 @@
 
 <div class="container mt-5">
     <h2>@Model.Name's profile</h2>
-    <p>Joined: <span id="reviewerJoinDate">@Model.JoinDate UTC</span> | @Model.ReviewCount total reviews</p>
+    <p>Joined: <span id="reviewerJoinDate">@Html.Raw(Model.JoinDate.ToString("o"))</span> | @Model.ReviewCount total
+        reviews</p>
     <div id="reviewsList" class="list-group">Loading...</div>
     <button id="loadMoreButton" class="btn btn-primary mt-3" style="display: none;">Load More</button>
 </div>
@@ -37,7 +38,7 @@
                     const reviewItem = document.createElement('div');
                     reviewItem.classList.add('list-group-item');
                     reviewItem.innerHTML = `
-                        <strong>${new Date(review.date + 'Z').toLocaleString()}</strong>
+                        <strong>${new Date(review.date).toLocaleString()}</strong>
                         <p> ${review.comment}</p>
                             <img src="${review.imagePath}">
                     `;
@@ -53,5 +54,6 @@
 
     fetchReviews();
 
-    document.querySelector('#reviewerJoinDate').innerText = new Date('@Model.JoinDate UTC').toLocaleString();
+    document.querySelector('#reviewerJoinDate').innerText = new Date(
+        '@Html.Raw(Model.JoinDate.ToString("o"))').toLocaleString();
 </script>
