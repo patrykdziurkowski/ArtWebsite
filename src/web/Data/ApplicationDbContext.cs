@@ -89,5 +89,17 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .WithOne()
                         .HasForeignKey<Reviewer>(r => r.UserId);
 
+                builder.Entity<Like>()
+                        .HasKey(l => l.Id);
+                builder.Entity<Like>()
+                       .Property(l => l.Id)
+                       .HasConversion(id => id.Value, guid => new LikeId(guid));
+                builder.Entity<Like>()
+                        .Property(l => l.Date)
+                        .IsRequired();
+                builder.Entity<Like>()
+                        .HasOne<ArtPiece>()
+                        .WithMany()
+                        .HasForeignKey(l => l.ArtPieceId);
         }
 }
