@@ -24,7 +24,8 @@ public class ArtPieceApiController : ControllerBase
                 _artPiecesQuery = artPiecesQuery;
         }
 
-        public IActionResult Index()
+        [HttpGet("/api/artpiece")]
+        public IActionResult GetNextArtPiece()
         {
                 ArtPiece? artPiece = _artPieceQuery.Execute(GetUserId());
                 if (artPiece is null)

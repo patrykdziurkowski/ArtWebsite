@@ -45,8 +45,8 @@ public class ArtistController : Controller
                 return View(model);
         }
 
-        [Route("/Artists/{artistId}")]
-        public async Task<ActionResult> Get(Guid artistId)
+        [HttpGet("/Artists/{artistId}")]
+        public async Task<ActionResult> GetArtist(Guid artistId)
         {
                 Artist? artist = await _dbContext.Artists
                         .FirstOrDefaultAsync(a => a.Id.Value == artistId);
