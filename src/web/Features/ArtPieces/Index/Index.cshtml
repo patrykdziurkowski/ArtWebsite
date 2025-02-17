@@ -45,6 +45,7 @@
                 const artContainer = document.getElementById('artContainer');
                 if (!data || !data.imagePath) {
                     artContainer.innerHTML = '<h1>No more images to review.</h1>';
+                    document.querySelector('#reviewArt').style.display = 'none';
                     return;
                 }
 
