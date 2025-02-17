@@ -40,31 +40,23 @@ builder.Services.AddControllersWithViews(o =>
 });
 builder.Services.Configure<RazorViewEngineOptions>(o =>
 {
-        /*
-            {2} - area name
-            {1} - controller name
-            {0} - action name
-        */
+        // {1} - controller name
+        // {0} - action name
         o.ViewLocationFormats.Clear();
-        o.ViewLocationFormats.Add("/Features/{2}/{0}.cshtml");
-        o.ViewLocationFormats.Add("/Features/{2}/{1}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{1}/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{1}s/{0}.cshtml");
         o.ViewLocationFormats.Add("/Features/{1}/{0}{1}/{0}.cshtml");
-        o.ViewLocationFormats.Add("/Features/{1}/{0}/{0}.cshtml");
-        o.ViewLocationFormats.Add("/Features/{2}/{1}s/{0}.cshtml");
         o.ViewLocationFormats.Add("/Features/{1}s/{0}{1}/{0}.cshtml");
         o.ViewLocationFormats.Add("/Features/{1}s/{0}{1}s/{0}.cshtml");
+        o.ViewLocationFormats.Add("/Features/{1}/{0}/{0}.cshtml");
         o.ViewLocationFormats.Add("/Features/{1}s/{0}/{0}.cshtml");
         o.ViewLocationFormats.Add("/Features/Shared/{0}.cshtml");
 
-        o.AreaPageViewLocationFormats.Clear();
-        o.AreaPageViewLocationFormats.Add("/Features/Authentication/{2}/{0}.cshtml");
-        o.AreaPageViewLocationFormats.Add("/Features/Authentication/{2}/{1}/{0}.cshtml");
-        o.AreaPageViewLocationFormats.Add("/Features/Authentication/{0}.cshtml");
-        o.AreaPageViewLocationFormats.Add("/Features/Shared/{0}.cshtml");
-
+        // {1} - page name
+        // {0} - view name
         o.PageViewLocationFormats.Clear();
-        o.PageViewLocationFormats.Add("/Features/Authentication/{2}/{0}.cshtml");
-        o.PageViewLocationFormats.Add("/Features/Authentication/{2}/{1}/{0}.cshtml");
+        o.PageViewLocationFormats.Add("/Features/Authentication/{1}.cshtml");
+        o.PageViewLocationFormats.Add("/Features/Shared/{1}.cshtml");
         o.PageViewLocationFormats.Add("/Features/Authentication/{0}.cshtml");
         o.PageViewLocationFormats.Add("/Features/Shared/{0}.cshtml");
 });
