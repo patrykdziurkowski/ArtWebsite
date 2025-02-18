@@ -21,7 +21,7 @@ public class ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand,
                 [Range(0, int.MaxValue)] int offset = 0)
         {
                 List<ReviewedArtPiece> reviews = reviewsQuery.Execute(
-                        new ReviewerId(reviewerId), REVIEWS_TO_LOAD, offset);
+                        new ReviewerId { Value = reviewerId }, REVIEWS_TO_LOAD, offset);
                 return Ok(reviews);
         }
 
@@ -29,7 +29,7 @@ public class ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand,
         public async Task<IActionResult> ReviewArtPiece(ReviewArtPieceModel model)
         {
                 Review review = await reviewArtPieceCommand.ExecuteAsync(
-                        model.Comment, new ArtPieceId(model.ArtPieceId), GetUserId());
+                        model.Comment, new ArtPieceId { Value = model.ArtPieceId }, GetUserId());
                 return Ok(review);
         }
 

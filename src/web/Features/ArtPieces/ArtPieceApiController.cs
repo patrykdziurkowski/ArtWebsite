@@ -32,7 +32,7 @@ public class ArtPieceApiController(ArtPieceQuery artPieceQuery,
                 [Range(0, int.MaxValue)] int offset = 0)
         {
                 List<ArtPiece> artPieces = artPiecesQuery
-                        .Execute(new ArtistId(artistId), ART_PIECES_TO_LOAD,
+                        .Execute(new ArtistId { Value = artistId }, ART_PIECES_TO_LOAD,
                                 offset);
                 return Ok(artPieces);
         }

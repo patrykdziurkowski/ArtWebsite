@@ -32,7 +32,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .HasKey(a => a.Id);
                 builder.Entity<Artist>()
                         .Property(a => a.Id)
-                        .HasConversion(id => id.Value, guid => new ArtistId(guid));
+                        .HasConversion(id => id.Value, guid => new ArtistId { Value = guid });
                 builder.Entity<Artist>()
                         .HasOne<IdentityUser<Guid>>()
                         .WithOne()
@@ -42,7 +42,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .HasKey(a => a.Id);
                 builder.Entity<ArtPiece>()
                         .Property(a => a.Id)
-                        .HasConversion(id => id.Value, guid => new ArtPieceId(guid));
+                        .HasConversion(id => id.Value, guid => new ArtPieceId { Value = guid });
                 builder.Entity<ArtPiece>()
                         .HasOne<Artist>()
                         .WithMany()
@@ -58,7 +58,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .HasKey(r => r.Id);
                 builder.Entity<Review>()
                         .Property(r => r.Id)
-                        .HasConversion(id => id.Value, guid => new ReviewId(guid));
+                        .HasConversion(id => id.Value, guid => new ReviewId { Value = guid });
                 builder.Entity<Review>()
                         .Property(r => r.Date)
                         .IsRequired();
@@ -75,7 +75,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .HasKey(r => r.Id);
                 builder.Entity<Reviewer>()
                        .Property(r => r.Id)
-                       .HasConversion(id => id.Value, guid => new ReviewerId(guid));
+                       .HasConversion(id => id.Value, guid => new ReviewerId { Value = guid });
                 builder.Entity<Reviewer>()
                         .Property(r => r.Name)
                         .IsRequired();
@@ -93,7 +93,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .HasKey(l => l.Id);
                 builder.Entity<Like>()
                        .Property(l => l.Id)
-                       .HasConversion(id => id.Value, guid => new LikeId(guid));
+                       .HasConversion(id => id.Value, guid => new LikeId { Value = guid });
                 builder.Entity<Like>()
                         .Property(l => l.Date)
                         .IsRequired();

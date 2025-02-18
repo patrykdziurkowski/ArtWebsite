@@ -1,8 +1,8 @@
 namespace web.Features.Shared.domain;
 
-public abstract class DomainId(Guid value) : ValueObject
+public abstract class DomainId : ValueObject
 {
-        public Guid Value { get; init; } = value;
+        public Guid Value { get; init; } = Guid.NewGuid();
 
         public override string ToString()
         {
