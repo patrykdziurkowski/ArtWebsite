@@ -40,4 +40,17 @@ public class ReviewsTests(WebDriverInitializer initializer)
                 hasOneReview.Should().BeTrue();
         }
 
+        [Fact, Order(2)]
+        public void LikingArtPiece_ShowsLikeOnReviewerProfile()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");
+
+                Wait.Until(d => d.FindElement(By.Id("likeArtPiece"))).Click();
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
+                Wait.Until(d => d.FindElement(By.CssSelector("#reviewerTabs button[data-bs-target='#likesTab']"))).Click();
+                bool hasOneLike = Wait.Until(d => d.FindElements(By.CssSelector("#likesList > * ")).Count == 1);
+                hasOneLike.Should().BeTrue();
+        }
+
 }

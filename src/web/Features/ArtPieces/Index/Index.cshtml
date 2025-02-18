@@ -6,6 +6,7 @@
     </div>
     <button id="reviewArt" class="btn btn-light m-3" data-bs-toggle="modal"
         data-bs-target="#reviewModal">Review</button>
+    <button id="likeArtPiece" class="btn btn-light m-3">Like</button>
 </div>
 
 <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
@@ -31,7 +32,6 @@
         </div>
     </div>
 </div>
-
 <script>
     function loadArtPiece() {
         fetch("/api/artpiece")
@@ -45,6 +45,7 @@
                 const artContainer = document.getElementById('artContainer');
                 if (!data || !data.imagePath) {
                     artContainer.innerHTML = '<h1>No more images to review.</h1>';
+                    document.querySelector('#likeArtPiece').style.display = 'none';
                     document.querySelector('#reviewArt').style.display = 'none';
                     return;
                 }
@@ -61,6 +62,25 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         loadArtPiece();
+
+        document.querySelector('#likeArtPiece').addEventListener('click', (e) => {
+            const artPieceId = document.querySelector('#reviewForm input[name="artPieceId"]').value;
+
+            fetch(`/api/artpieces/${artPieceId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Art piece liked successfully!');
+                    } else {
+                        console.error('Failed to like the art piece', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Error occurred:', error));
+        });
 
         document.querySelector('#reviewForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -93,9 +113,6 @@
                     const validationErrorsText = document.querySelector('#reviewForm *[name="comment"] + span');
                     validationErrorsText.innerText = error.errors.Comment;
                 });
-
-
-
         });
     });
 </script>
