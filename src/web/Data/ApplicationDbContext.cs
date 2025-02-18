@@ -3,23 +3,21 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using web.Features.Artists;
 using web.Features.ArtPieces;
+using web.Features.Likes;
 using web.Features.Reviewers;
 using web.Features.Reviews;
 using web.Features.Shared.domain;
 
 namespace web.Data;
 
-public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>(options)
 {
         public required DbSet<Artist> Artists { get; set; }
         public required DbSet<ArtPiece> ArtPieces { get; set; }
         public required DbSet<Review> Reviews { get; set; }
         public required DbSet<Reviewer> Reviewers { get; set; }
-
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
+        public required DbSet<Like> Likes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -101,5 +99,9 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser<Guid>, Identi
                         .HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(l => l.ArtPieceId);
+                builder.Entity<Like>()
+                        .HasOne<Reviewer>()
+                        .WithMany()
+                        .HasForeignKey(l => l.ReviewerId);
         }
 }

@@ -1,5 +1,5 @@
 using web.Features.Shared.domain;
 
-namespace web.Features.Reviewers;
+namespace web.Features.Likes;
 
 public class LikeId : DomainId;

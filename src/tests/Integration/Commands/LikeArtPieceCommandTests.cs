@@ -3,8 +3,9 @@ using FluentResults;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.ArtPieces;
+using web.Features.Likes;
+using web.Features.Likes.LikeArtPiece;
 using web.Features.Reviewers;
-using web.Features.Reviewers.LikeArtPiece;
 
 namespace tests.Integration.Commands;
 
@@ -31,8 +32,7 @@ public class LikeArtPieceCommandTests : DatabaseBase
                         results.Add(result);
                 }
 
-                Reviewer reviewer = DbContext.Reviewers.First();
-                reviewer.Likes.Should().HaveCount(5);
+                DbContext.Likes.Should().HaveCount(5);
                 for (int i = 0; i < 5; ++i)
                 {
                         results[i].IsSuccess.Should().BeTrue();
@@ -48,7 +48,6 @@ public class LikeArtPieceCommandTests : DatabaseBase
 
                 await _command.ExecuteAsync(currentUserId, artPieceIds.First());
 
-                Reviewer reviewer = DbContext.Reviewers.First();
-                reviewer.Likes.Should().HaveCount(1);
+                DbContext.Likes.Should().HaveCount(1);
         }
 }
