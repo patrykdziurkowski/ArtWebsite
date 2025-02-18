@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using web.Data;
 using web.Features.Artists;
 using web.Features.ArtPieces;
+using web.Features.Likes;
 using web.Features.Reviewers;
 using web.Features.Reviews;
 
@@ -133,6 +134,30 @@ public class DatabaseBase : IDisposable
                 }
                 await DbContext.SaveChangesAsync();
                 return reviewerId;
+        }
+
+        public async Task<Guid> CreateReviewerWith20Likes(List<ArtPieceId> artPiecesToLike)
+        {
+                IdentityUser<Guid> user = new("johnSmith2");
+                await UserManager.CreateAsync(user);
+                ReviewerId reviewerId = new();
+                DbContext.Reviewers.Add(new Reviewer()
+                {
+                        Id = reviewerId,
+                        Name = "SomeUser123",
+                        UserId = user.Id,
+                });
+                foreach (ArtPieceId artPieceId in artPiecesToLike)
+                {
+                        Like like = new()
+                        {
+                                ArtPieceId = artPieceId,
+                                ReviewerId = reviewerId,
+                        };
+                        await DbContext.AddAsync(like);
+                }
+                await DbContext.SaveChangesAsync();
+                return user.Id;
         }
 
         public FormFile GetExampleFile()
