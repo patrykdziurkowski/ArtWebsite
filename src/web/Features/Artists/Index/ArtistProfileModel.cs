@@ -2,17 +2,8 @@ namespace web.Features.Artists.Index;
 
 public class ArtistProfileModel
 {
-        public Guid Id { get; }
-        public string Name { get; }
-        public string Summary { get; }
-        public bool IsOwner { get; }
-
-        public ArtistProfileModel(Guid id, string name, string summary, bool isOwner)
-        {
-                Id = id;
-                Name = name;
-                Summary = summary;
-                IsOwner = isOwner;
-        }
-
+        public required Guid Id { get; init; }
+        public required string Name { get; init; }
+        public required string Summary { get; init; }
+        public required bool IsOwner { get; init; }
 }

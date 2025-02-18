@@ -27,8 +27,13 @@ public class ArtistController(
                 }
 
                 Artist artist = dbContext.Artists.First(a => a.UserId == GetUserId());
-                ArtistProfileModel model = new(artist.Id.Value,
-                        artist.Name, artist.Summary, isOwner: true);
+                ArtistProfileModel model = new()
+                {
+                        Id = artist.Id.Value,
+                        Name = artist.Name,
+                        Summary = artist.Summary,
+                        IsOwner = true,
+                };
                 return View(model);
         }
 
@@ -43,8 +48,13 @@ public class ArtistController(
                                 "No artist with such id found."));
                 }
 
-                ArtistProfileModel model = new(artist.Id.Value,
-                        artist.Name, artist.Summary, isOwner: GetUserId() == artist.UserId);
+                ArtistProfileModel model = new()
+                {
+                        Id = artist.Id.Value,
+                        Name = artist.Name,
+                        Summary = artist.Summary,
+                        IsOwner = artist.UserId == GetUserId(),
+                };
                 return View("Index", model);
         }
 
