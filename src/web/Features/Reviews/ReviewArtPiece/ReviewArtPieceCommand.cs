@@ -4,18 +4,12 @@ using web.Features.Reviewers;
 
 namespace web.Features.Reviews.ReviewArtPiece;
 
-public class ReviewArtPieceCommand
+public class ReviewArtPieceCommand(ApplicationDbContext dbContext)
 {
-        private readonly ApplicationDbContext _dbContext;
-        public ReviewArtPieceCommand(ApplicationDbContext dbContext)
-        {
-                _dbContext = dbContext;
-        }
-
         public async Task<Review> ExecuteAsync(string comment,
                 ArtPieceId artPieceId, Guid userId)
         {
-                ReviewerId reviewerId = _dbContext.Reviewers
+                ReviewerId reviewerId = dbContext.Reviewers
                         .First(r => r.UserId == userId).Id;
 
                 Review review = new()
@@ -24,8 +18,8 @@ public class ReviewArtPieceCommand
                         ArtPieceId = artPieceId,
                         ReviewerId = reviewerId,
                 };
-                await _dbContext.AddAsync(review);
-                await _dbContext.SaveChangesAsync();
+                await dbContext.AddAsync(review);
+                await dbContext.SaveChangesAsync();
                 return review;
         }
 }

@@ -7,18 +7,9 @@ using web.Features.ArtPieces.UploadArtPiece;
 namespace web.Features.ArtPieces;
 
 [Authorize]
-public class ArtPieceController : Controller
+public class ArtPieceController(UploadArtPieceCommand uploadArtPieceCommand,
+        UserManager<IdentityUser<Guid>> userManager) : Controller
 {
-        private readonly UploadArtPieceCommand _uploadArtPieceCommand;
-        private readonly UserManager<IdentityUser<Guid>> _userManager;
-
-        public ArtPieceController(UploadArtPieceCommand uploadArtPieceCommand,
-                UserManager<IdentityUser<Guid>> userManager)
-        {
-                _uploadArtPieceCommand = uploadArtPieceCommand;
-                _userManager = userManager;
-        }
-
         public ActionResult Index()
         {
                 return View();
@@ -40,7 +31,7 @@ public class ArtPieceController : Controller
                 {
                         return RedirectToAction(nameof(Index));
                 }
-                await _uploadArtPieceCommand.ExecuteAsync(model.Image, model.Description, GetUserId());
+                await uploadArtPieceCommand.ExecuteAsync(model.Image, model.Description, GetUserId());
                 return RedirectToAction(nameof(Index));
         }
 
@@ -53,13 +44,13 @@ public class ArtPieceController : Controller
 
         private async Task<bool> IsArtistAsync()
         {
-                IdentityUser<Guid>? user = await _userManager.GetUserAsync(User);
+                IdentityUser<Guid>? user = await userManager.GetUserAsync(User);
                 if (user is null)
                 {
                         return false;
                 }
 
-                return await _userManager.IsInRoleAsync(user, "Artist");
+                return await userManager.IsInRoleAsync(user, "Artist");
         }
 
 }

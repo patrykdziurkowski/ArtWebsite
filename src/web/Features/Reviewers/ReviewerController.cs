@@ -6,18 +6,11 @@ using web.Features.Reviewers.Index;
 namespace web.Features.Reviewers;
 
 [Authorize]
-public class ReviewerController : Controller
+public class ReviewerController(UserReviewerQuery userReviewerQuery) : Controller
 {
-        private readonly UserReviewerQuery _userReviewerQuery;
-
-        public ReviewerController(UserReviewerQuery userReviewerQuery)
-        {
-                _userReviewerQuery = userReviewerQuery;
-        }
-
         public ActionResult Index()
         {
-                Reviewer reviewer = _userReviewerQuery.Execute(GetUserId());
+                Reviewer reviewer = userReviewerQuery.Execute(GetUserId());
                 return View(reviewer);
         }
 

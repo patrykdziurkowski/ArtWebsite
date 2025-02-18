@@ -11,23 +11,16 @@ namespace web.Features.Reviews;
 
 [ApiController]
 [Authorize]
-public class ReviewApiController : ControllerBase
+public class ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand,
+        ReviewsQuery reviewsQuery) : ControllerBase
 {
         private const int REVIEWS_TO_LOAD = 10;
-        private readonly ReviewArtPieceCommand _reviewArtPieceCommand;
-        private readonly ReviewsQuery _reviewsQuery;
-        public ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand,
-                ReviewsQuery reviewsQuery)
-        {
-                _reviewArtPieceCommand = reviewArtPieceCommand;
-                _reviewsQuery = reviewsQuery;
-        }
 
         [HttpGet("/api/reviewers/{reviewerId}/reviews")]
         public IActionResult LoadReviews(Guid reviewerId,
                 [Range(0, int.MaxValue)] int offset = 0)
         {
-                List<ReviewedArtPiece> reviews = _reviewsQuery.Execute(
+                List<ReviewedArtPiece> reviews = reviewsQuery.Execute(
                         new ReviewerId(reviewerId), REVIEWS_TO_LOAD, offset);
                 return Ok(reviews);
         }
@@ -35,7 +28,7 @@ public class ReviewApiController : ControllerBase
         [HttpPost("/api/reviews")]
         public async Task<IActionResult> ReviewArtPiece(ReviewArtPieceModel model)
         {
-                Review review = await _reviewArtPieceCommand.ExecuteAsync(
+                Review review = await reviewArtPieceCommand.ExecuteAsync(
                         model.Comment, new ArtPieceId(model.ArtPieceId), GetUserId());
                 return Ok(review);
         }

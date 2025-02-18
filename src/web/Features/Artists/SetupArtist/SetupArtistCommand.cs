@@ -5,36 +5,28 @@ using web.Data;
 
 namespace web.Features.Artists.SetupArtist;
 
-public class SetupArtistCommand
+public class SetupArtistCommand(ApplicationDbContext dbContext,
+        UserManager<IdentityUser<Guid>> userManager)
 {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly UserManager<IdentityUser<Guid>> _userManager;
-
-        public SetupArtistCommand(ApplicationDbContext dbContext,
-                UserManager<IdentityUser<Guid>> userManager)
+        public async Task<Result<Artist>> ExecuteAsync(Guid userId, string name,
+                string summary)
         {
-                _dbContext = dbContext;
-                _userManager = userManager;
-        }
-
-        public async Task<Result<Artist>> ExecuteAsync(Guid userId, string name, string summary)
-        {
-                IdentityUser<Guid> user = await _userManager.FindByIdAsync(userId.ToString())
+                IdentityUser<Guid> user = await userManager.FindByIdAsync(userId.ToString())
                         ?? throw new InvalidOperationException("Could not setup artist profile - user with such id does not exist.");
 
-                if (await _dbContext.Artists.AnyAsync(a => a.Name == name))
+                if (await dbContext.Artists.AnyAsync(a => a.Name == name))
                 {
                         return Result.Fail($"An artist with name '{name}' already exists.");
                 }
 
-                _dbContext.Add(new Artist
+                dbContext.Add(new Artist
                 {
                         UserId = userId,
                         Name = name,
                         Summary = summary,
                 });
-                await _dbContext.SaveChangesAsync();
-                await _userManager.AddToRoleAsync(user, "Artist");
+                await dbContext.SaveChangesAsync();
+                await userManager.AddToRoleAsync(user, "Artist");
                 return Result.Ok();
         }
 }

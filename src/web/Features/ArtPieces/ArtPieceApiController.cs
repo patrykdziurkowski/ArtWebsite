@@ -11,23 +11,15 @@ namespace web.Features.ArtPieces;
 [Route("api/artpiece")]
 [ApiController]
 [Authorize]
-public class ArtPieceApiController : ControllerBase
+public class ArtPieceApiController(ArtPieceQuery artPieceQuery,
+        ArtPiecesQuery artPiecesQuery) : ControllerBase
 {
         private const int ART_PIECES_TO_LOAD = 5;
-        private readonly ArtPieceQuery _artPieceQuery;
-        private readonly ArtPiecesQuery _artPiecesQuery;
-
-        public ArtPieceApiController(ArtPieceQuery artPieceQuery,
-                ArtPiecesQuery artPiecesQuery)
-        {
-                _artPieceQuery = artPieceQuery;
-                _artPiecesQuery = artPiecesQuery;
-        }
 
         [HttpGet("/api/artpiece")]
         public IActionResult GetNextArtPiece()
         {
-                ArtPiece? artPiece = _artPieceQuery.Execute(GetUserId());
+                ArtPiece? artPiece = artPieceQuery.Execute(GetUserId());
                 if (artPiece is null)
                 {
                         return NoContent();
@@ -39,7 +31,7 @@ public class ArtPieceApiController : ControllerBase
         public IActionResult LoadArtPiecesForArtist(Guid artistId,
                 [Range(0, int.MaxValue)] int offset = 0)
         {
-                List<ArtPiece> artPieces = _artPiecesQuery
+                List<ArtPiece> artPieces = artPiecesQuery
                         .Execute(new ArtistId(artistId), ART_PIECES_TO_LOAD,
                                 offset);
                 return Ok(artPieces);

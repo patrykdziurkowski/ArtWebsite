@@ -3,20 +3,12 @@ using web.Data;
 
 namespace web.Features.ArtPieces.UploadArtPiece;
 
-public class UploadArtPieceCommand
+public class UploadArtPieceCommand(ApplicationDbContext dbContext)
 {
-        private readonly ApplicationDbContext _dbContext;
-
-        public UploadArtPieceCommand(
-                ApplicationDbContext dbContext)
-        {
-                _dbContext = dbContext;
-        }
-
         public async Task<ArtPiece> ExecuteAsync(IFormFile image,
                 string description, Guid userId)
         {
-                Artists.Artist artist = await _dbContext.Artists
+                Artists.Artist artist = await dbContext.Artists
                         .FirstAsync(a => a.UserId == userId);
 
                 string directoryPath = Path.Combine("user-images", "art-pieces", $"{artist.Id}");
@@ -37,8 +29,8 @@ public class UploadArtPieceCommand
                         ImagePath = imagePath,
                         ArtistId = artist.Id,
                 };
-                await _dbContext.ArtPieces.AddAsync(artPiece);
-                await _dbContext.SaveChangesAsync();
+                await dbContext.ArtPieces.AddAsync(artPiece);
+                await dbContext.SaveChangesAsync();
                 return artPiece;
         }
 

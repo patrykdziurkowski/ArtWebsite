@@ -4,25 +4,18 @@ using web.Features.ArtPieces;
 
 namespace web.Features.Reviewers.LikeArtPiece;
 
-public class LikeArtPieceCommand
+public class LikeArtPieceCommand(ApplicationDbContext dbContext)
 {
-        private readonly ApplicationDbContext _dbContext;
-
-        public LikeArtPieceCommand(ApplicationDbContext dbContext)
-        {
-                _dbContext = dbContext;
-        }
-
         public async Task<Result<Like>> ExecuteAsync(Guid currentUserId, ArtPieceId artPieceId)
         {
-                Reviewer reviewer = _dbContext.Reviewers
+                Reviewer reviewer = dbContext.Reviewers
                         .First(r => r.UserId == currentUserId);
                 Result result = reviewer.LikeArtPiece(artPieceId);
                 if (result.IsFailed)
                 {
                         return result;
                 }
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
                 return Result.Ok(reviewer.Likes.Last());
         }
 }

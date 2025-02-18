@@ -13,25 +13,12 @@ using web.Features.Shared;
 namespace web.Features.Artists;
 
 [Authorize]
-public class ArtistController : Controller
+public class ArtistController(
+        SetupArtistCommand setupArtistCommand,
+        UserManager<IdentityUser<Guid>> userManager,
+        DeactivateArtistCommand deactivateArtistCommand,
+        ApplicationDbContext dbContext) : Controller
 {
-        private readonly UserManager<IdentityUser<Guid>> _userManager;
-        private readonly ApplicationDbContext _dbContext;
-        private readonly SetupArtistCommand _setupArtistCommand;
-        private readonly DeactivateArtistCommand _deactivateArtistCommand;
-
-        public ArtistController(
-                SetupArtistCommand setupArtistCommand,
-                UserManager<IdentityUser<Guid>> userManager,
-                DeactivateArtistCommand deactivateArtistCommand,
-                ApplicationDbContext dbContext)
-        {
-                _setupArtistCommand = setupArtistCommand;
-                _userManager = userManager;
-                _deactivateArtistCommand = deactivateArtistCommand;
-                _dbContext = dbContext;
-        }
-
         public async Task<ActionResult> Index()
         {
                 if (await IsArtistAsync() == false)
@@ -39,7 +26,7 @@ public class ArtistController : Controller
                         return RedirectToAction(nameof(Setup));
                 }
 
-                Artist artist = _dbContext.Artists.First(a => a.UserId == GetUserId());
+                Artist artist = dbContext.Artists.First(a => a.UserId == GetUserId());
                 ArtistProfileModel model = new(artist.Id.Value,
                         artist.Name, artist.Summary, isOwner: true);
                 return View(model);
@@ -48,7 +35,7 @@ public class ArtistController : Controller
         [HttpGet("/Artists/{artistId}")]
         public async Task<ActionResult> GetArtist(Guid artistId)
         {
-                Artist? artist = await _dbContext.Artists
+                Artist? artist = await dbContext.Artists
                         .FirstOrDefaultAsync(a => a.Id.Value == artistId);
                 if (artist is null)
                 {
@@ -80,7 +67,7 @@ public class ArtistController : Controller
                         return RedirectToAction(nameof(Index));
                 }
 
-                Result<Artist> result = await _setupArtistCommand.ExecuteAsync(
+                Result<Artist> result = await setupArtistCommand.ExecuteAsync(
                         GetUserId(), model.Name, model.Summary);
                 if (result.IsFailed)
                 {
@@ -100,7 +87,7 @@ public class ArtistController : Controller
                 }
 
 
-                await _deactivateArtistCommand.ExecuteAsync(GetUserId());
+                await deactivateArtistCommand.ExecuteAsync(GetUserId());
                 return Redirect("/");
         }
 
@@ -113,13 +100,13 @@ public class ArtistController : Controller
 
         private async Task<bool> IsArtistAsync()
         {
-                IdentityUser<Guid>? user = await _userManager.GetUserAsync(User);
+                IdentityUser<Guid>? user = await userManager.GetUserAsync(User);
                 if (user is null)
                 {
                         return false;
                 }
 
-                return await _userManager.IsInRoleAsync(user, "Artist");
+                return await userManager.IsInRoleAsync(user, "Artist");
         }
 
 }
