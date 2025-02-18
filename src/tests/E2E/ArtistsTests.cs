@@ -6,13 +6,9 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class ArtistsTests : WebDriverBase
+public class ArtistsTests(WebDriverInitializer initializer)
+        : WebDriverBase(initializer)
 {
-        public ArtistsTests(WebDriverInitializer initializer)
-                : base(initializer)
-        {
-        }
-
         [Fact, Order(0)]
         public void Index_RedirectsToLogin_WhenNotLoggedIn()
         {

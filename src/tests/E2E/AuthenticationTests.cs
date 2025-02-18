@@ -4,14 +4,9 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class AuthenticationTests : WebDriverBase
+public class AuthenticationTests(WebDriverInitializer initializer)
+        : WebDriverBase(initializer)
 {
-        public AuthenticationTests(WebDriverInitializer initializer)
-                : base(initializer)
-        {
-        }
-
-
         [Fact, Order(0)]
         public void RegisterPage_Loads()
         {

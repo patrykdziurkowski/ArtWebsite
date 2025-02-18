@@ -6,20 +6,12 @@ using SeleniumExtras.WaitHelpers;
 namespace tests.E2E.Fixtures;
 
 [Collection("Web server collection")]
-public abstract class WebDriverBase
+public abstract class WebDriverBase(WebDriverInitializer initializer)
 {
         public const string HTTP_PROTOCOL_PREFIX = "https://";
-        public IWebDriver Driver { get; }
-        public WebDriverWait Wait { get; }
-        public WebServer WebServer { get; }
-
-        public WebDriverBase(WebDriverInitializer initializer)
-        {
-                WebServer = initializer.WebServer;
-                Wait = initializer.Wait;
-                Driver = initializer.Driver;
-
-        }
+        public IWebDriver Driver { get; } = initializer.Driver;
+        public WebDriverWait Wait { get; } = initializer.Wait;
+        public WebServer WebServer { get; } = initializer.WebServer;
 
         public void Register(string userName = "SomeUser123",
                 string email = "john@smith.com", string password = "Ex@mpl3")

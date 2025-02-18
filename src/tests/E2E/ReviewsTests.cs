@@ -6,13 +6,9 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class ReviewsTests : WebDriverBase
+public class ReviewsTests(WebDriverInitializer initializer)
+        : WebDriverBase(initializer)
 {
-        public ReviewsTests(WebDriverInitializer initializer)
-                : base(initializer)
-        {
-        }
-
         [Fact, Order(0)]
         public void ReviewingArtPiece_ChangesArtPiece_WhenReviewed()
         {

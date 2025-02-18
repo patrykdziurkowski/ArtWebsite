@@ -5,13 +5,9 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class ArtPiecesTests : WebDriverBase
+public class ArtPiecesTests(WebDriverInitializer initializer)
+        : WebDriverBase(initializer)
 {
-        public ArtPiecesTests(WebDriverInitializer initializer)
-                : base(initializer)
-        {
-        }
-
         [Fact, Order(0)]
         public void UploadingArtPiece_Fails_WhenUploadedNonImageFile()
         {
