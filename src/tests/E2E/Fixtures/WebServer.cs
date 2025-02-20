@@ -9,12 +9,16 @@ public class WebServer : IDisposable
         private const string DB_TEST_PASSWORD = "exampleP@ssword123";
         private const string TRUNCATE_DATA_QUERY = @"
                 SET QUOTED_IDENTIFIER ON;
-                DELETE FROM [dbo].[AspNetUsers];
-                DELETE FROM [dbo].[Artists];
-                DELETE FROM [dbo].[ArtPieces];
+                DELETE FROM [dbo].[Likes];
                 DELETE FROM [dbo].[Reviews];
                 DELETE FROM [dbo].[Reviewers];
-                DELETE FROM [dbo].[Likes];
+                DELETE FROM [dbo].[ArtPieces];
+                DELETE FROM [dbo].[Artists];
+                DELETE FROM [dbo].[AspNetUserClaims];
+                DELETE FROM [dbo].[AspNetUserLogins];
+                DELETE FROM [dbo].[AspNetUserTokens];
+                DELETE FROM [dbo].[AspNetUserRoles];
+                DELETE FROM [dbo].[AspNetUsers];
                 ";
         public ICompositeService Server { get; }
 
