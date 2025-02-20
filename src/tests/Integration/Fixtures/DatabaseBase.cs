@@ -12,7 +12,7 @@ using web.Features.Reviews;
 namespace tests.Integration.Fixtures;
 
 [Collection("Database collection")]
-public class DatabaseBase : IDisposable
+public abstract class DatabaseBase : IDisposable
 {
         public ApplicationDbContext DbContext { get; init; }
         public IServiceScope Scope { get; init; }
