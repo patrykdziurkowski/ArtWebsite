@@ -17,30 +17,23 @@ using web.Features.Reviews.LoadReviews;
 using web.Features.Reviews.ReviewArtPiece;
 using web.Features.Shared;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+IServiceCollection services = builder.Services;
+
 string connectionString = builder.Configuration["CONNECTION_STRING"]
-                ?? throw new InvalidOperationException("Connection string not found.");
-builder.Services
-        .AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
-builder.Services
-        .AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
+        ?? throw new InvalidOperationException("Connection string not found.");
+
+services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
+services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
                 options.SignIn.RequireConfirmedAccount = true)
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
-builder.Services.AddRazorPages(o => // Pages are used for Identity only
-{
-        o.RootDirectory = "/Features/Authentication"; // Make Razor look for Identity Pages in the right place
-});
-builder.Services.ConfigureApplicationCookie(o =>
-{
-        o.LoginPath = "/Login";
-});
-
-builder.Services.AddControllersWithViews(o =>
-{
-        o.Filters.Add<ValidateModelFilter>(); // Globally require a valid ModelState with a default error view
-});
-builder.Services.Configure<RazorViewEngineOptions>(o =>
+// Make Razor look for Identity Pages in the right place
+services.AddRazorPages(o => o.RootDirectory = "/Features/Authentication");
+services.ConfigureApplicationCookie(o => o.LoginPath = "/Login");
+// Globally require a valid ModelState with a default error view
+services.AddControllersWithViews(o => o.Filters.Add<ValidateModelFilter>());
+services.Configure<RazorViewEngineOptions>(o =>
 {
         // {1} - controller name
         // {0} - action name
@@ -63,18 +56,18 @@ builder.Services.Configure<RazorViewEngineOptions>(o =>
         o.PageViewLocationFormats.Add("/Features/Shared/{0}.cshtml");
 });
 
-builder.Services.AddTransient<SetupArtistCommand>();
-builder.Services.AddTransient<DeactivateArtistCommand>();
-builder.Services.AddTransient<UploadArtPieceCommand>();
-builder.Services.AddTransient<ArtPieceQuery>();
-builder.Services.AddTransient<ArtPiecesQuery>();
-builder.Services.AddTransient<ReviewsQuery>();
-builder.Services.AddTransient<UserReviewerQuery>();
-builder.Services.AddTransient<ReviewArtPieceCommand>();
-builder.Services.AddTransient<LikeArtPieceCommand>();
-builder.Services.AddTransient<LikesQuery>();
-builder.Services.AddTransient<ReviewerRepository>();
-builder.Services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
+services.AddTransient<SetupArtistCommand>();
+services.AddTransient<DeactivateArtistCommand>();
+services.AddTransient<UploadArtPieceCommand>();
+services.AddTransient<ArtPieceQuery>();
+services.AddTransient<ArtPiecesQuery>();
+services.AddTransient<ReviewsQuery>();
+services.AddTransient<UserReviewerQuery>();
+services.AddTransient<ReviewArtPieceCommand>();
+services.AddTransient<LikeArtPieceCommand>();
+services.AddTransient<LikesQuery>();
+services.AddTransient<ReviewerRepository>();
+services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -117,12 +110,9 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapStaticAssets();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
