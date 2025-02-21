@@ -1,27 +1,26 @@
 using FluentResults;
-using Microsoft.EntityFrameworkCore;
-using web.Data;
 using web.Features.ArtPieces;
 
 namespace web.Features.Reviewers.LikeArtPiece;
 
-public class LikeArtPieceCommand(ApplicationDbContext dbContext)
+public class LikeArtPieceCommand(ReviewerRepository reviewerRepository)
 {
         public async Task<Result<Like>> ExecuteAsync(Guid currentUserId,
                 ArtPieceId artPieceId)
         {
-                Reviewer reviewer = await dbContext.Reviewers
-                        .Where(r => r.UserId == currentUserId)
-                        .Include(r => r.ActiveLikes
-                                .Where(l => l.ExpirationDate >= DateTimeOffset.UtcNow))
-                        .FirstAsync();
+                Reviewer? reviewer = await reviewerRepository.GetByIdAsync(currentUserId);
+                if (reviewer is null)
+                {
+                        return Result.Fail("No reviewer profile found for this user id.");
+                }
+
                 Result likeResult = reviewer.LikeArtPiece(artPieceId);
                 if (likeResult.IsFailed)
                 {
                         return likeResult;
                 }
 
-                await dbContext.SaveChangesAsync();
+                await reviewerRepository.SaveAsync();
                 return Result.Ok(reviewer.ActiveLikes.Last());
         }
 }

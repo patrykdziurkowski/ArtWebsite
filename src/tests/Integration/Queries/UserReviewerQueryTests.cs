@@ -31,9 +31,9 @@ public class UserReviewerQueryTests : DatabaseBase
                 await DbContext.SaveChangesAsync();
 
 
-                Reviewer obtainedReviewer = _command.Execute(user.Id);
+                Reviewer? obtainedReviewer = await _command.ExecuteAsync(user.Id);
 
-                obtainedReviewer.Id.Should().Be(reviewerId);
+                obtainedReviewer!.Id.Should().Be(reviewerId);
         }
 
 }

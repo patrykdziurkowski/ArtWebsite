@@ -9,6 +9,7 @@ using web.Features.Artists.SetupArtist;
 using web.Features.ArtPieces.Index;
 using web.Features.ArtPieces.LoadArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Reviewers;
 using web.Features.Reviewers.Index;
 using web.Features.Reviewers.LikeArtPiece;
 using web.Features.Reviewers.LoadLikes;
@@ -72,6 +73,7 @@ builder.Services.AddTransient<UserReviewerQuery>();
 builder.Services.AddTransient<ReviewArtPieceCommand>();
 builder.Services.AddTransient<LikeArtPieceCommand>();
 builder.Services.AddTransient<LikesQuery>();
+builder.Services.AddTransient<ReviewerRepository>();
 builder.Services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
 
 var app = builder.Build();

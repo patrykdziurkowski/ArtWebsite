@@ -91,6 +91,7 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
                 Actions actions = new(Driver);
                 actions.MoveToElement(element);
                 actions.Perform();
+                Thread.Sleep(1000);
         }
 
         public void ResetTestContext()

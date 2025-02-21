@@ -29,9 +29,9 @@ public class ReviewsQueryTests : DatabaseBase
         public async Task Execute_ShouldReturnReviews_WhenTheyExist()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                ReviewerId reviewerId = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
 
-                List<ReviewedArtPiece> reviews = _command.Execute(reviewerId, 10);
+                List<ReviewedArtPiece> reviews = _command.Execute(reviewer.Id, 10);
 
                 reviews.Should().HaveCount(10);
         }
@@ -40,9 +40,9 @@ public class ReviewsQueryTests : DatabaseBase
         public async Task Execute_ShouldReturnSomeReviews_WhenOffset()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                ReviewerId reviewerId = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
 
-                List<ReviewedArtPiece> reviews = _command.Execute(reviewerId, 10, 17);
+                List<ReviewedArtPiece> reviews = _command.Execute(reviewer.Id, 10, 17);
 
                 reviews.Should().HaveCount(3);
         }

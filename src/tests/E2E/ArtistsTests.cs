@@ -76,7 +76,7 @@ public class ArtistsTests(WebDriverInitializer initializer)
                 Wait.Until(d => d.FindElement(By.Id("loadMoreButton")));
                 IWebElement loadMoreButton = Driver.FindElement(By.Id("loadMoreButton"));
                 ScrollIntoView(loadMoreButton);
-                loadMoreButton.Click();
+                Wait.Until(ExpectedConditions.ElementToBeClickable(loadMoreButton)).Click();
 
                 bool has8ArtPieces = Wait.Until(d => d.FindElements(By.CssSelector("#artPiecesList > *")).Count == 8);
                 has8ArtPieces.Should().BeTrue();

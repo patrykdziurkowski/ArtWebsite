@@ -7,6 +7,7 @@ using web.Features.ArtPieces;
 using web.Features.Reviewers.Index;
 using web.Features.Reviewers.LikeArtPiece;
 using web.Features.Reviewers.LoadLikes;
+using web.Features.Shared;
 
 namespace web.Features.Reviewers;
 
@@ -17,16 +18,21 @@ public class ReviewerController(UserReviewerQuery userReviewerQuery,
 {
         private const int LIKES_TO_LOAD = 10;
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-                Reviewer reviewer = userReviewerQuery.Execute(GetUserId());
+                Reviewer? reviewer = await userReviewerQuery.ExecuteAsync(GetUserId());
+                if (reviewer is null)
+                {
+                        return View("Error", new ErrorViewModel(404,
+                                "No reviewer profile found for a given user."));
+                }
                 return View(reviewer);
         }
 
         [HttpGet("/api/reviewer/likes")]
-        public IActionResult LoadLikes([Range(0, int.MaxValue)] int offset = 0)
+        public async Task<IActionResult> LoadLikes([Range(0, int.MaxValue)] int offset = 0)
         {
-                List<Like> likes = likesQuery.Execute(GetUserId(),
+                List<Like> likes = await likesQuery.ExecuteAsync(GetUserId(),
                         LIKES_TO_LOAD, offset);
                 return Ok(likes);
         }

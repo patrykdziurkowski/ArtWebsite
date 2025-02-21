@@ -22,7 +22,7 @@ public class LikesQueryTests : DatabaseBase
         {
                 await CreateArtistUserWithArtPieces();
                 Guid currentUserId = DbContext.Users.First().Id;
-                List<Like> likes = _command.Execute(currentUserId, 10);
+                List<Like> likes = await _command.ExecuteAsync(currentUserId, 10);
 
                 likes.Should().BeEmpty();
         }
@@ -33,7 +33,7 @@ public class LikesQueryTests : DatabaseBase
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = await CreateReviewerWith20Likes(artPieceIds);
 
-                List<Like> likes = _command.Execute(currentUserId, 10);
+                List<Like> likes = await _command.ExecuteAsync(currentUserId, 10);
 
                 likes.Should().HaveCount(10);
         }
@@ -44,7 +44,7 @@ public class LikesQueryTests : DatabaseBase
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = await CreateReviewerWith20Likes(artPieceIds);
 
-                List<Like> likes = _command.Execute(currentUserId, 10, 17);
+                List<Like> likes = await _command.ExecuteAsync(currentUserId, 10, 17);
 
                 likes.Should().HaveCount(3);
         }

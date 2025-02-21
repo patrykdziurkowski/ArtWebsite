@@ -9,6 +9,6 @@ public class Like
         public DateTimeOffset ExpirationDate { get; init; } = DateTimeOffset.UtcNow.AddDays(1);
         public required ArtPieceId ArtPieceId { get; init; }
         public required ReviewerId ReviewerId { get; init; }
-        public bool IsActive => ExpirationDate <= DateTimeOffset.UtcNow;
+        public bool IsActive => ExpirationDate >= DateTimeOffset.UtcNow;
 
 }

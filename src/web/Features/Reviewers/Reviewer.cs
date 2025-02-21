@@ -11,13 +11,13 @@ public class Reviewer : AggreggateRoot
         public ReviewerId Id { get; init; } = new ReviewerId();
         public required string Name { get; init; }
         public DateTimeOffset JoinDate { get; init; } = DateTimeOffset.UtcNow;
-        public int ReviewCount { get; init; } = 0;
+        public int ReviewCount { get; set; } = 0;
         public required Guid UserId { get; init; }
         private List<Like> _activeLikes = [];
         public IEnumerable<Like> ActiveLikes
         {
                 get => _activeLikes;
-                init
+                set
                 {
                         _activeLikes = value.ToList();
                 }

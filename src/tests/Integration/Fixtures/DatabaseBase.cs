@@ -110,17 +110,18 @@ public abstract class DatabaseBase : IDisposable
                 return artPieceIds;
         }
 
-        public async Task<ReviewerId> CreateReviewerWith20Reviews(List<ArtPieceId> artPiecesToReview)
+        public async Task<Reviewer> CreateReviewerWith20Reviews(List<ArtPieceId> artPiecesToReview)
         {
                 IdentityUser<Guid> user = new("johnSmith2");
                 await UserManager.CreateAsync(user);
                 ReviewerId reviewerId = new();
-                DbContext.Reviewers.Add(new Reviewer()
+                Reviewer reviewer = new()
                 {
                         Id = reviewerId,
                         Name = "SomeUser123",
                         UserId = user.Id,
-                });
+                };
+                DbContext.Reviewers.Add(reviewer);
                 foreach (ArtPieceId artPieceId in artPiecesToReview)
                 {
                         Review review = new()
@@ -132,7 +133,7 @@ public abstract class DatabaseBase : IDisposable
                         await DbContext.AddAsync(review);
                 }
                 await DbContext.SaveChangesAsync();
-                return reviewerId;
+                return reviewer;
         }
 
         public async Task<Guid> CreateReviewerWith20Likes(List<ArtPieceId> artPiecesToLike)
