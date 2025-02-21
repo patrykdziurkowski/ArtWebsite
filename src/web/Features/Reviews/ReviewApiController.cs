@@ -17,10 +17,10 @@ public class ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand,
         private const int REVIEWS_TO_LOAD = 10;
 
         [HttpGet("/api/reviewers/{reviewerId}/reviews")]
-        public IActionResult LoadReviews(Guid reviewerId,
+        public async Task<IActionResult> LoadReviews(Guid reviewerId,
                 [Range(0, int.MaxValue)] int offset = 0)
         {
-                List<ReviewedArtPiece> reviews = reviewsQuery.Execute(
+                List<ReviewedArtPiece> reviews = await reviewsQuery.ExecuteAsync(
                         new ReviewerId { Value = reviewerId }, REVIEWS_TO_LOAD, offset);
                 return Ok(reviews);
         }

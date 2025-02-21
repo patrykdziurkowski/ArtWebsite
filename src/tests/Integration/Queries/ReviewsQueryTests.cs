@@ -18,9 +18,9 @@ public class ReviewsQueryTests : DatabaseBase
         }
 
         [Fact]
-        public void Execute_ShouldReturnEmpty_WhenNoReviewsForGivenUser()
+        public async Task Execute_ShouldReturnEmpty_WhenNoReviewsForGivenUser()
         {
-                List<ReviewedArtPiece> reviews = _command.Execute(new ReviewerId(), 10);
+                List<ReviewedArtPiece> reviews = await _command.ExecuteAsync(new ReviewerId(), 10);
 
                 reviews.Should().BeEmpty();
         }
@@ -31,7 +31,7 @@ public class ReviewsQueryTests : DatabaseBase
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
 
-                List<ReviewedArtPiece> reviews = _command.Execute(reviewer.Id, 10);
+                List<ReviewedArtPiece> reviews = await _command.ExecuteAsync(reviewer.Id, 10);
 
                 reviews.Should().HaveCount(10);
         }
@@ -42,7 +42,7 @@ public class ReviewsQueryTests : DatabaseBase
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
 
-                List<ReviewedArtPiece> reviews = _command.Execute(reviewer.Id, 10, 17);
+                List<ReviewedArtPiece> reviews = await _command.ExecuteAsync(reviewer.Id, 10, 17);
 
                 reviews.Should().HaveCount(3);
         }
@@ -53,7 +53,7 @@ public class ReviewsQueryTests : DatabaseBase
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 await CreateReviewerWith20Reviews(artPieceIds);
 
-                List<ReviewedArtPiece> reviews = _command.Execute(new ReviewerId(), 10, 0);
+                List<ReviewedArtPiece> reviews = await _command.ExecuteAsync(new ReviewerId(), 10, 0);
 
                 reviews.Should().BeEmpty();
         }

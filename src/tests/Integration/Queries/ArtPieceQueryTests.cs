@@ -24,7 +24,7 @@ public class ArtPieceQueryTests : DatabaseBase
                 await CreateUserWithArtistProfile();
                 Guid currentUserId = DbContext.Users.First().Id;
 
-                ArtPiece? artPiece = _command.Execute(currentUserId);
+                ArtPiece? artPiece = await _command.ExecuteAsync(currentUserId);
 
                 artPiece.Should().BeNull();
         }
@@ -36,7 +36,7 @@ public class ArtPieceQueryTests : DatabaseBase
                 await Create6ArtPiecesForArtist(artistId);
                 Guid currentUserId = DbContext.Users.First().Id;
 
-                ArtPiece? artPiece = _command.Execute(currentUserId);
+                ArtPiece? artPiece = await _command.ExecuteAsync(currentUserId);
 
                 artPiece.Should().NotBeNull();
         }
@@ -61,7 +61,7 @@ public class ArtPieceQueryTests : DatabaseBase
                 await DbContext.SaveChangesAsync();
                 Guid currentUserId = DbContext.Users.First().Id;
 
-                ArtPiece? returnedArtPiece = _command.Execute(currentUserId);
+                ArtPiece? returnedArtPiece = await _command.ExecuteAsync(currentUserId);
 
                 returnedArtPiece.Should().BeNull();
         }

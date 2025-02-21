@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Reviewers;
 
@@ -5,10 +6,10 @@ namespace web.Features.Reviews.LoadReviews;
 
 public class ReviewsQuery(ApplicationDbContext dbContext)
 {
-        public List<ReviewedArtPiece> Execute(ReviewerId reviewerId,
+        public async Task<List<ReviewedArtPiece>> ExecuteAsync(ReviewerId reviewerId,
                 int count, int offset = 0)
         {
-                return dbContext.Reviews
+                return await dbContext.Reviews
                         .Where(r => r.ReviewerId == reviewerId)
                         .OrderByDescending(r => r.Date)
                         .Skip(offset)
@@ -23,7 +24,7 @@ public class ReviewsQuery(ApplicationDbContext dbContext)
                                         Comment = review.Comment,
                                         ImagePath = artPiece.ImagePath
                                 })
-                        .ToList();
+                        .ToListAsync();
         }
 
 }

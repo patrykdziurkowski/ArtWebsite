@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.ArtPieces;
 using web.Features.Reviewers;
@@ -9,8 +10,8 @@ public class ReviewArtPieceCommand(ApplicationDbContext dbContext)
         public async Task<Review> ExecuteAsync(string comment,
                 ArtPieceId artPieceId, Guid userId)
         {
-                ReviewerId reviewerId = dbContext.Reviewers
-                        .First(r => r.UserId == userId).Id;
+                ReviewerId reviewerId = (await dbContext.Reviewers
+                        .FirstAsync(r => r.UserId == userId)).Id;
 
                 Review review = new()
                 {

@@ -17,9 +17,9 @@ public class ArtPieceApiController(ArtPieceQuery artPieceQuery,
         private const int ART_PIECES_TO_LOAD = 5;
 
         [HttpGet("/api/artpiece")]
-        public IActionResult GetNextArtPiece()
+        public async Task<IActionResult> GetNextArtPiece()
         {
-                ArtPiece? artPiece = artPieceQuery.Execute(GetUserId());
+                ArtPiece? artPiece = await artPieceQuery.ExecuteAsync(GetUserId());
                 if (artPiece is null)
                 {
                         return NoContent();
@@ -28,11 +28,11 @@ public class ArtPieceApiController(ArtPieceQuery artPieceQuery,
         }
 
         [HttpGet("/api/artists/{artistId}/artpieces/")]
-        public IActionResult LoadArtPiecesForArtist(Guid artistId,
+        public async Task<IActionResult> LoadArtPiecesForArtist(Guid artistId,
                 [Range(0, int.MaxValue)] int offset = 0)
         {
-                List<ArtPiece> artPieces = artPiecesQuery
-                        .Execute(new ArtistId { Value = artistId }, ART_PIECES_TO_LOAD,
+                List<ArtPiece> artPieces = await artPiecesQuery
+                        .ExecuteAsync(new ArtistId { Value = artistId }, ART_PIECES_TO_LOAD,
                                 offset);
                 return Ok(artPieces);
         }

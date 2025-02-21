@@ -18,9 +18,9 @@ public class ArtPiecesQueryTests : DatabaseBase
         }
 
         [Fact]
-        public void Execute_ShouldReturnEmpty_WhenNoArtPieces()
+        public async Task Execute_ShouldReturnEmpty_WhenNoArtPieces()
         {
-                List<ArtPiece> artPieces = _command.Execute(new ArtistId(), 10);
+                List<ArtPiece> artPieces = await _command.ExecuteAsync(new ArtistId(), 10);
 
                 artPieces.Should().BeEmpty();
         }
@@ -31,7 +31,7 @@ public class ArtPiecesQueryTests : DatabaseBase
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 await Create6ArtPiecesForArtist(artistId);
 
-                List<ArtPiece> artPieces = _command.Execute(new ArtistId(), 10);
+                List<ArtPiece> artPieces = await _command.ExecuteAsync(new ArtistId(), 10);
 
                 artPieces.Should().BeEmpty();
         }
@@ -42,7 +42,7 @@ public class ArtPiecesQueryTests : DatabaseBase
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 await Create6ArtPiecesForArtist(artistId);
 
-                List<ArtPiece> artPieces = _command.Execute(artistId, 10);
+                List<ArtPiece> artPieces = await _command.ExecuteAsync(artistId, 10);
 
                 artPieces.Should().HaveCount(6);
         }
@@ -53,7 +53,7 @@ public class ArtPiecesQueryTests : DatabaseBase
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 await Create6ArtPiecesForArtist(artistId);
 
-                List<ArtPiece> artPieces = _command.Execute(artistId, 10, 5);
+                List<ArtPiece> artPieces = await _command.ExecuteAsync(artistId, 10, 5);
 
                 artPieces.Should().HaveCount(1);
         }
@@ -64,7 +64,7 @@ public class ArtPiecesQueryTests : DatabaseBase
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 await Create6ArtPiecesForArtist(artistId);
 
-                List<ArtPiece> artPieces = _command.Execute(artistId, 3, 0);
+                List<ArtPiece> artPieces = await _command.ExecuteAsync(artistId, 3, 0);
 
                 artPieces.Should().HaveCount(3);
         }

@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Reviewers;
 
@@ -5,19 +6,20 @@ namespace web.Features.ArtPieces.Index;
 
 public class ArtPieceQuery(ApplicationDbContext dbContext)
 {
-        public ArtPiece? Execute(Guid currentUserId)
+        public async Task<ArtPiece?> ExecuteAsync(Guid currentUserId)
         {
-                ReviewerId reviewerId = dbContext.Reviewers
-                        .First(r => r.UserId == currentUserId).Id;
+                ReviewerId reviewerId = (await dbContext.Reviewers
+                        .FirstAsync(r => r.UserId == currentUserId)).Id;
 
-                List<ArtPieceId> reviewedArtPieces = dbContext.Reviews
+                List<ArtPieceId> reviewedArtPieces = await dbContext.Reviews
                         .Where(r => r.ReviewerId == reviewerId)
-                        .Select(r => r.ArtPieceId).ToList();
+                        .Select(r => r.ArtPieceId)
+                        .ToListAsync();
 
-                return dbContext.ArtPieces
+                return await dbContext.ArtPieces
                         .OrderByDescending(a => a.UploadDate)
                         .Where(a => reviewedArtPieces.Contains(a.Id) == false)
-                        .FirstOrDefault();
+                        .FirstOrDefaultAsync();
         }
 
 }
