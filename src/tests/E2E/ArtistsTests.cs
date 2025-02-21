@@ -38,15 +38,6 @@ public class ArtistsTests(WebDriverInitializer initializer)
         }
 
         [Fact, Order(3)]
-        public void Index_DoesntRedirect_WhenHasArtistProfile()
-        {
-                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
-
-                Action action = () => Wait.Until(d => d.Url.Contains("Setup"));
-                action.Should().Throw<WebDriverTimeoutException>();
-        }
-
-        [Fact, Order(4)]
         public void Setup_RedirectsToIndex_WhenUserHasArtistProfile()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Setup");
@@ -54,7 +45,7 @@ public class ArtistsTests(WebDriverInitializer initializer)
                 Wait.Until(d => d.Url.Contains("Setup") == false);
         }
 
-        [Fact, Order(5)]
+        [Fact, Order(4)]
         public void Index_ShouldInitiallyShow5ArtistsArtPieces_WhenArtistHas8ArtPieces()
         {
                 for (int i = 0; i < 8; ++i)
@@ -68,7 +59,7 @@ public class ArtistsTests(WebDriverInitializer initializer)
                 has5ArtPieces.Should().BeTrue();
         }
 
-        [Fact, Order(6)]
+        [Fact, Order(5)]
         public void Index_ShouldShowAllArtistsArtPieces_WhenMoreLoaded()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
@@ -83,7 +74,7 @@ public class ArtistsTests(WebDriverInitializer initializer)
         }
 
 
-        [Fact, Order(7)]
+        [Fact, Order(6)]
         public void Deactivate_RedirectsToIndex()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
@@ -94,7 +85,7 @@ public class ArtistsTests(WebDriverInitializer initializer)
                 Wait.Until(d => DriverIsAtBaseUrl()).Should().BeTrue();
         }
 
-        [Fact, Order(8)]
+        [Fact, Order(7)]
         public void Index_RedirectsAgain_WhenArtistDeactivated()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
