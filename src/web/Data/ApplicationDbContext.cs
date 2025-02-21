@@ -12,11 +12,11 @@ namespace web.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>(options)
 {
-        public required DbSet<Artist> Artists { get; set; }
-        public required DbSet<ArtPiece> ArtPieces { get; set; }
-        public required DbSet<Review> Reviews { get; set; }
-        public required DbSet<Reviewer> Reviewers { get; set; }
-        public required DbSet<Like> Likes { get; set; }
+        public DbSet<Artist> Artists { get; set; }
+        public DbSet<ArtPiece> ArtPieces { get; set; }
+        public DbSet<Review> Reviews { get; set; }
+        public DbSet<Reviewer> Reviewers { get; set; }
+        public DbSet<Like> Likes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
