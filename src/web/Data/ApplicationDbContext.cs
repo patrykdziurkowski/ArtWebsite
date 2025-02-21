@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using web.Features.Artists;
 using web.Features.ArtPieces;
-using web.Features.Likes;
 using web.Features.Reviewers;
 using web.Features.Reviews;
 using web.Features.Shared.domain;
@@ -86,6 +85,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .HasOne<IdentityUser<Guid>>()
                         .WithOne()
                         .HasForeignKey<Reviewer>(r => r.UserId);
+                builder.Entity<Reviewer>()
+                        .HasMany(l => l.ActiveLikes)
+                        .WithOne()
+                        .HasForeignKey(l => l.ReviewerId);
 
                 builder.Entity<Like>()
                         .HasKey(l => l.Id);
@@ -96,12 +99,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .Property(l => l.Date)
                         .IsRequired();
                 builder.Entity<Like>()
+                        .Property(l => l.ExpirationDate)
+                        .IsRequired();
+                builder.Entity<Like>()
                         .HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(l => l.ArtPieceId);
-                builder.Entity<Like>()
-                        .HasOne<Reviewer>()
-                        .WithMany()
-                        .HasForeignKey(l => l.ReviewerId);
         }
 }

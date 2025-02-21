@@ -41,11 +41,12 @@ public class ReviewsTests(WebDriverInitializer initializer)
         }
 
         [Fact, Order(2)]
-        public void LikingArtPiece_ShowsLikeOnReviewerProfile()
+        public async Task LikingArtPiece_ShowsLikeOnReviewerProfile()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");
 
                 Wait.Until(d => d.FindElement(By.Id("likeArtPiece"))).Click();
+                await Task.Delay(1000);
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
                 Wait.Until(d => d.FindElement(By.CssSelector("#reviewerTabs button[data-bs-target='#likesTab']"))).Click();

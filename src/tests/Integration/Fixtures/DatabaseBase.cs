@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using web.Data;
 using web.Features.Artists;
 using web.Features.ArtPieces;
-using web.Features.Likes;
 using web.Features.Reviewers;
 using web.Features.Reviews;
 

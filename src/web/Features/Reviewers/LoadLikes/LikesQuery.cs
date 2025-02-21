@@ -1,7 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using web.Data;
-using web.Features.Reviewers;
 
-namespace web.Features.Likes.LoadLikes;
+namespace web.Features.Reviewers.LoadLikes;
 
 public class LikesQuery(ApplicationDbContext dbContext)
 {
@@ -15,6 +15,7 @@ public class LikesQuery(ApplicationDbContext dbContext)
                         .OrderByDescending(like => like.Date)
                         .Skip(offset)
                         .Take(count)
+                        .AsNoTracking()
                         .ToList();
         }
 }
