@@ -70,6 +70,9 @@
                     <div class="card">
                         <img src="${artPiece.imagePath}" class="card-img-top" alt="Image">
                         <div class="card-body">
+                            ${Array.from({ length: 5 }, (_, i) =>
+                        `<label class="${i < artPiece.averageRating ? 'checked-star' : ''}">&#9733;</label>`
+                    ).join('')}
                             <p class="card-text">${artPiece.description}</p>
                             <small class="text-muted">${new Date(artPiece.uploadDate).toLocaleDateString()}</small>
                         </div>

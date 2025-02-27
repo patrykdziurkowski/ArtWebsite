@@ -48,6 +48,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .Property(a => a.ImagePath)
                         .IsRequired();
                 builder.Entity<ArtPiece>()
+                        .Ignore(a => a.AverageRating);
+                builder.Entity<ArtPiece>()
                         .Property(a => a.UploadDate)
                         .IsRequired();
 
