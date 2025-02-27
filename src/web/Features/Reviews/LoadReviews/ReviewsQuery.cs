@@ -22,6 +22,7 @@ public class ReviewsQuery(ApplicationDbContext dbContext)
                                 {
                                         Date = review.Date,
                                         Comment = review.Comment,
+                                        Rating = review.Rating.Value,
                                         ImagePath = artPiece.ImagePath
                                 })
                         .ToListAsync();

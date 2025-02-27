@@ -106,8 +106,11 @@
                     reviewItem.classList.add('list-group-item');
                     reviewItem.innerHTML = `
                         <strong>${new Date(review.date).toLocaleString()}</strong>
+                        ${Array.from({ length: 5 }, (_, i) =>
+                        `<label class="${i < review.rating ? 'checked-star' : ''}">&#9733;</label>`
+                    ).join('')}
                         <p> ${review.comment}</p>
-                            <img src="${review.imagePath}">
+                        <img src="${review.imagePath}">
                     `;
                     list.appendChild(reviewItem);
                 });

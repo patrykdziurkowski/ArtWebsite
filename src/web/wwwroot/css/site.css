@@ -63,6 +63,10 @@ p {
         color: orange;
 }
 
+.checked-star {
+        color: orange;
+}
+
 @media (max-width: 1140px) {
         #sidebar {
                 transform: translateX(-200%);
