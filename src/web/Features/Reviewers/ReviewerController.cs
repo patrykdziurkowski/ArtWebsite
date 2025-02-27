@@ -12,11 +12,8 @@ using web.Features.Shared;
 namespace web.Features.Reviewers;
 
 [Authorize]
-public class ReviewerController(UserReviewerQuery userReviewerQuery,
-        LikeArtPieceCommand likeArtPieceCommand,
-        LikesQuery likesQuery) : Controller
+public class ReviewerController(UserReviewerQuery userReviewerQuery) : Controller
 {
-        private const int LIKES_TO_LOAD = 10;
 
         public async Task<ActionResult> Index()
         {
@@ -27,27 +24,6 @@ public class ReviewerController(UserReviewerQuery userReviewerQuery,
                                 "No reviewer profile found for a given user."));
                 }
                 return View(reviewer);
-        }
-
-        [HttpGet("/api/reviewer/likes")]
-        public async Task<IActionResult> LoadLikes([Range(0, int.MaxValue)] int offset = 0)
-        {
-                List<Like> likes = await likesQuery.ExecuteAsync(GetUserId(),
-                        LIKES_TO_LOAD, offset);
-                return Ok(likes);
-        }
-
-        [HttpPost("/api/artpieces/{artPieceId}/like")]
-        public async Task<IActionResult> LikeArtPiece(Guid artPieceId)
-        {
-                Result<Like> result = await likeArtPieceCommand.ExecuteAsync(GetUserId(),
-                        new ArtPieceId { Value = artPieceId });
-                if (result.IsFailed)
-                {
-                        return Forbid();
-                }
-
-                return Created();
         }
 
         private Guid GetUserId()
