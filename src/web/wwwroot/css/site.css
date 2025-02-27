@@ -38,6 +38,31 @@ p {
         white-space: normal;
 }
 
+.rating {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+}
+
+.rating input {
+        display: none;
+}
+
+.rating label {
+        font-size: 24px;
+        cursor: pointer;
+}
+
+.rating label:hover,
+.rating label:hover~label {
+        color: orange;
+}
+
+.rating input:checked~label {
+        color: orange;
+}
+
 @media (max-width: 1140px) {
         #sidebar {
                 transform: translateX(-200%);

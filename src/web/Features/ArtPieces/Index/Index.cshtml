@@ -24,6 +24,21 @@
                         <span asp-validation-for="Comment" class="text-danger"></span>
                     </div>
                     <div class="form-group">
+                        <div class="rating">
+                            <input type="radio" id="star5" name="Rating" asp-for="Rating" value="5">
+                            <label for="star5">&#9733;</label>
+                            <input type="radio" id="star4" name="Rating" asp-for="Rating" value="4">
+                            <label for="star4">&#9733;</label>
+                            <input type="radio" id="star3" name="Rating" asp-for="Rating" value="3">
+                            <label for="star3">&#9733;</label>
+                            <input type="radio" id="star2" name="Rating" asp-for="Rating" value="2">
+                            <label for="star2">&#9733;</label>
+                            <input type="radio" id="star1" name="Rating" asp-for="Rating" value="1">
+                            <label for="star1">&#9733;</label>
+                        </div>
+                        <span asp-validation-for="Rating" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
                         <input type="hidden" name="artPieceId" value="">
                     </div>
                     <button type="submit" class="btn btn-primary">Submit Review</button>
@@ -88,6 +103,7 @@
             const form = new FormData(document.querySelector('#reviewForm'));
             const data = {
                 comment: form.get('comment'),
+                rating: document.querySelector('input[name="Rating"]:checked').value,
                 artPieceId: form.get('artPieceId')
             };
 

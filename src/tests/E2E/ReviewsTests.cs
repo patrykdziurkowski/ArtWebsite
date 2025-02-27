@@ -24,6 +24,7 @@ public class ReviewsTests(WebDriverInitializer initializer)
                         Driver.FindElement(By.Id("reviewForm"))));
 
                 Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
+                Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
                 Driver.FindElement(By.CssSelector("#reviewForm button")).Click();
 
                 Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("reviewForm")));

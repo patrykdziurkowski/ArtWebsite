@@ -29,7 +29,8 @@ public class ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand,
         public async Task<IActionResult> ReviewArtPiece(ReviewArtPieceModel model)
         {
                 Review review = await reviewArtPieceCommand.ExecuteAsync(
-                        model.Comment, new ArtPieceId { Value = model.ArtPieceId }, GetUserId());
+                        model.Comment, model.Rating,
+                        new ArtPieceId { Value = model.ArtPieceId }, GetUserId());
                 return Ok(review);
         }
 

@@ -127,6 +127,7 @@ public abstract class DatabaseBase : IDisposable
                         Review review = new()
                         {
                                 Comment = "Some comment with a descriptive opinion that's long enough. Some comment with a descriptive opinion that's long enough.",
+                                Rating = new Rating(5),
                                 ArtPieceId = artPieceId,
                                 ReviewerId = reviewerId,
                         };

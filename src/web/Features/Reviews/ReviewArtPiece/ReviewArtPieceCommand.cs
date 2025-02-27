@@ -8,7 +8,7 @@ namespace web.Features.Reviews.ReviewArtPiece;
 public class ReviewArtPieceCommand(ApplicationDbContext dbContext)
 {
         public async Task<Review> ExecuteAsync(string comment,
-                ArtPieceId artPieceId, Guid userId)
+                int rating, ArtPieceId artPieceId, Guid userId)
         {
                 ReviewerId reviewerId = (await dbContext.Reviewers
                         .FirstAsync(r => r.UserId == userId)).Id;
@@ -16,6 +16,7 @@ public class ReviewArtPieceCommand(ApplicationDbContext dbContext)
                 Review review = new()
                 {
                         Comment = comment,
+                        Rating = new Rating(rating),
                         ArtPieceId = artPieceId,
                         ReviewerId = reviewerId,
                 };

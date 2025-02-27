@@ -56,6 +56,7 @@ public class ArtPieceQueryTests : DatabaseBase
                 {
                         Comment = "Some review comment!",
                         ArtPieceId = artPiece.Id,
+                        Rating = new Rating(5),
                         ReviewerId = DbContext.Reviewers.First().Id,
                 });
                 await DbContext.SaveChangesAsync();

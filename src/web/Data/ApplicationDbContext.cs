@@ -60,6 +60,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .Property(r => r.Date)
                         .IsRequired();
                 builder.Entity<Review>()
+                        .Property(r => r.Rating)
+                        .HasConversion(rating => rating.Value, value => new Rating(value));
+                builder.Entity<Review>()
                         .HasOne<Reviewer>()
                         .WithMany()
                         .HasForeignKey(r => r.ReviewerId);

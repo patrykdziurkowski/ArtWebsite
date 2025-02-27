@@ -42,7 +42,7 @@ public class ReviewArtPieceCommandTests : DatabaseBase
                 ArtPiece artPiece = await _uploadArtPiece.ExecuteAsync(
                         GetExampleFile(), "description", user.Id);
 
-                await _command.ExecuteAsync("Review comment!", artPiece.Id, user.Id);
+                await _command.ExecuteAsync("Review comment!", 5, artPiece.Id, user.Id);
 
                 DbContext.Reviews.FirstOrDefault()
                         .Should().NotBeNull();
