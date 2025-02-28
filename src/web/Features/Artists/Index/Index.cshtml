@@ -2,8 +2,9 @@
 @model ArtistProfileModel
 
 <div class="container mt-4">
-    <h2>@Model.Name's Profile</h2>
-    <p><strong>Summary:</strong> @Model.Summary</p>
+    <h2><span id="artistName">@Model.Name</span>'s Profile <button id="editProfileModalButton" data-bs-toggle="modal"
+            data-bs-target="#editProfileModal"><i id="editProfile" class="bi bi-pencil-square"></i></button></h2>
+    <p><strong>Summary:</strong> <span id="artistSummary">@Model.Summary</span></p>
     <a asp-controller="ArtPiece" asp-action="Upload" class="btn btn-primary">Upload!</a>
 
     @if (@Model.IsOwner)
@@ -14,6 +15,34 @@
 
     <div id="artPiecesList" class="list-group">Loading...</div>
     <button id="loadMoreButton" class="btn btn-primary mt-3" style="display: none;">Load More</button>
+
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">Edit your artist profile!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editForm">
+                        <div class="form-group">
+                            <input type="text" value="@Model.Name" name="Name" placeholder="Your username">
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" value="@Model.Summary" name="Summary" placeholder="Profile summary">
+                            <span asp-validation-for="Summary" class="text-danger"></span>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button id="editArtistProfile" type="submit" class="btn btn-danger">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -89,4 +118,36 @@
     });
 
     fetchArtPieces();
+
+    document.querySelector('#editArtistProfile').addEventListener('click', async (e) => {
+        const form = new FormData(document.querySelector('#editForm'));
+        const data = {
+            name: form.get('Name'),
+            summary: form.get('Summary'),
+        };
+
+        await fetch('/api/artist', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(async response => {
+                if (response.status !== 200) {
+                    const data = await response.json();
+                    throw data;
+                }
+                document.querySelector('#artistName').innerText = data.name;
+                document.querySelector('#artistSummary').innerText = data.summary;
+                document.querySelector('#editProfileModal .btn-close').click();
+            })
+            .catch(error => {
+                const validationErrorsText = document.querySelector('#editForm *[name="name"] + span');
+                validationErrorsText.innerText = error.errors.Name;
+                const validationErrorsText2 = document.querySelector('#editForm *[name="summary"] + span');
+                validationErrorsText2.innerText = error.errors.Summary;
+            });
+    });
+
 </script>

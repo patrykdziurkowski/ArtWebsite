@@ -39,6 +39,7 @@ public class ReviewsTests(WebDriverInitializer initializer)
 
                 bool hasOneReview = Wait.Until(d => d.FindElements(By.CssSelector("#reviewsList > *")).Count == 1);
                 hasOneReview.Should().BeTrue();
+                Driver.FindElements(By.ClassName("checked-star")).Should().HaveCount(3);
         }
 
         [Fact, Order(2)]

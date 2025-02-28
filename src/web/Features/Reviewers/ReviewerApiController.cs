@@ -10,6 +10,7 @@ using web.Features.Reviewers.LoadLikes;
 namespace web.Features.Reviewers;
 
 [Authorize]
+[ApiController]
 public class ReviewerApiController(LikeArtPieceCommand likeArtPieceCommand,
         LikesQuery likesQuery) : ControllerBase
 {

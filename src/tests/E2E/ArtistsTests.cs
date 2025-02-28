@@ -75,6 +75,26 @@ public class ArtistsTests(WebDriverInitializer initializer)
 
 
         [Fact, Order(6)]
+        public void ArtistProfileInfo_ShouldBeChanged_WhenUpdated()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
+
+                Wait.Until(d => d.FindElement(By.Id("editProfileModalButton"))).Click();
+                IWebElement submitButton = Wait.Until(ExpectedConditions
+                        .ElementToBeClickable(By.Id("editArtistProfile")));
+                IWebElement nameInput = Driver.FindElement(By.CssSelector("#editForm input[name=\"Name\"]"));
+                nameInput.Clear();
+                nameInput.SendKeys("NewName");
+                IWebElement summaryInput = Driver.FindElement(By.CssSelector("#editForm input[name=\"Summary\"]"));
+                summaryInput.Clear();
+                summaryInput.SendKeys("New summary text!");
+                submitButton.Click();
+
+                Wait.Until(d => d.FindElement(By.Id("artistName")).Text == "NewName").Should().BeTrue();
+                Wait.Until(d => d.FindElement(By.Id("artistSummary")).Text == "New summary text!").Should().BeTrue();
+        }
+
+        [Fact, Order(7)]
         public void Deactivate_RedirectsToIndex()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
@@ -85,7 +105,7 @@ public class ArtistsTests(WebDriverInitializer initializer)
                 Wait.Until(d => DriverIsAtBaseUrl()).Should().BeTrue();
         }
 
-        [Fact, Order(7)]
+        [Fact, Order(8)]
         public void Index_RedirectsAgain_WhenArtistDeactivated()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
