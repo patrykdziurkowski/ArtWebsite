@@ -1,0 +1,53 @@
+﻿<div class="tab-pane fade show active" id="reviewsTab">
+    <div id="reviewsList" class="list-group">Loading...</div>
+    <button id="loadMoreReviews" class="btn btn-primary mt-3" style="display: none;">Load More</button>
+</div>
+
+<script>
+    let reviewsOffset = 0;
+    const reviewsPerPage = 10;
+
+    function loadReviews() {
+        const list = document.querySelector('#reviewsList');
+        const loadMore = document.querySelector('#loadMoreReviews');
+
+        fetch(`/api/reviewers/@Model.Id/reviews?offset=${reviewsOffset}`)
+            .then(response => response.json())
+            .then(data => {
+                if (reviewsOffset == 0) {
+                    list.innerText = '';
+                }
+                if (reviewsOffset == 0 && data.length === 0) {
+                    list.innerText = 'No reviews found.';
+                }
+
+                // If loaded less reviews than requested, hide the button since we're at the end
+                if (data.length < reviewsPerPage) {
+                    loadMore.style.display = 'none';
+                } else {
+                    loadMore.style.display = 'block';
+                }
+
+                data.forEach(review => {
+                    const reviewItem = document.createElement('div');
+                    reviewItem.classList.add('list-group-item');
+                    reviewItem.innerHTML = `
+                        <strong>${new Date(review.date).toLocaleString()}</strong>
+                        ${Array.from({ length: 5 }, (_, i) =>
+                        `<label class="${i < review.rating ? 'checked-star' : ''}">&#9733;</label>`
+                    ).join('')}
+                        <p> ${review.comment}</p>
+                        <img src="${review.imagePath}">
+                    `;
+                    list.appendChild(reviewItem);
+                });
+                reviewsOffset += reviewsPerPage;
+            });
+    }
+
+    document.querySelector('#loadMoreReviews').addEventListener('click', function () {
+        loadReviews();
+    });
+
+    loadReviews();
+</script>

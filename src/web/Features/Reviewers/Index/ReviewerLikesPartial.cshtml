@@ -1,0 +1,49 @@
+﻿<div class="tab-pane fade" id="likesTab">
+    <div id="likesList" class="list-group">Loading...</div>
+    <button id="loadMoreLikes" class="btn btn-primary mt-3" style="display: none;">Load More</button>
+</div>
+
+<script>
+    let likesOffset = 0;
+    const likesPerPage = 10;
+
+    function loadLikes() {
+        const list = document.querySelector('#likesList');
+        const loadMore = document.querySelector('#loadMoreLikes');
+
+        fetch(`/api/reviewer/likes?offset=${likesOffset}`)
+            .then(response => response.json())
+            .then(data => {
+                if (likesOffset == 0) {
+                    list.innerText = '';
+                }
+                if (likesOffset == 0 && data.length === 0) {
+                    list.innerText = 'No likes found.';
+                }
+
+                // If loaded less likes than requested, hide the button since we're at the end
+                if (data.length < likesPerPage) {
+                    loadMore.style.display = 'none';
+                } else {
+                    loadMore.style.display = 'block';
+                }
+
+                data.forEach(like => {
+                    const likeItem = document.createElement('div');
+                    likeItem.classList.add('list-group-item');
+                    likeItem.innerHTML = `
+                        <strong>${new Date(like.date).toLocaleString()}</strong>
+                        <p> ${like.artPieceId.value}</p>
+                    `;
+                    list.appendChild(likeItem);
+                });
+                likesOffset += likesPerPage;
+            });
+    }
+
+    document.querySelector('#loadMoreLikes').addEventListener('click', function () {
+        loadLikes();
+    });
+
+    loadLikes();
+</script>
