@@ -32,6 +32,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 artist.HasOne<IdentityUser<Guid>>()
                         .WithOne()
                         .HasForeignKey<Artist>(a => a.UserId);
+                artist.HasMany<Boost>()
+                        .WithOne()
+                        .HasForeignKey(b => b.ArtistId);
 
                 var boost = builder.Entity<Boost>();
                 boost.HasKey(b => b.Id);
