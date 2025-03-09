@@ -25,105 +25,79 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 builder.Ignore<AggreggateRoot>();
                 builder.Ignore<ValueObject>();
 
-                builder.Entity<Artist>()
-                        .HasKey(a => a.Id);
-                builder.Entity<Artist>()
-                        .Property(a => a.Id)
+                var artist = builder.Entity<Artist>();
+                artist.HasKey(a => a.Id);
+                artist.Property(a => a.Id)
                         .HasConversion(id => id.Value, guid => new ArtistId { Value = guid });
-                builder.Entity<Artist>()
-                        .HasOne<IdentityUser<Guid>>()
+                artist.HasOne<IdentityUser<Guid>>()
                         .WithOne()
                         .HasForeignKey<Artist>(a => a.UserId);
 
-                builder.Entity<Boost>()
-                        .HasKey(b => b.Id);
-                builder.Entity<Boost>()
-                        .Property(b => b.Id)
+                var boost = builder.Entity<Boost>();
+                boost.HasKey(b => b.Id);
+                boost.Property(b => b.Id)
                         .HasConversion(id => id.Value, guid => new BoostId { Value = guid });
-                builder.Entity<Boost>()
-                        .Property(b => b.Date)
+                boost.Property(b => b.Date)
                         .IsRequired();
-                builder.Entity<Boost>()
-                        .Property(b => b.ExpirationDate)
+                boost.Property(b => b.ExpirationDate)
                         .IsRequired();
-                builder.Entity<Boost>()
-                        .HasOne<ArtPiece>()
+                boost.HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(b => b.ArtPieceId);
 
-                builder.Entity<ArtPiece>()
-                        .HasKey(a => a.Id);
-                builder.Entity<ArtPiece>()
-                        .Property(a => a.Id)
+                var artPiece = builder.Entity<ArtPiece>();
+                artPiece.HasKey(a => a.Id);
+                artPiece.Property(a => a.Id)
                         .HasConversion(id => id.Value, guid => new ArtPieceId { Value = guid });
-                builder.Entity<ArtPiece>()
-                        .HasOne<Artist>()
+                artPiece.HasOne<Artist>()
                         .WithMany()
                         .HasForeignKey(a => a.ArtistId);
-                builder.Entity<ArtPiece>()
-                        .Property(a => a.ImagePath)
+                artPiece.Property(a => a.ImagePath)
                         .IsRequired();
-                builder.Entity<ArtPiece>()
-                        .Ignore(a => a.AverageRating);
-                builder.Entity<ArtPiece>()
-                        .Property(a => a.UploadDate)
+                artPiece.Ignore(a => a.AverageRating);
+                artPiece.Property(a => a.UploadDate)
                         .IsRequired();
 
-                builder.Entity<Review>()
-                        .HasKey(r => r.Id);
-                builder.Entity<Review>()
-                        .Property(r => r.Id)
+                var review = builder.Entity<Review>();
+                review.HasKey(r => r.Id);
+                review.Property(r => r.Id)
                         .HasConversion(id => id.Value, guid => new ReviewId { Value = guid });
-                builder.Entity<Review>()
-                        .Property(r => r.Date)
+                review.Property(r => r.Date)
                         .IsRequired();
-                builder.Entity<Review>()
-                        .Property(r => r.Rating)
+                review.Property(r => r.Rating)
                         .HasConversion(rating => rating.Value, value => new Rating(value));
-                builder.Entity<Review>()
-                        .HasOne<Reviewer>()
+                review.HasOne<Reviewer>()
                         .WithMany()
                         .HasForeignKey(r => r.ReviewerId);
-                builder.Entity<Review>()
-                        .HasOne<ArtPiece>()
+                review.HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(r => r.ArtPieceId);
 
-                builder.Entity<Reviewer>()
-                        .HasKey(r => r.Id);
-                builder.Entity<Reviewer>()
-                       .Property(r => r.Id)
+                var reviewer = builder.Entity<Reviewer>();
+                reviewer.HasKey(r => r.Id);
+                reviewer.Property(r => r.Id)
                        .HasConversion(id => id.Value, guid => new ReviewerId { Value = guid });
-                builder.Entity<Reviewer>()
-                        .Property(r => r.Name)
+                reviewer.Property(r => r.Name)
                         .IsRequired();
-                builder.Entity<Reviewer>()
-                        .Property(r => r.JoinDate)
+                reviewer.Property(r => r.JoinDate)
                         .IsRequired();
-                builder.Entity<Reviewer>()
-                        .Ignore(r => r.ReviewCount);
-                builder.Entity<Reviewer>()
-                        .HasOne<IdentityUser<Guid>>()
+                reviewer.Ignore(r => r.ReviewCount);
+                reviewer.HasOne<IdentityUser<Guid>>()
                         .WithOne()
                         .HasForeignKey<Reviewer>(r => r.UserId);
-                builder.Entity<Reviewer>()
-                        .HasMany(l => l.ActiveLikes)
+                reviewer.HasMany(l => l.ActiveLikes)
                         .WithOne()
                         .HasForeignKey(l => l.ReviewerId);
 
-                builder.Entity<Like>()
-                        .HasKey(l => l.Id);
-                builder.Entity<Like>()
-                       .Property(l => l.Id)
+                var like = builder.Entity<Like>();
+                like.HasKey(l => l.Id);
+                like.Property(l => l.Id)
                        .HasConversion(id => id.Value, guid => new LikeId { Value = guid });
-                builder.Entity<Like>()
-                        .Property(l => l.Date)
+                like.Property(l => l.Date)
                         .IsRequired();
-                builder.Entity<Like>()
-                        .Property(l => l.ExpirationDate)
+                like.Property(l => l.ExpirationDate)
                         .IsRequired();
-                builder.Entity<Like>()
-                        .HasOne<ArtPiece>()
+                like.HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(l => l.ArtPieceId);
         }
