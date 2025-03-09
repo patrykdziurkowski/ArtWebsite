@@ -6,8 +6,9 @@
                         "type": "docker",
                         "request": "attach",
                         "platform": "netCore",
+                        "processId": "${command:pickRemoteProcess}",
                         "sourceFileMap": {
-                                "/src": "${workspaceFolder}/src"
+                                "/web": "${workspaceFolder}/src/web"
                         }
                 },
         ]
