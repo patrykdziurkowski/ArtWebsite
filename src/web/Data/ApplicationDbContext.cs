@@ -35,6 +35,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .WithOne()
                         .HasForeignKey<Artist>(a => a.UserId);
 
+                builder.Entity<Boost>()
+                        .HasKey(b => b.Id);
+                builder.Entity<Boost>()
+                        .Property(b => b.Id)
+                        .HasConversion(id => id.Value, guid => new BoostId { Value = guid });
+                builder.Entity<Boost>()
+                        .Property(b => b.Date)
+                        .IsRequired();
+                builder.Entity<Boost>()
+                        .Property(b => b.ExpirationDate)
+                        .IsRequired();
+                builder.Entity<Boost>()
+                        .HasOne<ArtPiece>()
+                        .WithMany()
+                        .HasForeignKey(b => b.ArtPieceId);
+
                 builder.Entity<ArtPiece>()
                         .HasKey(a => a.Id);
                 builder.Entity<ArtPiece>()
