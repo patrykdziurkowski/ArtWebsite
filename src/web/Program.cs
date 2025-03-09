@@ -1,8 +1,10 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using web;
 using web.Data;
 using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.SetupArtist;
@@ -56,6 +58,8 @@ services.Configure<RazorViewEngineOptions>(o =>
         o.PageViewLocationFormats.Add("/Features/Shared/{0}.cshtml");
 });
 
+
+services.AddAutoMapper(typeof(AutoMapperProfile));
 services.AddTransient<SetupArtistCommand>();
 services.AddTransient<DeactivateArtistCommand>();
 services.AddTransient<UploadArtPieceCommand>();

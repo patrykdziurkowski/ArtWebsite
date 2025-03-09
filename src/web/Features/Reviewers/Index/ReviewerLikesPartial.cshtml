@@ -34,6 +34,7 @@
                     likeItem.innerHTML = `
                         <strong>${new Date(like.date).toLocaleString()}</strong>
                         <p> ${like.artPieceId.value}</p>
+                        <img src="${like.imagePath}">
                     `;
                     list.appendChild(likeItem);
                 });

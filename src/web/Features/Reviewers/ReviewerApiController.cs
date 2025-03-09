@@ -19,7 +19,7 @@ public class ReviewerApiController(LikeArtPieceCommand likeArtPieceCommand,
         [HttpGet("/api/reviewer/likes")]
         public async Task<IActionResult> LoadLikes([Range(0, int.MaxValue)] int offset = 0)
         {
-                List<Like> likes = await likesQuery.ExecuteAsync(GetUserId(),
+                List<ReviewerLikeModel> likes = await likesQuery.ExecuteAsync(GetUserId(),
                         LIKES_TO_LOAD, offset);
                 return Ok(likes);
         }
