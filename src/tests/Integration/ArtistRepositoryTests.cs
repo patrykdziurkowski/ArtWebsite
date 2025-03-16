@@ -37,7 +37,7 @@ public class ArtistRepositoryTests : DatabaseBase
         }
 
         [Fact]
-        public async Task GetByNameAsync_ShouldReturnArtistWithBoost_WhenExists()
+        public async Task GetByNameAsync_ShouldReturnArtistWithActiveBoost_WhenExists()
         {
                 ArtPieceId artPieceId = (await CreateArtistUserWithArtPieces()).First();
                 Artist? artist = await _artistRepository.GetByNameAsync("ArtistName");
@@ -47,7 +47,53 @@ public class ArtistRepositoryTests : DatabaseBase
                 Artist? queriedArtist = await _artistRepository.GetByNameAsync("ArtistName");
 
                 queriedArtist.Should().NotBeNull();
-                queriedArtist.ActiveBoost.Should().NotBeNull();
+                queriedArtist.ActiveBoost!.IsActive.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task GetByNameAsync_ShouldReturnArtistWithInactiveBoost_WhenNoActiveBoosts()
+        {
+                ArtPieceId artPieceId = (await CreateArtistUserWithArtPieces()).First();
+                Artist? artist = await _artistRepository.GetByNameAsync("ArtistName");
+                Boost boost = new()
+                {
+                        ArtistId = artist!.Id,
+                        ArtPieceId = artPieceId,
+                        Date = DateTimeOffset.UtcNow.AddDays(-5),
+                        ExpirationDate = DateTimeOffset.UtcNow.AddDays(-4),
+                };
+                DbContext.Add(boost);
+                await DbContext.SaveChangesAsync();
+
+                Artist? queriedArtist = await _artistRepository.GetByNameAsync("ArtistName");
+
+                queriedArtist!.ActiveBoost.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetByNameAsync_ShouldReturnArtistWithActiveBoost_WhenTwoBoostsAndOneIsActive()
+        {
+                ArtPieceId artPieceId = (await CreateArtistUserWithArtPieces()).First();
+                Artist? artist = await _artistRepository.GetByNameAsync("ArtistName");
+                Boost boost = new()
+                {
+                        ArtistId = artist!.Id,
+                        ArtPieceId = artPieceId,
+                        Date = DateTimeOffset.UtcNow.AddDays(-5),
+                        ExpirationDate = DateTimeOffset.UtcNow.AddDays(-4),
+                };
+                DbContext.Add(boost);
+                Boost boost2 = new()
+                {
+                        ArtistId = artist!.Id,
+                        ArtPieceId = artPieceId,
+                };
+                DbContext.Add(boost2);
+                await DbContext.SaveChangesAsync();
+
+                Artist? queriedArtist = await _artistRepository.GetByNameAsync("ArtistName");
+
+                queriedArtist!.ActiveBoost.Should().NotBeNull();
         }
 
         [Fact]

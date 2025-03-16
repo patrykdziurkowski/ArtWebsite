@@ -9,7 +9,15 @@ public class Artist : AggreggateRoot
         public ArtistId Id { get; init; } = new ArtistId();
         public required string Name { get; set; }
         public required string Summary { get; set; }
-        public Boost? ActiveBoost { get; private set; }
+        private Boost? _activeBoost;
+        public Boost? ActiveBoost
+        {
+                get => _activeBoost;
+                init
+                {
+                        _activeBoost = value;
+                }
+        }
         public required Guid UserId { get; init; }
 
         public Result BoostArtPiece(ArtPieceId artPieceId, ArtistId artPieceArtistId)
@@ -24,7 +32,7 @@ public class Artist : AggreggateRoot
                         return Result.Fail("An art piece is already boosted.");
                 }
 
-                ActiveBoost = new()
+                _activeBoost = new()
                 {
                         ArtistId = Id,
                         ArtPieceId = artPieceId,

@@ -17,6 +17,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Reviewer> Reviewers { get; set; }
         public DbSet<Like> Likes { get; set; }
+        public DbSet<Boost> Boosts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
