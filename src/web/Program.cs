@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using web;
 using web.Data;
+using web.Features.Artists;
 using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.SetupArtist;
 using web.Features.ArtPieces.Index;
@@ -71,6 +72,7 @@ services.AddTransient<ReviewArtPieceCommand>();
 services.AddTransient<LikeArtPieceCommand>();
 services.AddTransient<LikesQuery>();
 services.AddTransient<ReviewerRepository>();
+services.AddTransient<ArtistRepository>();
 services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
 
 var app = builder.Build();

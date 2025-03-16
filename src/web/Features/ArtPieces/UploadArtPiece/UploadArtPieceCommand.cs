@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
+using web.Features.Artists;
 
 namespace web.Features.ArtPieces.UploadArtPiece;
 
@@ -8,7 +9,7 @@ public class UploadArtPieceCommand(ApplicationDbContext dbContext)
         public async Task<ArtPiece> ExecuteAsync(IFormFile image,
                 string description, Guid userId)
         {
-                Artists.Artist artist = await dbContext.Artists
+                Artist artist = await dbContext.Artists
                         .FirstAsync(a => a.UserId == userId);
 
                 string directoryPath = Path.Combine("user-images", "art-pieces", $"{artist.Id}");
