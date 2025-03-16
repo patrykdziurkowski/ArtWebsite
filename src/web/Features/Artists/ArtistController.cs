@@ -17,7 +17,7 @@ public class ArtistController(
         SetupArtistCommand setupArtistCommand,
         UserManager<IdentityUser<Guid>> userManager,
         DeactivateArtistCommand deactivateArtistCommand,
-        ApplicationDbContext dbContext) : Controller
+        ArtistRepository artistRepository) : Controller
 {
         public async Task<ActionResult> Index()
         {
@@ -26,7 +26,8 @@ public class ArtistController(
                         return RedirectToAction(nameof(Setup));
                 }
 
-                Artist artist = dbContext.Artists.First(a => a.UserId == GetUserId());
+                Artist artist = await artistRepository.GetByUserIdAsync(GetUserId())
+                        ?? throw new InvalidOperationException("No artist profile found despite user having the artist role.");
                 ArtistProfileModel model = new()
                 {
                         Id = artist.Id.Value,
@@ -40,8 +41,7 @@ public class ArtistController(
         [HttpGet("/Artists/{artistId}")]
         public async Task<ActionResult> GetArtist(Guid artistId)
         {
-                Artist? artist = await dbContext.Artists
-                        .FirstOrDefaultAsync(a => a.Id.Value == artistId);
+                Artist? artist = await artistRepository.GetByIdAsync(new ArtistId { Value = artistId });
                 if (artist is null)
                 {
                         return View("Error", new ErrorViewModel(404,

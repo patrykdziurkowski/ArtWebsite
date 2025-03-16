@@ -69,6 +69,35 @@ public class ArtistRepositoryTests : DatabaseBase
         }
 
         [Fact]
+        public async Task GetByUserIdAsync_ShouldReturnNull_WhenNoArtistForUser()
+        {
+                IdentityUser<Guid> user = new("userName");
+                await UserManager.CreateAsync(user);
+
+                Artist? artist = await _artistRepository.GetByUserIdAsync(user.Id);
+
+                artist.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetByUserIdAsync_ShouldReturnArtist_WhenExists()
+        {
+                IdentityUser<Guid> user = new("userName");
+                await UserManager.CreateAsync(user);
+                Artist artist = new()
+                {
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                };
+                await _artistRepository.SaveChangesAsync(artist);
+
+                Artist? queriedArtist = await _artistRepository.GetByUserIdAsync(user.Id);
+
+                queriedArtist.Should().NotBeNull();
+        }
+
+        [Fact]
         public async Task SaveChangesAsync_SavesChanges_WhenCalled()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();

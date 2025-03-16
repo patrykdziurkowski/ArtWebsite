@@ -15,6 +15,11 @@ public class ArtistRepository(ApplicationDbContext dbContext)
                 return await dbContext.Artists.FirstOrDefaultAsync(a => a.Name == name);
         }
 
+        public async Task<Artist?> GetByUserIdAsync(Guid userId)
+        {
+                return await dbContext.Artists.FirstOrDefaultAsync(a => a.UserId == userId);
+        }
+
         public async Task SaveChangesAsync()
         {
                 await dbContext.SaveChangesAsync();

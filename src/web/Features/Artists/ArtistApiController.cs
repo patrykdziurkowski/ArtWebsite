@@ -9,15 +9,15 @@ namespace web.Features.Artists;
 
 [Authorize]
 [ApiController]
-public class ArtistApiController(ApplicationDbContext dbContext) : ControllerBase
+public class ArtistApiController(ArtistRepository artistRepository) : ControllerBase
 {
         [HttpPut("/api/artist")]
         public async Task<IActionResult> UpdateArtistProfile(UpdateArtistProfileModel model)
         {
-                Artist artist = await dbContext.Artists.FirstAsync(a => a.UserId == GetUserId());
+                Artist artist = await artistRepository.GetByUserIdAsync(GetUserId());
                 artist.Name = model.Name;
                 artist.Summary = model.Summary;
-                await dbContext.SaveChangesAsync();
+                await artistRepository.SaveChangesAsync();
                 return Ok();
         }
 

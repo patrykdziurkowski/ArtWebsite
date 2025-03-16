@@ -4,13 +4,14 @@ using web.Features.Artists;
 
 namespace web.Features.ArtPieces.UploadArtPiece;
 
-public class UploadArtPieceCommand(ApplicationDbContext dbContext)
+public class UploadArtPieceCommand(ApplicationDbContext dbContext,
+        ArtistRepository artistRepository)
 {
         public async Task<ArtPiece> ExecuteAsync(IFormFile image,
                 string description, Guid userId)
         {
-                Artist artist = await dbContext.Artists
-                        .FirstAsync(a => a.UserId == userId);
+                Artist artist = await artistRepository.GetByUserIdAsync(userId)
+                        ?? throw new InvalidOperationException("Cannot upload an art piece due to user not having an artist profile.");
 
                 string directoryPath = Path.Combine("user-images", "art-pieces", $"{artist.Id}");
                 Directory.CreateDirectory(directoryPath);
