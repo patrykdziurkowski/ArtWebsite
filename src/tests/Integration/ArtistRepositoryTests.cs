@@ -175,6 +175,25 @@ public class ArtistRepositoryTests : DatabaseBase
         }
 
         [Fact]
+        public async Task SaveChangesAsync_DoesntCreateAnotherArtist_WhenAlreadyTrackedButIsPassedAsParameter()
+        {
+                IdentityUser<Guid> user = new("userName");
+                await UserManager.CreateAsync(user);
+                Artist artist = new()
+                {
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                };
+                await _artistRepository.SaveChangesAsync(artist);
+
+                await _artistRepository.SaveChangesAsync(artist);
+
+                Artist? queriedArtist = await _artistRepository.GetByNameAsync("ArtistName");
+                queriedArtist.Should().NotBeNull();
+        }
+
+        [Fact]
         public async Task SaveChangesAsync_SavesArtistsBoost_WhenCalled()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();

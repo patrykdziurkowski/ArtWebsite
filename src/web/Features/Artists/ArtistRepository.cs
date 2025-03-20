@@ -47,7 +47,10 @@ public class ArtistRepository(ApplicationDbContext dbContext)
 
         public async Task SaveChangesAsync(Artist artist)
         {
-                dbContext.Artists.Add(artist);
+                if (dbContext.Entry(artist).State == EntityState.Detached)
+                {
+                        dbContext.Artists.Add(artist);
+                }
                 await dbContext.SaveChangesAsync();
         }
 
