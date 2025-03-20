@@ -150,7 +150,7 @@ public class ArtistRepositoryTests : DatabaseBase
                 Artist? artist = await _artistRepository.GetByIdAsync(artistId);
 
                 artist!.Name = "NewName";
-                await _artistRepository.SaveChangesAsync();
+                await _artistRepository.SaveChangesAsync(artist);
 
                 Artist? changedArtist = await _artistRepository.GetByIdAsync(artistId);
                 changedArtist!.Name.Should().Be("NewName");
@@ -202,7 +202,7 @@ public class ArtistRepositoryTests : DatabaseBase
                 ArtPieceId artPieceId = DbContext.ArtPieces.First().Id;
 
                 artist!.BoostArtPiece(artPieceId, artistId);
-                await _artistRepository.SaveChangesAsync();
+                await _artistRepository.SaveChangesAsync(artist);
 
                 Artist? changedArtist = await _artistRepository.GetByIdAsync(artistId);
                 changedArtist!.ActiveBoost.Should().NotBeNull();

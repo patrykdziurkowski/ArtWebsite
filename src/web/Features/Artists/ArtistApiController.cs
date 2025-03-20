@@ -19,7 +19,7 @@ public class ArtistApiController(ArtistRepository artistRepository) : Controller
                 }
                 artist.Name = model.Name;
                 artist.Summary = model.Summary;
-                await artistRepository.SaveChangesAsync();
+                await artistRepository.SaveChangesAsync(artist);
                 return Ok();
         }
 
