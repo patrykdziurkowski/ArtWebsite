@@ -1,8 +1,6 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using web.Data;
 using web.Features.Artists.UpdateArtistProfile;
 
 namespace web.Features.Artists;
@@ -14,7 +12,11 @@ public class ArtistApiController(ArtistRepository artistRepository) : Controller
         [HttpPut("/api/artist")]
         public async Task<IActionResult> UpdateArtistProfile(UpdateArtistProfileModel model)
         {
-                Artist artist = await artistRepository.GetByUserIdAsync(GetUserId());
+                Artist? artist = await artistRepository.GetByUserIdAsync(GetUserId());
+                if (artist is null)
+                {
+                        return Forbid();
+                }
                 artist.Name = model.Name;
                 artist.Summary = model.Summary;
                 await artistRepository.SaveChangesAsync();
