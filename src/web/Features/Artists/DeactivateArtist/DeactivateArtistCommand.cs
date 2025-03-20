@@ -1,12 +1,9 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using web.Data;
 
 namespace web.Features.Artists.DeactivateArtist;
 
 public class DeactivateArtistCommand(UserManager<IdentityUser<Guid>> userManager,
-        ArtistRepository artistRepository,
-        ApplicationDbContext dbContext)
+        ArtistRepository artistRepository)
 {
         public async Task ExecuteAsync(Guid userId)
         {
@@ -14,8 +11,8 @@ public class DeactivateArtistCommand(UserManager<IdentityUser<Guid>> userManager
                                               ?? throw new InvalidOperationException("Could not deactivate artist profile - user with such id does not exist.");
                 Artist artist = await artistRepository.GetByUserIdAsync(userId)
                         ?? throw new InvalidOperationException("No artist exists for a given user.");
-                dbContext.Artists.Remove(artist);
-                await dbContext.SaveChangesAsync();
+                artist.Deactivate();
+                await artistRepository.SaveChangesAsync(artist);
                 await userManager.RemoveFromRoleAsync(user, "Artist");
         }
 }

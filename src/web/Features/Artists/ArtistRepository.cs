@@ -46,6 +46,10 @@ public class ArtistRepository(ApplicationDbContext dbContext)
                 {
                         dbContext.Artists.Add(artist);
                 }
+                if (artist.DomainEvents.Contains(new ArtistDeactivatedEvent()))
+                {
+                        dbContext.Artists.Remove(artist);
+                }
                 await dbContext.SaveChangesAsync();
         }
 

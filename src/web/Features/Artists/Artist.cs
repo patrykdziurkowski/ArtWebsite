@@ -39,4 +39,9 @@ public class Artist : AggreggateRoot
                 };
                 return Result.Ok();
         }
+
+        public void Deactivate()
+        {
+                RaiseDomainEvent(new ArtistDeactivatedEvent());
+        }
 }

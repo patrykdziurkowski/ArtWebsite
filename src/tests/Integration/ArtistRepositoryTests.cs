@@ -208,4 +208,18 @@ public class ArtistRepositoryTests : DatabaseBase
                 changedArtist!.ActiveBoost.Should().NotBeNull();
         }
 
+        [Fact]
+        public async Task SaveChangesAsync_DeletesArtist_WhenDeactivated()
+        {
+                ArtistId artistId = await CreateUserWithArtistProfile();
+                await Create6ArtPiecesForArtist(artistId);
+                Artist? artist = await _artistRepository.GetByIdAsync(artistId);
+
+                artist!.Deactivate();
+                await _artistRepository.SaveChangesAsync(artist);
+
+                Artist? deactivatedArtist = await _artistRepository.GetByIdAsync(artistId);
+                deactivatedArtist.Should().BeNull();
+        }
+
 }
