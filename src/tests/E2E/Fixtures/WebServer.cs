@@ -10,6 +10,7 @@ public class WebServer : IDisposable
         private const string TRUNCATE_DATA_QUERY = @"
                 SET QUOTED_IDENTIFIER ON;
                 DELETE FROM [dbo].[Likes];
+                DELETE FROM [dbo].[Boosts];
                 DELETE FROM [dbo].[Reviews];
                 DELETE FROM [dbo].[Reviewers];
                 DELETE FROM [dbo].[ArtPieces];
