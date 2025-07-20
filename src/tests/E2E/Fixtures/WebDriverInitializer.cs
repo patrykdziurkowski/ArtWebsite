@@ -23,6 +23,7 @@ public class WebDriverInitializer : IDisposable
                         options.AddArguments("--headless=new");
                 }
                 options.AddArguments("--no-sandbox");
+                options.AddArguments("--ozone-platform=x11");
                 options.AddArguments("--disable-dev-shm-usage");
                 options.AddArguments("--disable-gpu");
                 options.AddArguments("--window-size=1920,1080");
@@ -41,5 +42,4 @@ public class WebDriverInitializer : IDisposable
                 WebServer.Server.Stop();
                 WebServer.Server.Dispose();
         }
-
 }

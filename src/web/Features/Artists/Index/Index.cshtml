@@ -13,6 +13,19 @@
             data-bs-target="#deleteModal">Delete Profile</button>
     }
 
+    <div id="boosted-art-piece-container">
+        @if (Model.BoostExpirationDate is not null)
+        {
+            <div class="boosted-art-piece">
+                <img src="@Model.BoostedArtPiecePath" alt="Boosted Art Piece">
+                @if (Model.IsOwner)
+                {
+                    <span class="boost-expiration">Expires on @Model.BoostExpirationDate</span>
+                }
+            </div>
+        }
+    </div>
+
     <div id="artPiecesList" class="list-group">Loading...</div>
     <button id="loadMoreButton" class="btn btn-primary mt-3" style="display: none;">Load More</button>
 
@@ -95,8 +108,7 @@
                 data.forEach(artPiece => {
                     const card = document.createElement("div");
                     card.className = "col-md-4 mb-3";
-                    card.innerHTML = `
-                    <div class="card">
+                    card.innerHTML = `<div class="card">
                         <img src="${artPiece.imagePath}" class="card-img-top" alt="Image">
                         <div class="card-body">
                             ${Array.from({ length: 5 }, (_, i) =>
@@ -104,9 +116,12 @@
                     ).join('')}
                             <p class="card-text">${artPiece.description}</p>
                             <small class="text-muted">${new Date(artPiece.uploadDate).toLocaleDateString()}</small>
+                            @if (Model.IsOwner && Model.BoostExpirationDate is null)
+                            {
+                                    <button class="boost-btn" onclick="boostArtPiece('${artPiece.id.value}')">Boost</button>
+                            }
                         </div>
-                    </div>
-                `;
+                    </div>`;
                     list.appendChild(card);
                 });
                 offset += artPiecesPerPage;
@@ -149,5 +164,39 @@
                 validationErrorsText2.innerText = error.errors.Summary;
             });
     });
+
+    function boostArtPiece(artPieceId) {
+        fetch('/api/artist/boost', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                artPieceId: artPieceId
+            }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Response from boosting art piece was not ok.");
+                }
+
+                return response.json();
+            })
+            .then(responseObject => {
+                const boost = responseObject;
+                const container = document.querySelector("#boosted-art-piece-container");
+
+                const boostedImage = document.createElement("div");
+                boostedImage.className = "boosted-art-piece";
+                boostedImage.innerHTML = `
+                    <img src="${boost.imagePath}" alt="Boosted Art Piece">
+                    <span class="boost-expiration">Expires on ${boost.expirationDate}</span>
+                `;
+                container.appendChild(boostedImage);
+                const boostButtons = document.querySelectorAll(".boost-btn");
+                for (const button of boostButtons) {
+                    button.remove();
+                }
+            })
+            .catch(() => alert('Error boosting art piece.'));
+    }
 
 </script>

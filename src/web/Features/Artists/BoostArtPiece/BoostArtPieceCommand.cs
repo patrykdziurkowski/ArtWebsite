@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
@@ -6,11 +7,11 @@ using web.Features.ArtPieces;
 namespace web.Features.Artists.BoostArtPiece;
 
 public class BoostArtPieceCommand(ArtistRepository artistRepository,
-        ApplicationDbContext dbContext)
+        ApplicationDbContext dbContext, IMapper mapper)
 {
         private readonly ArtistRepository artistRepository = artistRepository;
 
-        public async Task<Result<Boost>> ExecuteAsync(Guid currentUserId, ArtPieceId artPieceId)
+        public async Task<Result<BoostDto>> ExecuteAsync(Guid currentUserId, ArtPieceId artPieceId)
         {
                 Artist currentArtist = await artistRepository.GetByUserIdAsync(currentUserId)
                         ?? throw new InvalidOperationException("No artist profile exists for the given user!");
@@ -25,6 +26,10 @@ public class BoostArtPieceCommand(ArtistRepository artistRepository,
                 }
 
                 await artistRepository.SaveChangesAsync(currentArtist);
-                return Result.Ok(currentArtist.ActiveBoost!);
+
+                ArtPiece boostedArtPiece = await dbContext.ArtPieces
+                        .SingleAsync(ap => ap.Id == currentArtist.ActiveBoost!.ArtPieceId);
+                BoostDto boostDto = mapper.Map<BoostDto>((currentArtist.ActiveBoost!, boostedArtPiece));
+                return Result.Ok(boostDto);
         }
 }

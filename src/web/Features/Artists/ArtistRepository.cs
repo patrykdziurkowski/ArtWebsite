@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using web.Data;
+using web.Features.ArtPieces;
 
 namespace web.Features.Artists;
 
@@ -46,10 +48,14 @@ public class ArtistRepository(ApplicationDbContext dbContext)
                 {
                         dbContext.Artists.Add(artist);
                 }
+
                 if (artist.DomainEvents.Contains(new ArtistDeactivatedEvent()))
                 {
+                        dbContext.Boosts.RemoveRange(dbContext.Boosts.Where(b => b.ArtistId == artist.Id));
+                        dbContext.ArtPieces.RemoveRange(dbContext.ArtPieces.Where(ap => ap.ArtistId == artist.Id));
                         dbContext.Artists.Remove(artist);
                 }
+
                 await dbContext.SaveChangesAsync();
         }
 

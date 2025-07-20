@@ -8,5 +8,7 @@ services:
     ports:
       - "8080:8080" # Used for test startup wait
     volumes:
-      - ./src/web:/web # Used for live reloading
-      - /tmp/user-images:/web/user-images # Prevent saving user-images on host machine when ran locally
+      - ./src/web:/web:Z # Used for live reloading
+      - /tmp/user-images:/web/user-images:Z # Prevent saving user-images on host machine when ran locally
+      - /web/bin # Override host's build artifacts to prevent issues
+      - /web/obj # Override host's build artifacts to prevent issues

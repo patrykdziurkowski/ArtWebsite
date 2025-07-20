@@ -8,6 +8,7 @@ using web.Data;
 using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.Index;
 using web.Features.Artists.SetupArtist;
+using web.Features.ArtPieces;
 using web.Features.Shared;
 
 namespace web.Features.Artists;
@@ -17,7 +18,8 @@ public class ArtistController(
         SetupArtistCommand setupArtistCommand,
         UserManager<IdentityUser<Guid>> userManager,
         DeactivateArtistCommand deactivateArtistCommand,
-        ArtistRepository artistRepository) : Controller
+        ArtistRepository artistRepository,
+        ApplicationDbContext dbContext) : Controller
 {
         public async Task<ActionResult> Index()
         {
@@ -28,12 +30,17 @@ public class ArtistController(
 
                 Artist artist = await artistRepository.GetByUserIdAsync(GetUserId())
                         ?? throw new InvalidOperationException("No artist profile found despite user having the artist role.");
+                ArtPiece? boostedArtPiece = artist.ActiveBoost?.ArtPieceId is ArtPieceId boostedArtPieceId
+                        ? dbContext.ArtPieces.FirstOrDefault(a => a.Id == boostedArtPieceId)
+                        : null;
                 ArtistProfileModel model = new()
                 {
                         Id = artist.Id.Value,
                         Name = artist.Name,
                         Summary = artist.Summary,
                         IsOwner = true,
+                        BoostedArtPiecePath = boostedArtPiece?.ImagePath,
+                        BoostExpirationDate = artist.ActiveBoost?.ExpirationDate,
                 };
                 return View(model);
         }
@@ -48,12 +55,17 @@ public class ArtistController(
                                 "No artist with such id found."));
                 }
 
+                ArtPiece? boostedArtPiece = artist.ActiveBoost?.ArtPieceId is ArtPieceId boostedArtPieceId
+                        ? dbContext.ArtPieces.FirstOrDefault(a => a.Id == boostedArtPieceId)
+                        : null;
                 ArtistProfileModel model = new()
                 {
                         Id = artist.Id.Value,
                         Name = artist.Name,
                         Summary = artist.Summary,
                         IsOwner = artist.UserId == GetUserId(),
+                        BoostedArtPiecePath = boostedArtPiece?.ImagePath,
+                        BoostExpirationDate = artist.ActiveBoost?.ExpirationDate,
                 };
                 return View("Index", model);
         }

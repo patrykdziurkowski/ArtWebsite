@@ -1,3 +1,4 @@
+using Azure;
 using FluentAssertions;
 using tests.E2E.Fixtures;
 using Xunit.Extensions.Ordering;

@@ -5,4 +5,5 @@ WORKDIR /web
 COPY web.csproj .
 RUN dotnet restore web.csproj
 COPY . .
-ENTRYPOINT ["dotnet", "watch", "run", "--project", "web.csproj", "--urls", "http://+:8080"]
+
+ENTRYPOINT [ "dotnet", "watch", "run", "--project", "web.csproj", "--urls", "http://*:8080" ]

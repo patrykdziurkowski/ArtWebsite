@@ -48,7 +48,7 @@ public class BoostArtPieceCommandTests : DatabaseBase
                 Guid currentUserId = DbContext.Users.First(u => u.UserName == "artistBoosting").Id;
                 ArtPieceId artPieceId = DbContext.ArtPieces.First().Id;
 
-                Result<Boost> result = await _command.ExecuteAsync(currentUserId, artPieceId);
+                Result<BoostDto> result = await _command.ExecuteAsync(currentUserId, artPieceId);
 
                 result.IsFailed.Should().BeTrue();
         }
@@ -59,9 +59,9 @@ public class BoostArtPieceCommandTests : DatabaseBase
                 await CreateArtistUserWithArtPieces();
                 Guid currentUserId = DbContext.Users.First().Id;
                 ArtPieceId artPieceId = DbContext.ArtPieces.First().Id;
-                Result<Boost> firstResult = await _command.ExecuteAsync(currentUserId, artPieceId);
+                Result<BoostDto> firstResult = await _command.ExecuteAsync(currentUserId, artPieceId);
 
-                Result<Boost> secondResult = await _command.ExecuteAsync(currentUserId, artPieceId);
+                Result<BoostDto> secondResult = await _command.ExecuteAsync(currentUserId, artPieceId);
 
                 firstResult.IsSuccess.Should().BeTrue();
                 secondResult.IsFailed.Should().BeTrue();
@@ -74,7 +74,7 @@ public class BoostArtPieceCommandTests : DatabaseBase
                 Guid currentUserId = DbContext.Users.First().Id;
                 ArtPieceId artPieceId = DbContext.ArtPieces.First().Id;
 
-                Result<Boost> result = await _command.ExecuteAsync(currentUserId, artPieceId);
+                Result<BoostDto> result = await _command.ExecuteAsync(currentUserId, artPieceId);
 
                 result.IsSuccess.Should().BeTrue();
                 result.Value.Should().NotBeNull();
