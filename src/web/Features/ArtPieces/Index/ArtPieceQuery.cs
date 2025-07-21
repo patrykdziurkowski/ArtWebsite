@@ -17,8 +17,9 @@ public class ArtPieceQuery(ApplicationDbContext dbContext)
                         .ToListAsync();
 
                 return await dbContext.ArtPieces
-                        .OrderByDescending(a => a.UploadDate)
-                        .Where(a => reviewedArtPieces.Contains(a.Id) == false)
+                        .OrderByDescending(ap => dbContext.Boosts.Any(b => b.ArtPieceId == ap.Id))
+                        .ThenByDescending(ap => ap.UploadDate)
+                        .Where(ap => reviewedArtPieces.Contains(ap.Id) == false)
                         .FirstOrDefaultAsync();
         }
 

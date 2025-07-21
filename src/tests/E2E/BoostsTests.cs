@@ -9,6 +9,8 @@ namespace tests.E2E;
 public class BoostsTests(WebDriverInitializer initializer)
         : WebDriverBase(initializer)
 {
+        private static string _boostedArtPieceSrc = "";
+
         [Fact, Order(0)]
         public void BoostingArtPiece_ShouldShowBoostedArtPiece_OnArtistProfile()
         {
@@ -26,8 +28,18 @@ public class BoostsTests(WebDriverInitializer initializer)
                 Wait.Until(ExpectedConditions.ElementToBeClickable(secondBoostButton)).Click();
 
                 Wait.Until(d => d.FindElement(By.CssSelector(".boosted-art-piece img"))).Should().NotBeNull();
+                _boostedArtPieceSrc = Driver.FindElements(By.CssSelector("#artPiecesList img"))[1].GetAttribute("src");
                 Action findingBoostButton = () => Driver.FindElement(By.CssSelector(".boost-btn"));
                 findingBoostButton.Should().Throw<NoSuchElementException>();
+        }
+
+
+        [Fact, Order(1)]
+        public void BoostingArtPiece_ShouldIncreaseBoostedArtPiecesOrder_OnBrowsingPage()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");
+                Wait.Until(d => d.FindElement(By.CssSelector("#artPieceImage")).GetAttribute("src") == _boostedArtPieceSrc);
+                Driver.FindElement(By.CssSelector("#artPieceImage")).GetAttribute("src").Should().Be(_boostedArtPieceSrc);
         }
 
 }
