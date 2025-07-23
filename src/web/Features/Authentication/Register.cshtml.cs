@@ -119,8 +119,14 @@ public class RegisterModel : PageModel
                         return Page();
                 }
 
-                var user = CreateUser();
                 using IDbContextTransaction transaction = await _dbContext.Database.BeginTransactionAsync();
+                if (await _userManager.FindByEmailAsync(Input.Email) is not null)
+                {
+                        ModelState.AddModelError(string.Empty, "A user with that email already exists.");
+                        return Page();
+                }
+
+                var user = CreateUser();
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
