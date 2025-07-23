@@ -2,8 +2,12 @@
 @model ArtistProfileModel
 
 <div class="container mt-4">
-    <h2><span id="artistName">@Model.Name</span>'s Profile <button id="editProfileModalButton" data-bs-toggle="modal"
-            data-bs-target="#editProfileModal"><i id="editProfile" class="bi bi-pencil-square"></i></button></h2>
+    <h2>
+        <span id="artistName">@Model.Name</span>'s Profile
+        <button id="editProfileModalButton" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            <i id="editProfile" class="bi bi-pencil-square"></i>
+        </button>
+    </h2>
     <p><strong>Summary:</strong> <span id="artistSummary">@Model.Summary</span></p>
     <a asp-controller="ArtPiece" asp-action="Upload" class="btn btn-primary">Upload!</a>
 
@@ -13,21 +17,9 @@
             data-bs-target="#deleteModal">Delete Profile</button>
     }
 
-    <div id="boosted-art-piece-container">
-        @if (Model.BoostExpirationDate is not null)
-        {
-            <div class="boosted-art-piece">
-                <img src="@Model.BoostedArtPiecePath" alt="Boosted Art Piece">
-                @if (Model.IsOwner)
-                {
-                    <span class="boost-expiration">Expires on @Model.BoostExpirationDate</span>
-                }
-            </div>
-        }
-    </div>
+    <partial name="Index/BoostedArtPiece" model="@Model" />
 
-    <div id="artPiecesList" class="list-group">Loading...</div>
-    <button id="loadMoreButton" class="btn btn-primary mt-3" style="display: none;">Load More</button>
+    <partial name="Index/ArtistsArtPiecesPartial" model="@Model" />
 
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
         aria-hidden="true">
@@ -80,60 +72,6 @@
 </div>
 
 <script>
-    let offset = 0;
-    const artPiecesPerPage = 5;
-
-    function fetchArtPieces() {
-        const list = document.querySelector('#artPiecesList');
-        const loadMore = document.querySelector('#loadMoreButton');
-        const artistId = "@Model.Id";
-
-        fetch(`/api/artists/${artistId}/artpieces?offset=${offset}`)
-            .then(response => response.json())
-            .then(data => {
-                if (offset == 0) {
-                    list.innerText = '';
-                }
-                if (offset == 0 && data.length === 0) {
-                    list.innerText = 'No art pieces found.';
-                }
-
-                // If loaded less art pieces than requested, hide the button since we're at the end
-                if (data.length < artPiecesPerPage) {
-                    loadMore.style.display = 'none';
-                } else {
-                    loadMore.style.display = 'block';
-                }
-
-                data.forEach(artPiece => {
-                    const card = document.createElement("div");
-                    card.className = "col-md-4 mb-3";
-                    card.innerHTML = `<div class="card">
-                        <img src="${artPiece.imagePath}" class="card-img-top" alt="Image">
-                        <div class="card-body">
-                            ${Array.from({ length: 5 }, (_, i) =>
-                        `<label class="${i < artPiece.averageRating ? 'checked-star' : ''}">&#9733;</label>`
-                    ).join('')}
-                            <p class="card-text">${artPiece.description}</p>
-                            <small class="text-muted">${new Date(artPiece.uploadDate).toLocaleDateString()}</small>
-                            @if (Model.IsOwner && Model.BoostExpirationDate is null)
-                            {
-                                    <button class="boost-btn" onclick="boostArtPiece('${artPiece.id.value}')">Boost</button>
-                            }
-                        </div>
-                    </div>`;
-                    list.appendChild(card);
-                });
-                offset += artPiecesPerPage;
-            });
-    }
-
-    document.querySelector('#loadMoreButton').addEventListener('click', function () {
-        fetchArtPieces();
-    });
-
-    fetchArtPieces();
-
     document.querySelector('#editArtistProfile').addEventListener('click', async (e) => {
         const form = new FormData(document.querySelector('#editForm'));
         const data = {
@@ -164,39 +102,4 @@
                 validationErrorsText2.innerText = error.errors.Summary;
             });
     });
-
-    function boostArtPiece(artPieceId) {
-        fetch('/api/artist/boost', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                artPieceId: artPieceId
-            }),
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Response from boosting art piece was not ok.");
-                }
-
-                return response.json();
-            })
-            .then(responseObject => {
-                const boost = responseObject;
-                const container = document.querySelector("#boosted-art-piece-container");
-
-                const boostedImage = document.createElement("div");
-                boostedImage.className = "boosted-art-piece";
-                boostedImage.innerHTML = `
-                    <img src="${boost.imagePath}" alt="Boosted Art Piece">
-                    <span class="boost-expiration">Expires on ${boost.expirationDate}</span>
-                `;
-                container.appendChild(boostedImage);
-                const boostButtons = document.querySelectorAll(".boost-btn");
-                for (const button of boostButtons) {
-                    button.remove();
-                }
-            })
-            .catch(() => alert('Error boosting art piece.'));
-    }
-
 </script>

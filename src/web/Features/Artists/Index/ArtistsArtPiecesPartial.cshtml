@@ -1,0 +1,61 @@
+@using web.Features.Artists.Index
+@model ArtistProfileModel
+
+<div id="artPiecesList" class="list-group">Loading...</div>
+<button id="loadMoreArtPieces" class="btn btn-primary mt-3" style="display: none;">Load More</button>
+
+<script>
+    let offset = 0;
+    const artPiecesPerPage = 5;
+
+    function fetchArtPieces() {
+        const list = document.querySelector('#artPiecesList');
+        const loadMore = document.querySelector('#loadMoreArtPieces');
+        const artistId = "@Model.Id";
+
+        fetch(`/api/artists/${artistId}/artpieces?offset=${offset}`)
+            .then(response => response.json())
+            .then(data => {
+                if (offset == 0) {
+                    list.innerText = '';
+                }
+                if (offset == 0 && data.length === 0) {
+                    list.innerText = 'No art pieces found.';
+                }
+
+                // If loaded less art pieces than requested, hide the button since we're at the end
+                if (data.length < artPiecesPerPage) {
+                    loadMore.style.display = 'none';
+                } else {
+                    loadMore.style.display = 'block';
+                }
+
+                data.forEach(artPiece => {
+                    const card = document.createElement("div");
+                    card.className = "col-md-4 mb-3";
+                    card.innerHTML = `<div class="card">
+                        <img src="${artPiece.imagePath}" class="card-img-top" alt="Image">
+                        <div class="card-body">
+                            ${Array.from({ length: 5 }, (_, i) =>
+                        `<label class="${i < artPiece.averageRating ? 'checked-star' : ''}">&#9733;</label>`
+                    ).join('')}
+                            <p class="card-text">${artPiece.description}</p>
+                            <small class="text-muted">${new Date(artPiece.uploadDate).toLocaleDateString()}</small>
+                            @if (Model.IsOwner && Model.BoostExpirationDate is null)
+                            {
+                                <button class="boost-btn" onclick="boostArtPiece('${artPiece.id.value}')">Boost</button>
+                            }
+                        </div>
+                    </div>`;
+                    list.appendChild(card);
+                });
+                offset += artPiecesPerPage;
+            });
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelector('#loadMoreArtPieces').addEventListener('click', fetchArtPieces);
+
+        fetchArtPieces();
+    });
+</script>

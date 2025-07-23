@@ -64,10 +64,10 @@ public class ArtistsTests(WebDriverInitializer initializer)
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
 
-                Wait.Until(d => d.FindElement(By.Id("loadMoreButton")));
-                IWebElement loadMoreButton = Driver.FindElement(By.Id("loadMoreButton"));
-                ScrollIntoView(loadMoreButton);
-                Wait.Until(ExpectedConditions.ElementToBeClickable(loadMoreButton)).Click();
+                Wait.Until(d => d.FindElement(By.Id("loadMoreArtPieces")));
+                IWebElement loadMoreArtPieces = Driver.FindElement(By.Id("loadMoreArtPieces"));
+                ScrollIntoView(loadMoreArtPieces);
+                Wait.Until(ExpectedConditions.ElementToBeClickable(loadMoreArtPieces)).Click();
 
                 bool has8ArtPieces = Wait.Until(d => d.FindElements(By.CssSelector("#artPiecesList > *")).Count == 8);
                 has8ArtPieces.Should().BeTrue();
