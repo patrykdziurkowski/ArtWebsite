@@ -45,10 +45,10 @@ public class ArtistController(
                 return View(model);
         }
 
-        [HttpGet("/Artists/{artistId}")]
-        public async Task<ActionResult> GetArtist(Guid artistId)
+        [HttpGet("/Artists/{artistName}")]
+        public async Task<ActionResult> GetArtist(string artistName)
         {
-                Artist? artist = await artistRepository.GetByIdAsync(new ArtistId { Value = artistId });
+                Artist? artist = await artistRepository.GetByNameAsync(artistName);
                 if (artist is null)
                 {
                         return View("Error", new ErrorViewModel(404,
