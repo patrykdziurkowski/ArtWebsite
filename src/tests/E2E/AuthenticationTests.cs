@@ -1,5 +1,6 @@
 using Azure;
 using FluentAssertions;
+using OpenQA.Selenium;
 using tests.E2E.Fixtures;
 using Xunit.Extensions.Ordering;
 
@@ -31,7 +32,7 @@ public class AuthenticationTests(WebDriverInitializer initializer)
         {
                 Login();
 
-                Wait.Until(d => d.PageSource.Contains("john@smith.com")).Should().BeTrue();
+                Wait.Until(d => d.FindElement(By.CssSelector("#logout"))).Should().NotBeNull();
         }
 }
 

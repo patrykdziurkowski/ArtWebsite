@@ -36,7 +36,7 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
 
                 Driver.FindElement(By.Id("login-submit")).Click();
 
-                Wait.Until(d => d.PageSource.Contains(email));
+                Wait.Until(d => d.FindElement(By.CssSelector("#logout")));
         }
 
         public void Logout()
