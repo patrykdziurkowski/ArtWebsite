@@ -19,7 +19,7 @@ public class Reviewer : AggreggateRoot
                 get => _activeLikes;
                 set
                 {
-                        _activeLikes = value.ToList();
+                        _activeLikes = [.. value];
                 }
         }
 
@@ -35,6 +35,29 @@ public class Reviewer : AggreggateRoot
                         ArtPieceId = artPieceId,
                         ReviewerId = Id,
                 });
+                return Result.Ok();
+        }
+
+        public Result UnlikeArtPiece(ArtPieceId artPieceId)
+        {
+                if (!_activeLikes.Any(l => l.ArtPieceId == artPieceId))
+                {
+                        return Result.Fail("Couldn't unlike the given art piece. No active like found for it.");
+                }
+
+                Like like = _activeLikes.Single(l => l.ArtPieceId == artPieceId);
+                if (!like.IsActive)
+                {
+                        return Result.Fail("Couldn't undo an expired like.");
+                }
+
+                bool likeTooOld = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(15)) > like.Date;
+                if (likeTooOld)
+                {
+                        return Result.Fail("Couldn't undo a like because too much time has passed.");
+                }
+
+                _activeLikes.Remove(like);
                 return Result.Ok();
         }
 }
