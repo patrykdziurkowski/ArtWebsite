@@ -126,8 +126,14 @@ public class RegisterModel : PageModel
                         return Page();
                 }
 
+                if (await _userManager.FindByNameAsync(Input.UserName) is not null)
+                {
+                        ModelState.AddModelError(string.Empty, "A user with that username already exists.");
+                        return Page();
+                }
+
                 var user = CreateUser();
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _userStore.SetUserNameAsync(user, Input.UserName, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 Reviewer reviewer = new()
