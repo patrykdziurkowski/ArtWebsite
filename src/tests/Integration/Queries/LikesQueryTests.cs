@@ -31,7 +31,7 @@ public class LikesQueryTests : DatabaseBase
         public async Task Execute_ShouldReturnLikes_WhenTheyExist()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Guid currentUserId = await CreateReviewerWith20Likes(artPieceIds);
+                Guid currentUserId = await CreateReviewerWithLikes(artPieceIds);
 
                 List<ReviewerLikeModel> likes = await _command.ExecuteAsync(currentUserId, 10);
 
@@ -43,7 +43,7 @@ public class LikesQueryTests : DatabaseBase
         public async Task Execute_ShouldReturnSomeLikes_WhenOffset()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Guid currentUserId = await CreateReviewerWith20Likes(artPieceIds);
+                Guid currentUserId = await CreateReviewerWithLikes(artPieceIds);
 
                 List<ReviewerLikeModel> likes = await _command.ExecuteAsync(currentUserId, 10, 17);
 

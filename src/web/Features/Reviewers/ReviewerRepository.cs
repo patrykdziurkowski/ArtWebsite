@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
+using web.Features.Reviewers.UnlikeArtPiece;
+using web.Features.Shared.domain;
 
 namespace web.Features.Reviewers;
 
@@ -50,8 +52,17 @@ public class ReviewerRepository(ApplicationDbContext dbContext)
                         .ToListAsync();
         }
 
-        public async Task SaveAsync()
+        public async Task SaveAsync(Reviewer reviewer)
         {
+                foreach (IDomainEvent domainEvent in reviewer.DomainEvents)
+                {
+                        if (domainEvent is ArtPieceUnlikedEvent unlikedEvent)
+                        {
+                                dbContext.Likes.Remove(unlikedEvent.Like);
+                        }
+                }
+
+                reviewer.ClearDomainEvents();
                 await dbContext.SaveChangesAsync();
         }
 

@@ -1,5 +1,6 @@
 using FluentResults;
 using web.Features.ArtPieces;
+using web.Features.Reviewers.UnlikeArtPiece;
 using web.Features.Shared.domain;
 
 namespace web.Features.Reviewers;
@@ -57,6 +58,10 @@ public class Reviewer : AggreggateRoot
                         return Result.Fail("Couldn't undo a like because too much time has passed.");
                 }
 
+                RaiseDomainEvent(new ArtPieceUnlikedEvent()
+                {
+                        Like = like,
+                });
                 _activeLikes.Remove(like);
                 return Result.Ok();
         }

@@ -137,7 +137,7 @@ public abstract class DatabaseBase : IDisposable
                 return reviewer;
         }
 
-        public async Task<Guid> CreateReviewerWith20Likes(List<ArtPieceId> artPiecesToLike)
+        public async Task<Guid> CreateReviewerWithLikes(List<ArtPieceId> artPiecesToLike)
         {
                 IdentityUser<Guid> user = new("johnSmith2");
                 await UserManager.CreateAsync(user);

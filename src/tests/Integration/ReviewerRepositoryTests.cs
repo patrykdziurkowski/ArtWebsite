@@ -65,7 +65,7 @@ public class ReviewerRepositoryTests : DatabaseBase
                 await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
 
                 reviewer.LikeArtPiece(artPieceIds.Last());
-                await _reviewerRepository.SaveAsync();
+                await _reviewerRepository.SaveAsync(reviewer);
 
                 Reviewer? queriedReviewer = await _reviewerRepository.GetByIdAsync(reviewer.Id);
                 queriedReviewer!.ActiveLikes.Should().HaveCount(2);
@@ -87,7 +87,7 @@ public class ReviewerRepositoryTests : DatabaseBase
         public async Task GetLikesAsync_ShouldReturnLikes_WhenTheyExist()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Guid currentUserId = await CreateReviewerWith20Likes(artPieceIds);
+                Guid currentUserId = await CreateReviewerWithLikes(artPieceIds);
 
                 List<Like> likes = await _reviewerRepository
                         .GetLikesAsync(currentUserId, 10);
@@ -99,7 +99,7 @@ public class ReviewerRepositoryTests : DatabaseBase
         public async Task GetLikesAsync_ShouldReturnSomeLikes_WhenOffset()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Guid currentUserId = await CreateReviewerWith20Likes(artPieceIds);
+                Guid currentUserId = await CreateReviewerWithLikes(artPieceIds);
 
                 List<Like> likes = await _reviewerRepository
                         .GetLikesAsync(currentUserId, 10, 17);

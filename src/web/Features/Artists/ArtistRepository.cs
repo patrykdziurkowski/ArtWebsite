@@ -56,6 +56,7 @@ public class ArtistRepository(ApplicationDbContext dbContext)
                         dbContext.Artists.Remove(artist);
                 }
 
+                artist.ClearDomainEvents();
                 await dbContext.SaveChangesAsync();
         }
 

@@ -20,7 +20,7 @@ public class LikeArtPieceCommand(ReviewerRepository reviewerRepository)
                         return likeResult;
                 }
 
-                await reviewerRepository.SaveAsync();
+                await reviewerRepository.SaveAsync(reviewer);
                 return Result.Ok(reviewer.ActiveLikes.Last());
         }
 }
