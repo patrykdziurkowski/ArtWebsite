@@ -48,53 +48,76 @@
     </div>
 </div>
 <script>
-    function loadArtPiece() {
-        fetch("/api/artpiece")
-            .then(response => {
-                if (response.status === 204) {
-                    return null;
-                }
-                return response.json();
-            })
-            .then(data => {
-                const artContainer = document.getElementById('artContainer');
-                if (!data || !data.imagePath) {
-                    artContainer.innerHTML = '<h1>No more images to review.</h1>';
-                    document.querySelector('#likeArtPiece').style.display = 'none';
-                    document.querySelector('#reviewArt').style.display = 'none';
-                    return;
-                }
+    async function loadArtPiece() {
+        const response = await fetch("/api/artpiece");
+        if (response.status === 204) {
+            return null;
+        }
 
-                artContainer.innerHTML = `
-                        <img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded">
-                        <div class="p-2">
-                            <p>${data.description}</p>
-                        </div>`;
-                document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
-            })
-            .catch(error => console.error('Error fetching art piece:', error));
+        const data = await response.json();
+        const artContainer = document.getElementById('artContainer');
+        if (!data || !data.imagePath) {
+            artContainer.innerHTML = '<h1>No more images to review.</h1>';
+            document.querySelector('#likeArtPiece').style.display = 'none';
+            document.querySelector('#reviewArt').style.display = 'none';
+            return null;
+        }
+
+        artContainer.innerHTML = `
+                <img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded">
+                <div class="p-2">
+                    <p>${data.description}</p>
+                </div>`;
+        document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
+
+        return data;
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        loadArtPiece();
+    document.addEventListener('DOMContentLoaded', async () => {
+        let isLiked = false;
+        const artPiece = await loadArtPiece();
+        const likeButton = document.querySelector('#likeArtPiece');
 
-        document.querySelector('#likeArtPiece').addEventListener('click', (e) => {
+        if (artPiece !== null) {
+            isLiked = artPiece.isLikedByCurrentUser;
+            if (isLiked) {
+                likeButton.innerText = "Unlike";
+            }
+        }
+
+        likeButton.addEventListener('click', async (e) => {
             const artPieceId = document.querySelector('#reviewForm input[name="artPieceId"]').value;
 
-            fetch(`/api/artpieces/${artPieceId}/like`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Art piece liked successfully!');
-                    } else {
-                        console.error('Failed to like the art piece', response.statusText);
+            if (isLiked) {
+                const response = await fetch(`/api/artpieces/${artPieceId}/like`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
                     }
-                })
-                .catch(error => console.error('Error occurred:', error));
+                });
+
+                if (response.ok) {
+                    console.log('Art piece unliked successfully!');
+                    likeButton.innerText = "Like";
+                } else {
+                    console.error('Failed to unlike the art piece', response.statusText);
+                }
+            }
+            else {
+                const response = await fetch(`/api/artpieces/${artPieceId}/like`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    console.log('Art piece liked successfully!');
+                    likeButton.innerText = "Unlike";
+                } else {
+                    console.error('Failed to like the art piece', response.statusText);
+                }
+            }
         });
 
         document.querySelector('#reviewForm').addEventListener('submit', async (e) => {
@@ -107,28 +130,22 @@
                 artPieceId: form.get('artPieceId')
             };
 
-            await fetch('/api/reviews/', {
+            const response = await fetch('/api/reviews/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(data)
-            })
-                .then(async response => {
-                    if (response.status !== 200) {
-                        const data = await response.json();
-                        throw data;
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    loadArtPiece();
-                    document.querySelector('#reviewModal .btn-close').click();
-                })
-                .catch(error => {
-                    const validationErrorsText = document.querySelector('#reviewForm *[name="comment"] + span');
-                    validationErrorsText.innerText = error.errors.Comment;
-                });
+            });
+
+            if (response.status !== 200) {
+                const data = await response.json();
+                const validationErrorsText = document.querySelector('#reviewForm *[name="comment"] + span');
+                validationErrorsText.innerText = data.errors.Comment;
+            }
+
+            await loadArtPiece();
+            document.querySelector('#reviewModal .btn-close').click();
         });
     });
 </script>

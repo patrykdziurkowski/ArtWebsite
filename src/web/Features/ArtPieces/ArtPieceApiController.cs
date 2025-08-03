@@ -19,7 +19,7 @@ public class ArtPieceApiController(ArtPieceQuery artPieceQuery,
         [HttpGet("/api/artpiece")]
         public async Task<IActionResult> GetNextArtPiece()
         {
-                ArtPiece? artPiece = await artPieceQuery.ExecuteAsync(GetUserId());
+                ArtPieceDto? artPiece = await artPieceQuery.ExecuteAsync(GetUserId());
                 if (artPiece is null)
                 {
                         return NoContent();

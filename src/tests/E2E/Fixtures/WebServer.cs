@@ -25,8 +25,23 @@ public class WebServer : IDisposable
 
         public WebServer()
         {
+                // FluentDocker doesnt seem to work well with docker compose v2+ so this is
+                // a workaround for that.
+                Environment.SetEnvironmentVariable("DOCKER_BUILDKIT", "0");
+                Environment.SetEnvironmentVariable("COMPOSE_DOCKER_CLI_BUILD", "0");
+
                 string dockerComposePath = Path.GetFullPath("../../../../../docker-compose.yaml");
+                if (!File.Exists(dockerComposePath))
+                {
+                        throw new InvalidOperationException($"Could not start E2E test webserver due to a missing docker compose file in path {dockerComposePath}");
+                }
+
                 string dockerComposeOverridePath = Path.GetFullPath("../../../../../docker-compose.override.yaml");
+                if (!File.Exists(dockerComposeOverridePath))
+                {
+                        throw new InvalidOperationException($"Could not start E2E test webserver due to a missing docker compose override file in path {dockerComposeOverridePath}");
+                }
+
                 Server = new Builder()
                         .UseContainer()
                         .UseCompose()
@@ -60,7 +75,7 @@ public class WebServer : IDisposable
         /// Ran synchronously in order to block test execution until ready.
         /// </summary>
         /// <exception cref="InvalidOperationException"></exception>
-        private void WaitUntilWebServerReady()
+        private static void WaitUntilWebServerReady()
         {
                 const int maxIterations = 25;
                 // http instead of https to avoid SSL issues

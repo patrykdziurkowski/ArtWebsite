@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using web.Features.ArtPieces;
 using web.Features.Reviewers.LikeArtPiece;
 using web.Features.Reviewers.LoadLikes;
+using web.Features.Reviewers.UnlikeArtPiece;
 
 namespace web.Features.Reviewers;
 
 [Authorize]
 [ApiController]
-public class ReviewerApiController(LikeArtPieceCommand likeArtPieceCommand,
+public class ReviewerApiController(
+        LikeArtPieceCommand likeArtPieceCommand,
+        UnlikeArtPieceCommand unlikeArtPieceCommand,
         LikesQuery likesQuery) : ControllerBase
 {
         private const int LIKES_TO_LOAD = 10;
@@ -35,6 +38,19 @@ public class ReviewerApiController(LikeArtPieceCommand likeArtPieceCommand,
                 }
 
                 return Created();
+        }
+
+        [HttpDelete("/api/artpieces/{artPieceId}/like")]
+        public async Task<IActionResult> UnlikeArtPiece(Guid artPieceId)
+        {
+                Result result = await unlikeArtPieceCommand
+                        .ExecuteAsync(GetUserId(), new ArtPieceId() { Value = artPieceId });
+                if (result.IsFailed)
+                {
+                        return BadRequest(result.Errors);
+                }
+
+                return Ok();
         }
 
         private Guid GetUserId()
