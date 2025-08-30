@@ -485,3 +485,9 @@ $RECYCLE.BIN/
 
 # User files
 **/web/user-images
+
+# RecognizeAnything is the image recognition model we use for tagging
+**/recognize-anything/*
+!**/recognize-anything/.gitkeep
+!**/recognize-anything/pretrained/
+!**/recognize-anything/pretrained/.gitkeep
