@@ -49,6 +49,11 @@ public class ImageTagger
 
         public async Task<List<string>> TagImageAsync(string fullImagePath)
         {
+                if (!File.Exists(fullImagePath))
+                {
+                        throw new InvalidOperationException("No image exists with the path: " + fullImagePath);
+                }
+
                 ProcessStartInfo processStartInfo = new()
                 {
                         FileName = "python",

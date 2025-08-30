@@ -24,4 +24,16 @@ public class ImageTaggerTests
 
                 tags.Count.Should().BeGreaterThan(1);
         }
+
+        [Fact]
+        public void TagImage_ShouldThrow_WhenImageDoesntExist()
+        {
+                ImageTagger imageTagger = new();
+                string image = "nonExistentImage.jpg";
+                File.Exists(image).Should().BeFalse();
+
+                Func<Task> callingTagImageAsync = async () => await imageTagger.TagImageAsync(image);
+
+                callingTagImageAsync.Should().ThrowAsync<InvalidOperationException>();
+        }
 }
