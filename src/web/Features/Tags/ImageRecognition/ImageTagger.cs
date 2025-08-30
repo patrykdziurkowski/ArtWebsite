@@ -5,8 +5,8 @@ namespace web.Features.Tags.ImageRecognition;
 public class ImageTagger
 {
         private const string ENGLISH_TAGS_LINE_START = "Image Tags: ";
-        private readonly string scriptLocation;
-        private readonly string pretrainedLocation;
+        private readonly string _scriptLocation;
+        private readonly string _pretrainedLocation;
 
         public ImageTagger()
         {
@@ -26,24 +26,24 @@ public class ImageTagger
                         "ImageRecognition",
                         "recognize-anything"));
 
-                scriptLocation = Path.GetFullPath(Path.Combine(
+                _scriptLocation = Path.GetFullPath(Path.Combine(
                         recognizeAnythingPath,
                         "inference_ram_plus.py"));
 
-                pretrainedLocation = Path.GetFullPath(Path.Combine(
+                _pretrainedLocation = Path.GetFullPath(Path.Combine(
                         recognizeAnythingPath,
                         "pretrained",
                         "ram_plus_swin_large_14m.pth"
                 ));
 
-                if (!File.Exists(scriptLocation))
+                if (!File.Exists(_scriptLocation))
                 {
-                        throw new InvalidOperationException("The tagging script is not present in location: " + scriptLocation);
+                        throw new InvalidOperationException("The tagging script is not present in location: " + _scriptLocation);
                 }
 
-                if (!File.Exists(pretrainedLocation))
+                if (!File.Exists(_pretrainedLocation))
                 {
-                        throw new InvalidOperationException("The tagging pretrained data is not present in location: " + pretrainedLocation);
+                        throw new InvalidOperationException("The tagging pretrained data is not present in location: " + _pretrainedLocation);
                 }
         }
 
@@ -57,7 +57,7 @@ public class ImageTagger
                 ProcessStartInfo processStartInfo = new()
                 {
                         FileName = "python",
-                        Arguments = $"{scriptLocation} --image {fullImagePath} --pretrained {pretrainedLocation}",
+                        Arguments = $"{_scriptLocation} --image {fullImagePath} --pretrained {_pretrainedLocation}",
                         CreateNoWindow = true,
                         RedirectStandardOutput = true,
                 };
