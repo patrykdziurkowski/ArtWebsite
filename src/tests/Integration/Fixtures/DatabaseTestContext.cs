@@ -60,9 +60,9 @@ public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDispo
         public new void Dispose()
         {
                 Database.Stop();
-                Database.Remove();
+                Database.Remove(force: true);
                 Database.Dispose();
-                _image.Remove();
+                _image.Remove(force: true);
                 _image.Dispose();
                 base.Dispose();
         }

@@ -35,4 +35,11 @@
     <ProjectReference Include="../web/web.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="../ai/Dockerfile">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+
 </Project>

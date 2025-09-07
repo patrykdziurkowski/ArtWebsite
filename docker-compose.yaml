@@ -27,6 +27,11 @@ services:
       db:
         condition: service_healthy
 
+  ai:
+    build:
+      context: src/ai
+      dockerfile: Dockerfile
+
   db:
     build:
       context: src/db
