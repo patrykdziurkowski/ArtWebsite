@@ -22,7 +22,7 @@ public class ImageTagger
                 HttpResponseMessage response = await client.PostAsync(Url, content);
                 if (!response.IsSuccessStatusCode)
                 {
-                        throw new InvalidOperationException($"Unable to fetch tags for image. Status {response.StatusCode} with message '{response.Content.ReadAsStringAsync()}'");
+                        throw new InvalidOperationException($"Unable to fetch tags for image. Status {response.StatusCode} with message '{await response.Content.ReadAsStringAsync()}'");
                 }
 
                 string json = await response.Content.ReadAsStringAsync();
