@@ -7,6 +7,8 @@ jobs:
     steps:
       - name: Get the repository
         uses: actions/checkout@v4.2.2
+        with:
+          submodules: true
 
       - name: Set up the .NET SDK
         uses: actions/setup-dotnet@v4.1.0
