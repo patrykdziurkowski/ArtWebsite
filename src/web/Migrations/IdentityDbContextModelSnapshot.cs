@@ -381,6 +381,40 @@ namespace web.Migrations
                     b.ToTable("Reviews");
                 });
 
+            modelBuilder.Entity("web.Features.Tags.ArtPieceTag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ArtPieceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TagId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArtPieceId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("ArtPieceTags");
+                });
+
+            modelBuilder.Entity("web.Features.Tags.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -504,6 +538,21 @@ namespace web.Migrations
                     b.HasOne("web.Features.Reviewers.Reviewer", null)
                         .WithMany()
                         .HasForeignKey("ReviewerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("web.Features.Tags.ArtPieceTag", b =>
+                {
+                    b.HasOne("web.Features.ArtPieces.ArtPiece", null)
+                        .WithMany()
+                        .HasForeignKey("ArtPieceId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("web.Features.Tags.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

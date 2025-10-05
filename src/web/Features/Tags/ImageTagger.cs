@@ -1,10 +1,18 @@
 using System.Text.Json;
 
-namespace web.Features.Tags.ImageRecognition;
+namespace web.Features.Tags;
 
 public class ImageTagger
 {
-        public string Url { get; init; } = "http://ai:8081/tag";
+        public string Url { get; }
+
+        public ImageTagger()
+        {
+                string url = Environment.GetEnvironmentVariable("AI_CONTAINER_URL")
+                        ?? "http://ai:8081/";
+                url = url.TrimEnd('/');
+                Url = $"{url}/tag";
+        }
 
         public async Task<List<string>> TagImageAsync(string fullImagePath)
         {
@@ -13,8 +21,7 @@ public class ImageTagger
                         throw new InvalidOperationException($"No image with path '{fullImagePath}' found when trying to generate tags for it.");
                 }
 
-                HttpClient client = new();
-
+                using HttpClient client = new();
                 using MultipartFormDataContent content = [];
                 using FileStream fileStream = File.OpenRead(fullImagePath);
                 content.Add(new StreamContent(fileStream), "image", fullImagePath);

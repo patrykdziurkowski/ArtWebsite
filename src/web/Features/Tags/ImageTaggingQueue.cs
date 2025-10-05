@@ -1,20 +1,29 @@
-namespace web.Features.Tags.ImageRecognition;
+using System.Collections.Concurrent;
 
-public class ImageTaggingQueue(ImageTagger imageTagger)
+namespace web.Features.Tags;
+
+public class ImageTaggingQueue
 {
-        private readonly ImageTagger _imageTagger = imageTagger;
-        public Dictionary<string, Action<List<string>>> QueuedImages { get; } = [];
+        public ConcurrentQueue<ImageTaggingItem> QueuedImages { get; } = [];
 
-        public async Task Add(string fullImagePath, Action<List<string>> callBack)
+        public void Add(string fullImagePath, Func<List<string>, Task> callBack)
         {
-                if (QueuedImages.ContainsKey(fullImagePath))
+                QueuedImages.Enqueue(new()
                 {
-                        throw new InvalidOperationException($"Could not queue image with path '{fullImagePath}' since it already is being processed.");
-                }
-
-                QueuedImages.Add(fullImagePath, callBack);
-                List<string> tags = await _imageTagger.TagImageAsync(fullImagePath);
-                callBack(tags);
-                QueuedImages.Remove(fullImagePath);
+                        FullImagePath = fullImagePath,
+                        CallBack = callBack,
+                });
         }
+
+        public ImageTaggingItem? Dequeue()
+        {
+                bool itemDequeued = QueuedImages.TryDequeue(out ImageTaggingItem? result);
+                return itemDequeued ? result : null;
+        }
+}
+
+public record ImageTaggingItem
+{
+        public required string FullImagePath { get; init; }
+        public required Func<List<string>, Task> CallBack { get; init; }
 }

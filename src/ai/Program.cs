@@ -1,60 +1,90 @@
-using System.Diagnostics;
+using Microsoft.ML.OnnxRuntime;
+using Microsoft.ML.OnnxRuntime.Tensors;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
+var labels = File.ReadAllLines("models/synset.txt");
+
 app.MapPost("/tag", async (HttpContext context) =>
 {
-        if (!context.Request.HasFormContentType)
-        {
-                return Results.BadRequest("Expected form data with a file.");
-        }
-
-        IFormCollection form = await context.Request.ReadFormAsync();
-        IFormFile? file = form.Files["image"];
+        var file = context.Request.Form.Files["image"];
         if (file is null)
         {
-                return Results.BadRequest("No image uploaded.");
+                return Results.BadRequest("No image provided");
         }
 
-        if (file.Length <= 0)
+        using var stream = file.OpenReadStream();
+        try
         {
-                return Results.BadRequest("Empty image uploaded.");
-        }
+                using var image = await Image.LoadAsync<Rgb24>(stream);
 
-        string imagePath = Path.Combine("/app/images", Guid.NewGuid().ToString());
-        Directory.CreateDirectory("/app/images");
-        using Stream fileStream = new FileStream(imagePath, FileMode.CreateNew);
-        await file.CopyToAsync(fileStream);
-
-        Process tagProcess = new()
-        {
-                StartInfo = new()
+                image.Mutate(x => x.Resize(new ResizeOptions
                 {
-                        RedirectStandardOutput = true,
-                        FileName = "python",
-                        Arguments = $"inference_ram_plus.py --image {imagePath} --pretrained pretrained/ram_plus_swin_large_14m.pth",
-                }
-        };
-        tagProcess.Start();
-        await tagProcess.WaitForExitAsync();
+                        Size = new Size(224, 224),
+                        Mode = ResizeMode.Crop
+                }));
 
-        const string ENGLISH_TAGS_LINE_START = "Image Tags: ";
-        string? line;
-        while ((line = await tagProcess.StandardOutput.ReadLineAsync()) is not null)
-        {
-                Console.WriteLine(line);
-                if (line.StartsWith(ENGLISH_TAGS_LINE_START))
+                float[] mean = [0.485f, 0.456f, 0.406f];
+                float[] stddev = [0.229f, 0.224f, 0.225f];
+                DenseTensor<float> processedImage = new([1, 3, 224, 224]);
+                image.ProcessPixelRows(accessor =>
                 {
-                        List<string> tags = [.. line[ENGLISH_TAGS_LINE_START.Length..].Split(" | ")];
-                        File.Delete(imagePath);
-                        return Results.Json(tags);
-                }
-        }
+                        for (int y = 0; y < accessor.Height; y++)
+                        {
+                                Span<Rgb24> pixelSpan = accessor.GetRowSpan(y);
+                                for (int x = 0; x < accessor.Width; x++)
+                                {
+                                        processedImage[0, 0, y, x] = ((pixelSpan[x].R / 255f) - mean[0]) / stddev[0];
+                                        processedImage[0, 1, y, x] = ((pixelSpan[x].G / 255f) - mean[1]) / stddev[1];
+                                        processedImage[0, 2, y, x] = ((pixelSpan[x].B / 255f) - mean[2]) / stddev[2];
+                                }
+                        }
+                });
 
-        File.Delete(imagePath);
-        return Results.InternalServerError("Could not find the tags for this image.");
+
+                using var inputOrtValue = OrtValue.CreateTensorValueFromMemory(OrtMemoryInfo.DefaultInstance,
+                        processedImage.Buffer, [1, 3, 224, 224]);
+
+                var inputs = new Dictionary<string, OrtValue>
+                        {
+                                { "data", inputOrtValue }
+                        };
+
+                using var session = new InferenceSession("models/resnet50-v2-7.onnx");
+                using var runOptions = new RunOptions();
+                using IDisposableReadOnlyCollection<OrtValue> results = session.Run(runOptions, inputs, session.OutputNames);
+
+                var output = results[0].GetTensorDataAsSpan<float>().ToArray();
+                float sum = output.Sum(x => (float)Math.Exp(x));
+                IEnumerable<float> softmax = output.Select(x => (float)Math.Exp(x) / sum);
+
+                IEnumerable<string> top10 = softmax.Select((x, i) => new Prediction { Label = labels[i], Confidence = x })
+                        .OrderByDescending(x => x.Confidence)
+                        .Select(p => p.Label)
+                        .Select(label => label.Replace(",", "").Split(' ')[1])
+                        .Take(10);
+
+                return Results.Json(top10);
+        }
+        catch (UnknownImageFormatException)
+        {
+                return Results.BadRequest("Unrecognized image format");
+        }
 });
 
+app.MapGet("/health", () => Results.Ok("Healthy"));
+
 app.Run();
+
+public record Prediction
+{
+        public required string Label { get; init; }
+        public required float Confidence { get; init; }
+}
+
+
 

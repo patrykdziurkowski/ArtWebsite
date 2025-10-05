@@ -5,6 +5,7 @@ using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Tags;
 
 namespace tests.Integration.Commands;
 
@@ -15,7 +16,11 @@ public class UploadArtPieceCommandTests : DatabaseBase
         public UploadArtPieceCommandTests(DatabaseTestContext databaseContext)
                 : base(databaseContext)
         {
-                _command = Scope.ServiceProvider.GetRequiredService<UploadArtPieceCommand>();
+                _command = new(
+                        DbContext,
+                        Scope.ServiceProvider.GetRequiredService<ArtistRepository>(),
+                        Scope.ServiceProvider.GetRequiredService<ImageTaggingQueue>(),
+                        Scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>());
         }
 
         [Fact]
@@ -59,7 +64,7 @@ public class UploadArtPieceCommandTests : DatabaseBase
                         GetExampleFile(), "description", user.Id);
 
                 string path = Path.Combine("user-images", "art-pieces",
-                        $"{artistId}", $"{artPiece.Id}");
+                        $"{artistId}", $"{artPiece.Id}.png");
                 File.Exists(path).Should().BeTrue();
         }
 

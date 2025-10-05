@@ -6,6 +6,7 @@ using web.Features.ArtPieces;
 using web.Features.Reviewers;
 using web.Features.Reviews;
 using web.Features.Shared.domain;
+using web.Features.Tags;
 
 namespace web.Data;
 
@@ -18,6 +19,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         public DbSet<Reviewer> Reviewers { get; set; }
         public DbSet<Like> Likes { get; set; }
         public DbSet<Boost> Boosts { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<ArtPieceTag> ArtPieceTags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -58,6 +61,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 artPiece.HasOne<Artist>()
                         .WithMany()
                         .HasForeignKey(a => a.ArtistId)
+                        .OnDelete(DeleteBehavior.NoAction);
+                artPiece.HasMany<ArtPieceTag>()
+                        .WithOne()
+                        .HasForeignKey(a => a.ArtPieceId)
                         .OnDelete(DeleteBehavior.NoAction);
                 artPiece.Property(a => a.ImagePath)
                         .IsRequired();
@@ -112,5 +119,21 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .WithMany()
                         .HasForeignKey(l => l.ArtPieceId)
                         .OnDelete(DeleteBehavior.NoAction);
+
+                var tag = builder.Entity<Tag>();
+                tag.HasKey(t => t.Id);
+                tag.Property(t => t.Id)
+                       .HasConversion(id => id.Value, guid => new TagId { Value = guid });
+                tag.Property(t => t.Name)
+                        .IsRequired();
+                tag.HasMany<ArtPieceTag>()
+                        .WithOne()
+                        .HasForeignKey(apt => apt.TagId)
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                var artPieceTag = builder.Entity<ArtPieceTag>();
+                artPieceTag.HasKey(apt => apt.Id);
+                artPieceTag.Property(apt => apt.Id)
+                        .HasConversion(id => id.Value, guid => new ArtPieceTagId { Value = guid });
         }
 }

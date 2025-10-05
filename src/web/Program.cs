@@ -21,6 +21,7 @@ using web.Features.Reviewers.UnlikeArtPiece;
 using web.Features.Reviews.LoadReviews;
 using web.Features.Reviews.ReviewArtPiece;
 using web.Features.Shared;
+using web.Features.Tags;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
@@ -63,6 +64,7 @@ services.Configure<RazorViewEngineOptions>(o =>
 
 
 services.AddAutoMapper(typeof(AutoMapperProfile));
+
 services.AddTransient<SetupArtistCommand>();
 services.AddTransient<DeactivateArtistCommand>();
 services.AddTransient<UploadArtPieceCommand>();
@@ -71,12 +73,19 @@ services.AddTransient<ArtPieceQuery>();
 services.AddTransient<ArtPiecesQuery>();
 services.AddTransient<ReviewsQuery>();
 services.AddTransient<UserReviewerQuery>();
+services.AddTransient<ArtPieceTagsQuery>();
 services.AddTransient<ReviewArtPieceCommand>();
 services.AddTransient<LikeArtPieceCommand>();
 services.AddTransient<UnlikeArtPieceCommand>();
 services.AddTransient<LikesQuery>();
+
 services.AddTransient<ReviewerRepository>();
 services.AddTransient<ArtistRepository>();
+
+services.AddSingleton<ImageTaggingQueue>();
+services.AddTransient<ImageTagger>();
+services.AddHostedService<ImageProcessor>();
+
 services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
 
 var app = builder.Build();

@@ -11,5 +11,5 @@ ENV MSSQL_SA_PASSWORD=${password}
 
 CMD ["/opt/mssql/bin/sqlservr"]
 
-HEALTHCHECK --interval=5s --timeout=1s --start-period=10s --retries=10 \
+HEALTHCHECK --interval=1s --timeout=5s --retries=90 \
         CMD /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ${MSSQL_SA_PASSWORD} -Q "SELECT 1" -b -No

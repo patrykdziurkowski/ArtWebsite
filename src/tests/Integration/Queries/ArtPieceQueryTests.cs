@@ -10,12 +10,12 @@ namespace tests.Integration.Queries;
 
 public class ArtPieceQueryTests : DatabaseBase
 {
-        private readonly ArtPieceQuery _command;
+        private readonly ArtPieceQuery _query;
 
         public ArtPieceQueryTests(DatabaseTestContext databaseContext)
                 : base(databaseContext)
         {
-                _command = Scope.ServiceProvider.GetRequiredService<ArtPieceQuery>();
+                _query = Scope.ServiceProvider.GetRequiredService<ArtPieceQuery>();
         }
 
         [Fact]
@@ -24,7 +24,7 @@ public class ArtPieceQueryTests : DatabaseBase
                 await CreateUserWithArtistProfile();
                 Guid currentUserId = DbContext.Users.First().Id;
 
-                ArtPieceDto? artPiece = await _command.ExecuteAsync(currentUserId);
+                ArtPieceDto? artPiece = await _query.ExecuteAsync(currentUserId);
 
                 artPiece.Should().BeNull();
         }
@@ -36,7 +36,7 @@ public class ArtPieceQueryTests : DatabaseBase
                 await Create6ArtPiecesForArtist(artistId);
                 Guid currentUserId = DbContext.Users.First().Id;
 
-                ArtPieceDto? artPiece = await _command.ExecuteAsync(currentUserId);
+                ArtPieceDto? artPiece = await _query.ExecuteAsync(currentUserId);
 
                 artPiece.Should().NotBeNull();
         }
@@ -62,7 +62,7 @@ public class ArtPieceQueryTests : DatabaseBase
                 await DbContext.SaveChangesAsync();
                 Guid currentUserId = DbContext.Users.First().Id;
 
-                ArtPieceDto? returnedArtPiece = await _command.ExecuteAsync(currentUserId);
+                ArtPieceDto? returnedArtPiece = await _query.ExecuteAsync(currentUserId);
 
                 returnedArtPiece.Should().BeNull();
         }

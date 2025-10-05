@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using web.Data;
 using web.Features.Artists;
@@ -22,13 +23,25 @@ public abstract class DatabaseBase : IDisposable
                 Scope = databaseContext.Services.CreateScope();
                 DbContext = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 UserManager = Scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
-                DbContext.Database.BeginTransaction();
+
+                DbContext.ArtPieceTags.ExecuteDelete();
+                DbContext.Tags.ExecuteDelete();
+                DbContext.Boosts.ExecuteDelete();
+                DbContext.Likes.ExecuteDelete();
+                DbContext.Reviews.ExecuteDelete();
+                DbContext.ArtPieces.ExecuteDelete();
+                DbContext.Artists.ExecuteDelete();
+                DbContext.Reviewers.ExecuteDelete();
+                DbContext.UserRoles.ExecuteDelete();
+                DbContext.UserLogins.ExecuteDelete();
+                DbContext.UserTokens.ExecuteDelete();
+                DbContext.UserClaims.ExecuteDelete();
+                DbContext.Users.ExecuteDelete();
         }
 
         public void Dispose()
         {
                 RemoveArtPieceImages();
-                DbContext.Database.RollbackTransaction();
                 Scope.Dispose();
         }
 
@@ -163,11 +176,24 @@ public abstract class DatabaseBase : IDisposable
 
         public FormFile GetExampleFile()
         {
-                MemoryStream stream = new(Encoding.UTF8.GetBytes("Test file"));
-                return new FormFile(stream, 0, stream.Length, "file", "myFile")
+                string image = Path.GetFullPath(Path.Combine(
+                        GetType().Assembly.Location,
+                        "..",
+                        "..",
+                        "..",
+                        "..",
+                        "resources",
+                        "exampleImage.png"));
+                if (!File.Exists(image))
+                {
+                        throw new InvalidOperationException("Unable to find a sample image for a test.");
+                }
+
+                FileStream stream = File.OpenRead(image);
+                return new FormFile(stream, 0, stream.Length, "file", Path.GetFileName(image))
                 {
                         Headers = new HeaderDictionary(),
-                        ContentType = "image/jpeg"
+                        ContentType = "image/png"
                 };
         }
 

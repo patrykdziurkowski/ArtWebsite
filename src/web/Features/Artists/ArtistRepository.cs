@@ -51,6 +51,12 @@ public class ArtistRepository(ApplicationDbContext dbContext)
 
                 if (artist.DomainEvents.Contains(new ArtistDeactivatedEvent()))
                 {
+                        dbContext.ArtPieceTags.RemoveRange(
+                                dbContext.ArtPieceTags.Where(apt => dbContext.ArtPieces
+                                        .Where(ap => ap.ArtistId == artist.Id)
+                                        .Select(ap => ap.Id)
+                                        .Contains(apt.ArtPieceId)));
+
                         dbContext.Boosts.RemoveRange(dbContext.Boosts.Where(b => b.ArtistId == artist.Id));
                         dbContext.ArtPieces.RemoveRange(dbContext.ArtPieces.Where(ap => ap.ArtistId == artist.Id));
                         dbContext.Artists.Remove(artist);

@@ -1,18 +1,15 @@
 using FluentAssertions;
 using tests.Integration.Fixtures;
-using web.Features.Tags.ImageRecognition;
+using web.Features.Tags;
 
 namespace tests.Integration;
 
-public class ImageTaggerTests : AiContainerTests
+public class ImageTaggerTests(DatabaseTestContext databaseContext) : DatabaseBase(databaseContext)
 {
         [Fact]
         public async Task TagImage_ShouldReturnACoupleOfTags_ForImage()
         {
-                ImageTagger imageTagger = new()
-                {
-                        Url = "http://localhost:8081/tag"
-                };
+                ImageTagger imageTagger = new();
                 string assemblyLocation = typeof(ImageTagger).Assembly.Location;
                 string image = Path.GetFullPath(Path.Combine(
                         assemblyLocation,
@@ -32,10 +29,7 @@ public class ImageTaggerTests : AiContainerTests
         [Fact]
         public void TagImage_ShouldThrow_WhenImageDoesntExist()
         {
-                ImageTagger imageTagger = new()
-                {
-                        Url = "http://localhost:8081/tag"
-                };
+                ImageTagger imageTagger = new();
                 string image = "nonExistentImage.jpg";
                 File.Exists(image).Should().BeFalse();
 

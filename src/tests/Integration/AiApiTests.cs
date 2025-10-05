@@ -6,7 +6,7 @@ using tests.Integration.Fixtures;
 
 namespace tests.Integration;
 
-public class AiApiTests : AiContainerTests
+public class AiApiTests(DatabaseTestContext databaseContext) : DatabaseBase(databaseContext)
 {
         private const string URL = "http://localhost:8081/tag";
 

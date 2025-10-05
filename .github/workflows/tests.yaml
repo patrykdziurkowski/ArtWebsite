@@ -10,11 +10,6 @@ jobs:
         with:
           submodules: true
 
-      - name: Download the image recognition checkpoints
-        run: |
-          mkdir -p src/ai/recognize-anything/pretrained
-          curl -L https://huggingface.co/xinyu1205/recognize-anything-plus-model/resolve/main/ram_plus_swin_large_14m.pth -o src/ai/recognize-anything/pretrained/ram_plus_swin_large_14m.pth
-
       - name: Set up the .NET SDK
         uses: actions/setup-dotnet@v4.1.0
         with:
