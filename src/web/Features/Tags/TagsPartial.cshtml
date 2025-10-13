@@ -1,0 +1,59 @@
+<div id="tags">Loading tags...</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.7/signalr.min.js"></script>
+<script>
+    async function loadTags() {
+        const container = document.getElementById('tags');
+        const res = await fetch(`/api/artpieces/${artPieceId}/tags`);
+        if (!res.ok) {
+            return waitForSignalR();
+        }
+
+        const tags = await res.json();
+
+        if (tags.length === 0) {
+            return waitForSignalR();
+        }
+
+        renderTags(tags);
+    }
+
+    function renderTags(tags) {
+        const container = document.getElementById('tags');
+        container.innerHTML = "";
+        tags.forEach(tag => {
+            const span = document.createElement("span");
+            span.classList.add("tag");
+            span.textContent = tag;
+            span.style.marginRight = "5px";
+            span.style.background = "#f0f2f5";
+            span.style.borderRadius = "12px";
+            span.style.padding = "4px 10px";
+            container.appendChild(span);
+        });
+    }
+
+    function waitForSignalR() {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/tagshub")
+            .build();
+
+        connection.start().then(() => {
+            connection.invoke("JoinArtGroup", artPieceId);
+        });
+
+        connection.on("TagsReady", (tags) => {
+            renderTags(tags);
+        });
+    }
+
+    async function waitForArtPieceId() {
+        while (typeof artPieceId === 'undefined' || !artPieceId) {
+            await new Promise(r => setTimeout(r, 200));
+        }
+
+        loadTags();
+    }
+
+    document.addEventListener('DOMContentLoaded', waitForArtPieceId());
+</script>

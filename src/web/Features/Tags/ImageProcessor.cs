@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.SignalR;
+
 namespace web.Features.Tags;
 
 public class ImageProcessor(
         ImageTaggingQueue queue,
         ImageTagger imageTagger,
-        ILogger<ImageProcessor> logger)
+        ILogger<ImageProcessor> logger,
+        IHubContext<TagsHub> tagsHub)
         : BackgroundService
 {
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -21,6 +24,7 @@ public class ImageProcessor(
                         {
                                 List<string> tags = await imageTagger.TagImageAsync(imageTaggingItem.FullImagePath);
                                 await imageTaggingItem.CallBack(tags);
+                                await tagsHub.Clients.Group($"art-{imageTaggingItem.ArtPieceId}").SendAsync("TagsReady", tags, stoppingToken);
                         }
                         catch (Exception ex)
                         {

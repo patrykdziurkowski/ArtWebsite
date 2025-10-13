@@ -24,11 +24,27 @@ public class ArtPiecesTests(WebDriverInitializer initializer)
         }
 
         [Fact, Order(1)]
-        public void UploadingArtPiece_AddsNewArtPiece_WhenUploadingImage()
+        public void UploadingArtPiece_AddsNewArtPieceWithTags_WhenUploadingImage()
         {
                 UploadArtPiece();
 
                 Wait.Until(d => d.FindElement(By.Id("artPieceImage"))).Should().NotBeNull();
+
+                TimeSpan previousTimeout = Wait.Timeout;
+                Wait.Timeout = TimeSpan.FromMinutes(1);
+                Wait.Until(d => d.FindElements(By.ClassName("tag")).Count > 0);
+                Wait.Timeout = previousTimeout;
+        }
+
+        [Fact, Order(2)]
+        public void Tags_ShouldLoad_WhenPageRefreshed()
+        {
+                Driver.Navigate().Refresh();
+
+                TimeSpan previousTimeout = Wait.Timeout;
+                Wait.Timeout = TimeSpan.FromMinutes(1);
+                Wait.Until(d => d.FindElements(By.ClassName("tag")).Count > 0);
+                Wait.Timeout = previousTimeout;
         }
 
 }

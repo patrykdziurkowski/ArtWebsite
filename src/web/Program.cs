@@ -63,6 +63,8 @@ services.Configure<RazorViewEngineOptions>(o =>
 });
 
 
+services.AddSignalR();
+
 services.AddAutoMapper(typeof(AutoMapperProfile));
 
 services.AddTransient<SetupArtistCommand>();
@@ -137,6 +139,8 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 app.MapRazorPages();
+
+app.MapHub<TagsHub>("/tagshub");
 
 await app.RunAsync();
 

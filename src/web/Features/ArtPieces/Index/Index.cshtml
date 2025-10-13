@@ -4,6 +4,8 @@
     <div id="artContainer" class="m-auto text-center">
         <h1>Loading...</h1>
     </div>
+
+    <partial name="../Tags/TagsPartial" />
     <button id="reviewArt" class="btn btn-light m-3" data-bs-toggle="modal"
         data-bs-target="#reviewModal">Review</button>
     <button id="likeArtPiece" class="btn btn-light m-3">Like</button>
@@ -48,6 +50,8 @@
     </div>
 </div>
 <script>
+    let artPieceId;
+
     async function loadArtPiece() {
         const response = await fetch("/api/artpiece");
         if (response.status === 204) {
@@ -69,7 +73,7 @@
                     <p>${data.description}</p>
                 </div>`;
         document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
-
+        artPieceId = data.id.value;
         return data;
     }
 

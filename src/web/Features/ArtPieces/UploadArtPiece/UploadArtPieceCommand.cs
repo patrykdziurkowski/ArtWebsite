@@ -39,7 +39,7 @@ public class UploadArtPieceCommand(
                 await dbContext.ArtPieces.AddAsync(artPiece);
                 await dbContext.SaveChangesAsync();
 
-                imageTaggingQueue.Add(imagePath, async (tags) => await AssignTagsAsync(artPiece.Id, tags));
+                imageTaggingQueue.Add(artPieceId, imagePath, async (tags) => await AssignTagsAsync(artPiece.Id, tags));
 
                 return artPiece;
         }
