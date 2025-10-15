@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Browse;
 
 namespace web.Features.ArtPieces;
 
@@ -10,16 +11,11 @@ namespace web.Features.ArtPieces;
 public class ArtPieceController(UploadArtPieceCommand uploadArtPieceCommand,
         UserManager<IdentityUser<Guid>> userManager) : Controller
 {
-        public ActionResult Index()
-        {
-                return View();
-        }
-
         public async Task<ActionResult> Upload()
         {
                 if (await IsArtistAsync() == false)
                 {
-                        return RedirectToAction(nameof(Index));
+                        return RedirectToAction(nameof(BrowseController.Index), "Browse");
                 }
                 return View();
         }
@@ -29,10 +25,10 @@ public class ArtPieceController(UploadArtPieceCommand uploadArtPieceCommand,
         {
                 if (await IsArtistAsync() == false)
                 {
-                        return RedirectToAction(nameof(Index));
+                        return RedirectToAction(nameof(BrowseController.Index), "Browse");
                 }
                 await uploadArtPieceCommand.ExecuteAsync(model.Image, model.Description, GetUserId());
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(BrowseController.Index), "Browse");
         }
 
         private Guid GetUserId()

@@ -1,12 +1,7 @@
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
-using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using web.Features.ArtPieces;
 using web.Features.Reviewers.Index;
-using web.Features.Reviewers.LikeArtPiece;
-using web.Features.Reviewers.LoadLikes;
 using web.Features.Shared;
 
 namespace web.Features.Reviewers;

@@ -3,8 +3,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Features.Artists;
-using web.Features.ArtPieces.Index;
 using web.Features.ArtPieces.LoadArtPieces;
+using web.Features.Browse.Index;
 
 namespace web.Features.ArtPieces;
 

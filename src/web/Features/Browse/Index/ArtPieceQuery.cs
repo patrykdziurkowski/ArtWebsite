@@ -1,9 +1,10 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
+using web.Features.ArtPieces;
 using web.Features.Reviewers;
 
-namespace web.Features.ArtPieces.Index;
+namespace web.Features.Browse.Index;
 
 public class ArtPieceQuery(
         ApplicationDbContext dbContext,

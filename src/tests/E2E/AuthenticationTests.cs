@@ -1,4 +1,3 @@
-using Azure;
 using FluentAssertions;
 using OpenQA.Selenium;
 using tests.E2E.Fixtures;

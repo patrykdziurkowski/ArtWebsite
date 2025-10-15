@@ -2,7 +2,6 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.ArtPieces;
-using web.Features.Reviewers;
 using web.Features.Reviewers.LoadLikes;
 
 namespace tests.Integration.Queries;

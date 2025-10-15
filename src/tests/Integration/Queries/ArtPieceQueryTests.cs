@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
-using web.Features.ArtPieces.Index;
+using web.Features.Browse.Index;
 using web.Features.Reviews;
 
 namespace tests.Integration.Queries;

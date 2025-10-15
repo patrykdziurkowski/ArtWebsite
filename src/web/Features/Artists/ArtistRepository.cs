@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using web.Data;
-using web.Features.ArtPieces;
 
 namespace web.Features.Artists;
 

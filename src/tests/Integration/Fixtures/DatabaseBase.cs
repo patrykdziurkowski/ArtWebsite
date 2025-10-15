@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -195,6 +194,22 @@ public abstract class DatabaseBase : IDisposable
                         Headers = new HeaderDictionary(),
                         ContentType = "image/png"
                 };
+        }
+
+        public async Task WaitWhileNoTagsInDatabaseAsync()
+        {
+                DateTime waitStart = DateTime.Now;
+                TimeSpan timeout = TimeSpan.FromSeconds(30);
+                while (!await DbContext.ArtPieceTags.AnyAsync())
+                {
+                        if (DateTime.Now.Subtract(waitStart) > timeout)
+                        {
+                                throw new TimeoutException("Waiting for image to be tagged timed out.");
+                        }
+
+                        await Task.Delay(1000);
+                }
+
         }
 
 }

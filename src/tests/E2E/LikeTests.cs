@@ -18,7 +18,7 @@ public class LikeTests(WebDriverInitializer initializer)
                 CreateUserWithArtistProfile();
                 UploadArtPiece();
 
-                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
                 IWebElement likeButton = Wait.Until(d => d.FindElement(By.Id("likeArtPiece")));
                 likeButton.Text.Should().Be("Like");
                 likeButton.Click();
@@ -48,7 +48,7 @@ public class LikeTests(WebDriverInitializer initializer)
         [Fact, Order(2)]
         public void UnlikingArtPiece_ShouldShowButtonAsLike_EvenAfterRefreshing()
         {
-                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
                 IWebElement likeButton = Wait.Until(d => d.FindElement(By.Id("likeArtPiece")));
                 likeButton.Text.Should().Be("Unlike");
                 likeButton.Click();

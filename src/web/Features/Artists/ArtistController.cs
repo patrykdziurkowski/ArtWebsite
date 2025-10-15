@@ -3,7 +3,6 @@ using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.Index;

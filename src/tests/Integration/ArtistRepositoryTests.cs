@@ -2,7 +2,6 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
-using web.Data;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 

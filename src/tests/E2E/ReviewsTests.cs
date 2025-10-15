@@ -16,7 +16,7 @@ public class ReviewsTests(WebDriverInitializer initializer)
                 CreateUserWithArtistProfile();
                 UploadArtPiece();
                 UploadArtPiece();
-                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
                 string imagePathBeforeReview = Wait.Until(d => d.FindElement(By.Id("artPieceImage"))
                         .GetDomAttribute("src"));
                 Driver.FindElement(By.Id("reviewArt")).Click();
@@ -45,7 +45,7 @@ public class ReviewsTests(WebDriverInitializer initializer)
         [Fact, Order(2)]
         public async Task LikingArtPiece_ShowsLikeOnReviewerProfile()
         {
-                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece");
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
 
                 Wait.Until(d => d.FindElement(By.Id("likeArtPiece"))).Click();
                 await Task.Delay(1000);

@@ -53,17 +53,7 @@ public class ArtPieceTagsQueryTests : DatabaseBase
                 await DbContext.SaveChangesAsync();
                 ArtPiece artPiece = await _uploadArtPiece.ExecuteAsync(
                         GetExampleFile(), "description", user.Id);
-                DateTime waitStart = DateTime.Now;
-                TimeSpan timeout = TimeSpan.FromSeconds(30);
-                while (!await DbContext.ArtPieceTags.AnyAsync())
-                {
-                        if (DateTime.Now.Subtract(waitStart) > timeout)
-                        {
-                                throw new TimeoutException("Waiting for image to be tagged timed out.");
-                        }
-
-                        await Task.Delay(1000);
-                }
+                await WaitWhileNoTagsInDatabaseAsync();
 
                 List<Tag> tags = await _query.ExecuteAsync(artPiece.Id);
 
