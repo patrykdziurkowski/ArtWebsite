@@ -4,7 +4,7 @@ using web.Features.Tags;
 
 namespace tests.Integration;
 
-public class ImageTaggerTests(DatabaseTestContext databaseContext) : DatabaseBase(databaseContext)
+public class ImageTaggerTests(DatabaseTestContext databaseContext) : DatabaseTest(databaseContext)
 {
         [Fact]
         public async Task TagImage_ShouldReturnACoupleOfTags_ForImage()

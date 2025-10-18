@@ -9,7 +9,7 @@ using web.Features.ArtPieces;
 
 namespace tests.Integration.Commands;
 
-public class BoostArtPieceCommandTests : DatabaseBase
+public class BoostArtPieceCommandTests : DatabaseTest
 {
         private readonly BoostArtPieceCommand _command;
         public BoostArtPieceCommandTests(DatabaseTestContext context) : base(context)

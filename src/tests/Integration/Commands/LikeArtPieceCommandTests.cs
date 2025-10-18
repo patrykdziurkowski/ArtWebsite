@@ -8,7 +8,7 @@ using web.Features.Reviewers.LikeArtPiece;
 
 namespace tests.Integration.Commands;
 
-public class LikeArtPieceCommandTests : DatabaseBase
+public class LikeArtPieceCommandTests : DatabaseTest
 {
         private readonly LikeArtPieceCommand _command;
 

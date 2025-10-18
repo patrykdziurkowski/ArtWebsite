@@ -8,7 +8,7 @@ using web.Features.Reviews;
 
 namespace tests.Integration.Queries;
 
-public class ArtPieceQueryTests : DatabaseBase
+public class ArtPieceQueryTests : DatabaseTest
 {
         private readonly ArtPieceQuery _query;
 

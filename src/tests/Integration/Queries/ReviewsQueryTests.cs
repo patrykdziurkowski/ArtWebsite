@@ -7,7 +7,7 @@ using web.Features.Reviews.LoadReviews;
 
 namespace tests.Integration.Queries;
 
-public class ReviewsQueryTests : DatabaseBase
+public class ReviewsQueryTests : DatabaseTest
 {
         private readonly ReviewsQuery _command;
 

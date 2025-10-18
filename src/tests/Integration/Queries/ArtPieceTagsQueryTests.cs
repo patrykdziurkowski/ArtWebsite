@@ -10,7 +10,7 @@ using web.Features.Tags;
 
 namespace tests.Integration.Queries;
 
-public class ArtPieceTagsQueryTests : DatabaseBase
+public class ArtPieceTagsQueryTests : DatabaseTest
 {
         private readonly ArtPieceTagsQuery _query;
         private readonly UploadArtPieceCommand _uploadArtPiece;

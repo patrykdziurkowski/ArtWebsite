@@ -7,7 +7,7 @@ using web.Features.ArtPieces.LoadArtPieces;
 
 namespace tests.Integration.Queries;
 
-public class ArtPiecesQueryTests : DatabaseBase
+public class ArtPiecesQueryTests : DatabaseTest
 {
         private readonly ArtPiecesQuery _command;
 

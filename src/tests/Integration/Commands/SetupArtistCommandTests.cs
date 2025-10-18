@@ -9,7 +9,7 @@ using web.Features.Artists.SetupArtist;
 
 namespace tests.Integration.Commands;
 
-public class SetupArtistCommandTests : DatabaseBase
+public class SetupArtistCommandTests : DatabaseTest
 {
         private readonly SetupArtistCommand _command;
 

@@ -7,7 +7,7 @@ using web.Features.Reviewers.Index;
 
 namespace tests.Integration.Queries;
 
-public class UserReviewerQueryTests : DatabaseBase
+public class UserReviewerQueryTests : DatabaseTest
 {
         private readonly UserReviewerQuery _command;
         public UserReviewerQueryTests(DatabaseTestContext databaseContext)

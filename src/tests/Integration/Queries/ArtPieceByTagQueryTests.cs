@@ -9,7 +9,7 @@ using web.Features.Browse.ByTag;
 
 namespace tests.Integration.Queries;
 
-public class ArtPieceByTagQueryTests : DatabaseBase
+public class ArtPieceByTagQueryTests : DatabaseTest
 {
         private readonly ArtPieceByTagQuery _query;
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;

@@ -6,7 +6,7 @@ using web.Features.Reviewers.LoadLikes;
 
 namespace tests.Integration.Queries;
 
-public class LikesQueryTests : DatabaseBase
+public class LikesQueryTests : DatabaseTest
 {
         private readonly LikesQuery _command;
 

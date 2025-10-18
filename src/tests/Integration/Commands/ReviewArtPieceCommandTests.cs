@@ -10,7 +10,7 @@ using web.Features.Reviews.ReviewArtPiece;
 
 namespace tests.Integration.Commands;
 
-public class ReviewArtPieceCommandTests : DatabaseBase
+public class ReviewArtPieceCommandTests : DatabaseTest
 {
         private readonly ReviewArtPieceCommand _command;
         private readonly UploadArtPieceCommand _uploadArtPiece;

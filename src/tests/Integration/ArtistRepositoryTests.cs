@@ -7,7 +7,7 @@ using web.Features.ArtPieces;
 
 namespace tests.Integration;
 
-public class ArtistRepositoryTests : DatabaseBase
+public class ArtistRepositoryTests : DatabaseTest
 {
         private readonly ArtistRepository _artistRepository;
 

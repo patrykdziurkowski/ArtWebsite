@@ -8,7 +8,7 @@ using web.Features.Reviewers.UnlikeArtPiece;
 
 namespace tests.Integration.Commands;
 
-public class UnlikeArtPieceCommandTests : DatabaseBase
+public class UnlikeArtPieceCommandTests : DatabaseTest
 {
         private readonly UnlikeArtPieceCommand _command;
 

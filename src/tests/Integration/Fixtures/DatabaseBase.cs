@@ -11,13 +11,13 @@ using web.Features.Reviews;
 namespace tests.Integration.Fixtures;
 
 [Collection("Database collection")]
-public abstract class DatabaseBase : IDisposable
+public abstract class DatabaseTest : IDisposable
 {
         public ApplicationDbContext DbContext { get; init; }
         public IServiceScope Scope { get; init; }
         public UserManager<IdentityUser<Guid>> UserManager { get; init; }
 
-        public DatabaseBase(DatabaseTestContext databaseContext)
+        public DatabaseTest(DatabaseTestContext databaseContext)
         {
                 Scope = databaseContext.Services.CreateScope();
                 DbContext = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

@@ -8,7 +8,7 @@ using web.Features.Artists.DeactivateArtist;
 
 namespace tests.Integration.Commands;
 
-public class DeactivateArtistCommandTests : DatabaseBase
+public class DeactivateArtistCommandTests : DatabaseTest
 {
         private readonly DeactivateArtistCommand _command;
 

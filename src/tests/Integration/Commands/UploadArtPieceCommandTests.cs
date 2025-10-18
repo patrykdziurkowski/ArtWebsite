@@ -9,7 +9,7 @@ using web.Features.Tags;
 
 namespace tests.Integration.Commands;
 
-public class UploadArtPieceCommandTests : DatabaseBase
+public class UploadArtPieceCommandTests : DatabaseTest
 {
         private readonly UploadArtPieceCommand _command;
 
