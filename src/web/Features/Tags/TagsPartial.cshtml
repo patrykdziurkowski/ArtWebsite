@@ -29,6 +29,7 @@
             span.style.background = "#f0f2f5";
             span.style.borderRadius = "12px";
             span.style.padding = "4px 10px";
+            span.onclick = () => selectTag(tag);
             container.appendChild(span);
         });
     }
@@ -55,5 +56,5 @@
         loadTags();
     }
 
-    document.addEventListener('DOMContentLoaded', waitForArtPieceId());
+    document.addEventListener('DOMContentLoaded', waitForArtPieceId);
 </script>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Features.Artists;
 using web.Features.ArtPieces.LoadArtPieces;
+using web.Features.Browse.ByTag;
 using web.Features.Browse.Index;
 
 namespace web.Features.ArtPieces;
@@ -11,19 +12,31 @@ namespace web.Features.ArtPieces;
 [Route("api/artpiece")]
 [ApiController]
 [Authorize]
-public class ArtPieceApiController(ArtPieceQuery artPieceQuery,
-        ArtPiecesQuery artPiecesQuery) : ControllerBase
+public class ArtPieceApiController(
+        ArtPieceQuery artPieceQuery,
+        ArtPiecesQuery artPiecesQuery,
+        ArtPieceByTagQuery artPiecesByTagQuery) : ControllerBase
 {
         private const int ART_PIECES_TO_LOAD = 5;
 
         [HttpGet("/api/artpiece")]
-        public async Task<IActionResult> GetNextArtPiece()
+        public async Task<IActionResult> GetNextArtPiece([FromQuery] string? tag)
         {
-                ArtPieceDto? artPiece = await artPieceQuery.ExecuteAsync(GetUserId());
+                ArtPieceDto? artPiece;
+                if (tag is null)
+                {
+                        artPiece = await artPieceQuery.ExecuteAsync(GetUserId());
+                }
+                else
+                {
+                        artPiece = await artPiecesByTagQuery.ExecuteAsync(GetUserId(), tag);
+                }
+
                 if (artPiece is null)
                 {
                         return NoContent();
                 }
+
                 return Ok(artPiece);
         }
 

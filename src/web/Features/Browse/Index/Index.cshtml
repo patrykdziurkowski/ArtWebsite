@@ -1,14 +1,18 @@
 ﻿@using web.Features.Reviews.ReviewArtPiece
 @model ReviewArtPieceModel
+
 <div class="container">
+    <div id="selectedTag"></div>
     <div id="artContainer" class="m-auto text-center">
         <h1>Loading...</h1>
     </div>
 
-    <partial name="../Tags/TagsPartial" />
-    <button id="reviewArt" class="btn btn-light m-3" data-bs-toggle="modal"
-        data-bs-target="#reviewModal">Review</button>
-    <button id="likeArtPiece" class="btn btn-light m-3">Like</button>
+    <div id="artPieceControls">
+        <partial name="../Tags/TagsPartial" />
+        <button id="reviewArt" class="btn btn-light m-3" data-bs-toggle="modal"
+            data-bs-target="#reviewModal">Review</button>
+        <button id="likeArtPiece" class="btn btn-light m-3">Like</button>
+    </div>
 </div>
 
 <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
@@ -49,21 +53,26 @@
         </div>
     </div>
 </div>
+
 <script>
     let artPieceId;
+    let currentTag = null;
 
     async function loadArtPiece() {
-        const response = await fetch("/api/artpiece");
+        const url = (currentTag === null) ? '/api/artpiece' : `/api/artpiece?tag=${currentTag}`;
+        const response = await fetch(url);
+        const artContainer = document.getElementById('artContainer');
         if (response.status === 204) {
+            artContainer.innerHTML = '<h1>No more images to review.</h1>';
+            document.querySelector('#artPieceControls').style.display = 'none';
             return null;
         }
 
         const data = await response.json();
-        const artContainer = document.getElementById('artContainer');
+
         if (!data || !data.imagePath) {
             artContainer.innerHTML = '<h1>No more images to review.</h1>';
-            document.querySelector('#likeArtPiece').style.display = 'none';
-            document.querySelector('#reviewArt').style.display = 'none';
+            document.querySelector('#artPieceControls').style.display = 'none';
             return null;
         }
 
@@ -75,6 +84,15 @@
         document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
         artPieceId = data.id.value;
         return data;
+    }
+
+    function selectTag(tag) {
+        currentTag = tag;
+
+        const selectedTagContainer = document.querySelector('#selectedTag');
+        selectedTagContainer.innerText = tag;
+
+        loadArtPiece();
     }
 
     document.addEventListener('DOMContentLoaded', async () => {

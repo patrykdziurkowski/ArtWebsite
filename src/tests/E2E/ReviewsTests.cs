@@ -56,4 +56,22 @@ public class ReviewsTests(WebDriverInitializer initializer)
                 hasOneLike.Should().BeTrue();
         }
 
+        [Fact, Order(3)]
+        public void ReviewingArtPieceAgain_ShowsNoArtPiecesLeft_WhenAllHaveBeenReviewed()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
+                string imagePathBeforeReview = Wait.Until(d => d.FindElement(By.Id("artPieceImage"))
+                        .GetDomAttribute("src"));
+                Driver.FindElement(By.Id("reviewArt")).Click();
+                Wait.Until(ExpectedConditions.ElementToBeClickable(
+                        Driver.FindElement(By.Id("reviewForm"))));
+
+                Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
+                Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
+                Driver.FindElement(By.CssSelector("#reviewForm button")).Click();
+
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("reviewForm")));
+                Driver.FindElement(By.XPath("//*[text()='No more images to review.']")).Should().NotBeNull();
+        }
+
 }
