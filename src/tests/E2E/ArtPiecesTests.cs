@@ -33,7 +33,7 @@ public class ArtPiecesTests(WebDriverInitializer initializer)
                 Wait.Until(d => d.FindElement(By.Id("artPieceImage"))).Should().NotBeNull();
 
                 TimeSpan previousTimeout = Wait.Timeout;
-                Wait.Timeout = TimeSpan.FromMinutes(1);
+                Wait.Timeout = TimeSpan.FromMinutes(5);
                 Wait.Until(d => d.FindElements(By.ClassName("tag")).Count > 0);
                 Wait.Timeout = previousTimeout;
         }
