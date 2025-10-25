@@ -18,7 +18,9 @@ public class ArtPiecesTests(WebDriverInitializer initializer)
                 Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
                 Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
 
-                Driver.FindElement(By.Id("upload-submit")).Click();
+                var submit = Driver.FindElement(By.Id("upload-submit"));
+                ScrollIntoView(submit);
+                submit.Click();
 
                 Wait.Until(d => d.FindElement(By.ClassName("field-validation-error"))).Should().NotBeNull();
         }
