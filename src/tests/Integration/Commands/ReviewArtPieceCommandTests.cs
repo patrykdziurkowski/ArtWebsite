@@ -46,6 +46,7 @@ public class ReviewArtPieceCommandTests : DatabaseTest
 
                 DbContext.Reviews.FirstOrDefault()
                         .Should().NotBeNull();
+                DbContext.Reviewers.First().Points.Should().Be(10);
         }
 
 }
