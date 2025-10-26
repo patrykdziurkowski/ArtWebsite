@@ -24,6 +24,7 @@ public class ImageProcessor(
                         {
                                 List<string> tags = await imageTagger.TagImageAsync(imageTaggingItem.FullImagePath);
                                 await imageTaggingItem.CallBack(tags);
+                                logger.LogDebug("Sending TagsReady to group: {group}", $"art-{imageTaggingItem.ArtPieceId}");
                                 await tagsHub.Clients.Group($"art-{imageTaggingItem.ArtPieceId}").SendAsync("TagsReady", tags, stoppingToken);
                         }
                         catch (Exception ex)

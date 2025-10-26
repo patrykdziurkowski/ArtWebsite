@@ -54,120 +54,122 @@
     </div>
 </div>
 
-<script>
-    let artPieceId;
-    let currentTag = null;
+@section Scripts {
+    <script>
+        let artPieceId;
+        let currentTag = null;
 
-    async function loadArtPiece() {
-        const url = (currentTag === null) ? '/api/artpiece' : `/api/artpiece?tag=${currentTag}`;
-        const response = await fetch(url);
-        const artContainer = document.getElementById('artContainer');
-        if (response.status === 204) {
-            artContainer.innerHTML = '<h1>No more images to review.</h1>';
-            document.querySelector('#artPieceControls').style.display = 'none';
-            return null;
-        }
-
-        const data = await response.json();
-
-        if (!data || !data.imagePath) {
-            artContainer.innerHTML = '<h1>No more images to review.</h1>';
-            document.querySelector('#artPieceControls').style.display = 'none';
-            return null;
-        }
-
-        artContainer.innerHTML = `
-                <img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded">
-                <div class="p-2">
-                    <p>${data.description}</p>
-                </div>`;
-        document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
-        artPieceId = data.id.value;
-        return data;
-    }
-
-    function selectTag(tag) {
-        currentTag = tag;
-
-        const selectedTagContainer = document.querySelector('#selectedTag');
-        selectedTagContainer.innerText = tag;
-
-        loadArtPiece();
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        let isLiked = false;
-        const artPiece = await loadArtPiece();
-        const likeButton = document.querySelector('#likeArtPiece');
-
-        if (artPiece !== null) {
-            isLiked = artPiece.isLikedByCurrentUser;
-            if (isLiked) {
-                likeButton.innerText = "Unlike";
+        async function loadArtPiece() {
+            const url = (currentTag === null) ? '/api/artpiece' : `/api/artpiece?tag=${currentTag}`;
+            const response = await fetch(url);
+            const artContainer = document.getElementById('artContainer');
+            if (response.status === 204) {
+                artContainer.innerHTML = '<h1>No more images to review.</h1>';
+                document.querySelector('#artPieceControls').style.display = 'none';
+                return null;
             }
+
+            const data = await response.json();
+
+            if (!data || !data.imagePath) {
+                artContainer.innerHTML = '<h1>No more images to review.</h1>';
+                document.querySelector('#artPieceControls').style.display = 'none';
+                return null;
+            }
+
+            artContainer.innerHTML = `
+                                <img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded">
+                                <div class="p-2">
+                                    <p>${data.description}</p>
+                                </div>`;
+            document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
+            artPieceId = data.id.value;
+            return data;
         }
 
-        likeButton.addEventListener('click', async (e) => {
-            const artPieceId = document.querySelector('#reviewForm input[name="artPieceId"]').value;
+        function selectTag(tag) {
+            currentTag = tag;
 
-            if (isLiked) {
-                const response = await fetch(`/api/artpieces/${artPieceId}/like`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
+            const selectedTagContainer = document.querySelector('#selectedTag');
+            selectedTagContainer.innerText = tag;
 
-                if (response.ok) {
-                    console.log('Art piece unliked successfully!');
-                    likeButton.innerText = "Like";
-                } else {
-                    console.error('Failed to unlike the art piece', response.statusText);
-                }
-            }
-            else {
-                const response = await fetch(`/api/artpieces/${artPieceId}/like`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
+            loadArtPiece();
+        }
 
-                if (response.ok) {
-                    console.log('Art piece liked successfully!');
+        document.addEventListener('DOMContentLoaded', async () => {
+            let isLiked = false;
+            const artPiece = await loadArtPiece();
+            const likeButton = document.querySelector('#likeArtPiece');
+
+            if (artPiece !== null) {
+                isLiked = artPiece.isLikedByCurrentUser;
+                if (isLiked) {
                     likeButton.innerText = "Unlike";
-                } else {
-                    console.error('Failed to like the art piece', response.statusText);
                 }
             }
-        });
 
-        document.querySelector('#reviewForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+            likeButton.addEventListener('click', async (e) => {
+                const artPieceId = document.querySelector('#reviewForm input[name="artPieceId"]').value;
 
-            const form = new FormData(document.querySelector('#reviewForm'));
-            const data = {
-                comment: form.get('comment'),
-                rating: document.querySelector('input[name="Rating"]:checked').value,
-                artPieceId: form.get('artPieceId')
-            };
+                if (isLiked) {
+                    const response = await fetch(`/api/artpieces/${artPieceId}/like`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
 
-            const response = await fetch('/api/reviews/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
+                    if (response.ok) {
+                        console.log('Art piece unliked successfully!');
+                        likeButton.innerText = "Like";
+                    } else {
+                        console.error('Failed to unlike the art piece', response.statusText);
+                    }
+                }
+                else {
+                    const response = await fetch(`/api/artpieces/${artPieceId}/like`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    });
+
+                    if (response.ok) {
+                        console.log('Art piece liked successfully!');
+                        likeButton.innerText = "Unlike";
+                    } else {
+                        console.error('Failed to like the art piece', response.statusText);
+                    }
+                }
             });
 
-            if (response.status !== 200) {
-                const data = await response.json();
-                const validationErrorsText = document.querySelector('#reviewForm *[name="comment"] + span');
-                validationErrorsText.innerText = data.errors.Comment;
-            }
+            document.querySelector('#reviewForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
 
-            await loadArtPiece();
-            document.querySelector('#reviewModal .btn-close').click();
+                const form = new FormData(document.querySelector('#reviewForm'));
+                const data = {
+                    comment: form.get('comment'),
+                    rating: document.querySelector('input[name="Rating"]:checked').value,
+                    artPieceId: form.get('artPieceId')
+                };
+
+                const response = await fetch('/api/reviews/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.status !== 200) {
+                    const data = await response.json();
+                    const validationErrorsText = document.querySelector('#reviewForm *[name="comment"] + span');
+                    validationErrorsText.innerText = data.errors.Comment;
+                }
+
+                await loadArtPiece();
+                document.querySelector('#reviewModal .btn-close').click();
+            });
         });
-    });
-</script>
+    </script>
+}

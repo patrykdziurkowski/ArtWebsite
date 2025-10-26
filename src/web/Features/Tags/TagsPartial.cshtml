@@ -1,18 +1,22 @@
 <div id="tags">Loading tags...</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.7/signalr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js"></script>
 <script>
     async function loadTags() {
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/tagshub")
+            .build();
+        connection.on("TagsReady", tags => renderTags(tags));
+
+        await connection.start();
+        await connection.invoke("JoinArtGroup", artPieceId);
+
         const container = document.getElementById('tags');
         const res = await fetch(`/api/artpieces/${artPieceId}/tags`);
-        if (!res.ok) {
-            return waitForSignalR();
-        }
-
         const tags = await res.json();
 
         if (tags.length === 0) {
-            return waitForSignalR();
+            return;
         }
 
         renderTags(tags);
@@ -31,20 +35,6 @@
             span.style.padding = "4px 10px";
             span.onclick = () => selectTag(tag);
             container.appendChild(span);
-        });
-    }
-
-    function waitForSignalR() {
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/tagshub")
-            .build();
-
-        connection.start().then(() => {
-            connection.invoke("JoinArtGroup", artPieceId);
-        });
-
-        connection.on("TagsReady", (tags) => {
-            renderTags(tags);
         });
     }
 
