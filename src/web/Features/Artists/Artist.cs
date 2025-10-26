@@ -9,6 +9,7 @@ public class Artist : AggreggateRoot
         public ArtistId Id { get; init; } = new ArtistId();
         public required string Name { get; set; }
         public required string Summary { get; set; }
+        public int Points { get; set; } = 0;
         private Boost? _activeBoost;
         public Boost? ActiveBoost
         {

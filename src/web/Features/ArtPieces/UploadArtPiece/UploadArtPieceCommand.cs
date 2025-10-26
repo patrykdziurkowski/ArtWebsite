@@ -11,6 +11,8 @@ public class UploadArtPieceCommand(
         ImageTaggingQueue imageTaggingQueue,
         IServiceScopeFactory scopeFactory)
 {
+        private const int POINTS_PER_UPLOAD = 10;
+
         public async Task<ArtPiece> ExecuteAsync(IFormFile image,
                 string description, Guid userId)
         {
@@ -35,6 +37,8 @@ public class UploadArtPieceCommand(
                         ImagePath = imagePath,
                         ArtistId = artist.Id,
                 };
+
+                artist.Points += POINTS_PER_UPLOAD;
 
                 await dbContext.ArtPieces.AddAsync(artPiece);
                 await dbContext.SaveChangesAsync();
