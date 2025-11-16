@@ -11,17 +11,29 @@ namespace web.Features.Reviews;
 
 [ApiController]
 [Authorize]
-public class ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand,
-        ReviewerReviewsQuery reviewsQuery) : ControllerBase
+public class ReviewApiController(
+        ReviewArtPieceCommand reviewArtPieceCommand,
+        ReviewerReviewsQuery reviewsForReviewerQuery,
+        ArtPieceReviewsQuery reviewsForArtPieceQuery) : ControllerBase
 {
-        private const int REVIEWS_TO_LOAD = 10;
+        private const int REVIEWS_TO_LOAD_FOR_REVIEWER = 10;
+        private const int REVIEWS_TO_LOAD_FOR_ART_PIECE = 10;
 
         [HttpGet("/api/reviewers/{reviewerId}/reviews")]
-        public async Task<IActionResult> LoadReviews(Guid reviewerId,
+        public async Task<IActionResult> LoadReviewsForReviewer(Guid reviewerId,
                 [Range(0, int.MaxValue)] int offset = 0)
         {
-                List<ReviewerReviewDto> reviews = await reviewsQuery.ExecuteAsync(
-                        new ReviewerId { Value = reviewerId }, REVIEWS_TO_LOAD, offset);
+                List<ReviewerReviewDto> reviews = await reviewsForReviewerQuery.ExecuteAsync(
+                        new ReviewerId { Value = reviewerId }, REVIEWS_TO_LOAD_FOR_REVIEWER, offset);
+                return Ok(reviews);
+        }
+
+        [HttpGet("/api/artPieces/{artPieceId}/reviews")]
+        public async Task<IActionResult> LoadReviewsForArtPiece(Guid artPieceId,
+                [Range(0, int.MaxValue)] int offset = 0)
+        {
+                List<ArtPieceReviewDto> reviews = await reviewsForArtPieceQuery.ExecuteAsync(
+                        GetUserId(), new ArtPieceId { Value = artPieceId }, REVIEWS_TO_LOAD_FOR_ART_PIECE, offset);
                 return Ok(reviews);
         }
 

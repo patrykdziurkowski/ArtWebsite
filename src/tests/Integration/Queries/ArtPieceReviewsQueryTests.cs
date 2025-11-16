@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.ArtPieces;
 using web.Features.Reviewers;
+using web.Features.Reviews;
 using web.Features.Reviews.LoadReviews;
 
 namespace tests.Integration.Queries;
@@ -19,21 +20,30 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
         }
 
         [Fact]
-        public async Task Execute_ShouldReturnEmpty_WhenNoReviewsForGivenArtPiece()
+        public async Task Execute_ShouldThrow_WhenArtPieceWasntReviewedByCurrentReviewer()
         {
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(new ArtPieceId(), 10);
+                Func<Task> callingExecute = async () => await _query.ExecuteAsync(Guid.NewGuid(), new ArtPieceId(), 10);
 
-                reviews.Should().BeEmpty();
+                await callingExecute.Should().ThrowAsync<InvalidOperationException>();
         }
 
         [Fact]
-        public async Task Execute_ShouldReturnReviews_WhenTheyExistForArtPiece()
+        public async Task Execute_ShouldReturnReviews_WhenCurrentReviewerReviewedArtPieceAndTheyExistForArtPiece()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
+                Guid currentUserId = (await DbContext.Users.SingleAsync()).Id;
                 ArtPieceId artPieceWithReviewsId = artPieceIds.First();
                 await CreateReviewsForArtPiece(artPieceWithReviewsId, count: 30);
+                DbContext.Reviews.Add(new Review()
+                {
+                        Comment = "Some comment long enough to pass through validation. Some comment long enough to pass through validation. Some comment long enough to pass through validation. Some comment long enough to pass through validation.",
+                        Rating = new Rating(4),
+                        ReviewerId = (await DbContext.Reviewers.SingleAsync(r => r.UserId == currentUserId)).Id,
+                        ArtPieceId = artPieceWithReviewsId,
+                });
+                await DbContext.SaveChangesAsync();
 
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(artPieceWithReviewsId, count: 10);
+                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(currentUserId, artPieceWithReviewsId, count: 10);
 
                 reviews.Should().HaveCount(10);
         }
@@ -42,12 +52,21 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
         public async Task Execute_ShouldReturnSomeReviews_WhenOffset()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
+                Guid currentUserId = (await DbContext.Users.SingleAsync()).Id;
                 ArtPieceId artPieceWithReviewsId = artPieceIds.First();
                 await CreateReviewsForArtPiece(artPieceWithReviewsId, count: 13);
+                DbContext.Reviews.Add(new Review()
+                {
+                        Comment = "Some comment long enough to pass through validation. Some comment long enough to pass through validation. Some comment long enough to pass through validation. Some comment long enough to pass through validation.",
+                        Rating = new Rating(4),
+                        ReviewerId = (await DbContext.Reviewers.SingleAsync(r => r.UserId == currentUserId)).Id,
+                        ArtPieceId = artPieceWithReviewsId,
+                });
+                await DbContext.SaveChangesAsync();
 
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(artPieceWithReviewsId, count: 10, offset: 10);
+                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(currentUserId, artPieceWithReviewsId, count: 10, offset: 10);
 
-                reviews.Should().HaveCount(3);
+                reviews.Should().HaveCount(4);
         }
 
         [Fact]
@@ -56,6 +75,7 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
                 int totalReviewsCount = 30;
                 int reviewsToFetchCount = 10;
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
+                Guid currentUserId = (await DbContext.Users.SingleAsync()).Id;
                 ArtPieceId artPieceWithReviewsId = artPieceIds.First();
                 await CreateReviewsForArtPiece(artPieceWithReviewsId, totalReviewsCount);
                 List<Reviewer> reviewers = await DbContext.Reviewers
@@ -65,9 +85,17 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
                 {
                         reviewers[i].Points = i * 100;
                 }
+                DbContext.Reviews.Add(new Review()
+                {
+                        Comment = "Some comment long enough to pass through validation. Some comment long enough to pass through validation. Some comment long enough to pass through validation. Some comment long enough to pass through validation.",
+                        Rating = new Rating(4),
+                        ReviewerId = (await DbContext.Reviewers.SingleAsync(r => r.UserId == currentUserId)).Id,
+                        ArtPieceId = artPieceWithReviewsId,
+                });
                 await DbContext.SaveChangesAsync();
 
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(artPieceWithReviewsId, reviewsToFetchCount);
+
+                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(currentUserId, artPieceWithReviewsId, reviewsToFetchCount);
 
                 for (int i = 0; i < reviewsToFetchCount; i++)
                 {
