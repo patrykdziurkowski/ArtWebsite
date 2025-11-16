@@ -1,6 +1,6 @@
 namespace web.Features.Reviews.LoadReviews;
 
-public class ReviewedArtPiece
+public record ReviewerReviewDto
 {
         public required DateTimeOffset Date { get; init; }
         public required string Comment { get; init; }

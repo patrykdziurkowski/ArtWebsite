@@ -152,6 +152,32 @@ public abstract class DatabaseTest : IDisposable
                 return reviewer;
         }
 
+        public async Task CreateReviewsForArtPiece(ArtPieceId artPieceId, int count)
+        {
+                for (int i = 0; i < count; i++)
+                {
+                        IdentityUser<Guid> user = new($"user{i}");
+                        await UserManager.CreateAsync(user);
+                        Reviewer reviewer = new Reviewer()
+                        {
+                                Name = $"user{i}",
+                                UserId = user.Id,
+                        };
+                        DbContext.Reviewers.Add(reviewer);
+
+                        Review review = new()
+                        {
+                                Comment = "Some comment with a descriptive opinion that's long enough. Some comment with a descriptive opinion that's long enough.",
+                                Rating = new Rating(5),
+                                ArtPieceId = artPieceId,
+                                ReviewerId = reviewer.Id,
+                        };
+                        await DbContext.AddAsync(review);
+
+                        await DbContext.SaveChangesAsync();
+                }
+        }
+
         public async Task<ReviewerId> CreateReviewer(string userName = "johnSmith2")
         {
                 IdentityUser<Guid> user = new(userName);

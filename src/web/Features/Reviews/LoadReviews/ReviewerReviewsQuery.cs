@@ -4,9 +4,9 @@ using web.Features.Reviewers;
 
 namespace web.Features.Reviews.LoadReviews;
 
-public class ReviewsQuery(ApplicationDbContext dbContext)
+public class ReviewerReviewsQuery(ApplicationDbContext dbContext)
 {
-        public async Task<List<ReviewedArtPiece>> ExecuteAsync(ReviewerId reviewerId,
+        public async Task<List<ReviewerReviewDto>> ExecuteAsync(ReviewerId reviewerId,
                 int count, int offset = 0)
         {
                 return await dbContext.Reviews
@@ -18,7 +18,7 @@ public class ReviewsQuery(ApplicationDbContext dbContext)
                                 dbContext.ArtPieces,
                                 review => review.ArtPieceId,
                                 artPiece => artPiece.Id,
-                                (review, artPiece) => new ReviewedArtPiece
+                                (review, artPiece) => new ReviewerReviewDto
                                 {
                                         Date = review.Date,
                                         Comment = review.Comment,

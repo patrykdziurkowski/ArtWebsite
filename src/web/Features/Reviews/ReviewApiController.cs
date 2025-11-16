@@ -12,7 +12,7 @@ namespace web.Features.Reviews;
 [ApiController]
 [Authorize]
 public class ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand,
-        ReviewsQuery reviewsQuery) : ControllerBase
+        ReviewerReviewsQuery reviewsQuery) : ControllerBase
 {
         private const int REVIEWS_TO_LOAD = 10;
 
@@ -20,7 +20,7 @@ public class ReviewApiController(ReviewArtPieceCommand reviewArtPieceCommand,
         public async Task<IActionResult> LoadReviews(Guid reviewerId,
                 [Range(0, int.MaxValue)] int offset = 0)
         {
-                List<ReviewedArtPiece> reviews = await reviewsQuery.ExecuteAsync(
+                List<ReviewerReviewDto> reviews = await reviewsQuery.ExecuteAsync(
                         new ReviewerId { Value = reviewerId }, REVIEWS_TO_LOAD, offset);
                 return Ok(reviews);
         }
