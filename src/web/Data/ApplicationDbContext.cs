@@ -1,6 +1,10 @@
+using System.Data;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using Microsoft.EntityFrameworkCore.Storage;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.Reviewers;
@@ -22,9 +26,80 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ArtPieceTag> ArtPieceTags { get; set; }
 
+        /// <summary>
+        /// This is a custom method mapped to an SQL Server function used for generating
+        /// values between 0 and 1 to be used in queries. Used instead of EF.Functions.Random
+        /// method due to how that method gets translated for SQL Server, which causes the
+        /// same, deterministic results between queries.
+        /// 
+        /// Made for use inside IQueryable expressions.
+        /// </summary>
+        /// <returns>A random value between 0 and 1</returns>
+        public double Random() => throw new NotSupportedException(); // the method's body doesn't matter here
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
                 base.OnModelCreating(builder);
+
+                // Custom SQL Server translation for our custom Random implementation used
+                // due to RAND() being determinsitic between query calls. NEWID() and CHECKSUM()
+                // inside here allow us to achieve actual per-row per-query randomness.
+                //
+                // Generates a value between 0 and 1.
+                builder.HasDbFunction(GetType().GetMethod(nameof(Random))!)
+                        .HasTranslation(args =>
+                        {
+                                var intMapping = new IntTypeMapping("int", DbType.Int32);
+                                var doubleMapping = new DoubleTypeMapping("float", DbType.Double);
+                                var guidMapping = new GuidTypeMapping("uniqueidentifier", DbType.Guid);
+                                var binary16Mapping = new ByteArrayTypeMapping("binary(16)");
+
+                                var newIdExpr = new SqlFunctionExpression(
+                                        "NEWID",
+                                        [],
+                                        false,
+                                        [],
+                                        typeof(Guid),
+                                        guidMapping);
+
+                                var castToBinaryExpr = new SqlUnaryExpression(
+                                        ExpressionType.Convert,
+                                        newIdExpr,
+                                        typeof(byte[]),
+                                        binary16Mapping);
+
+                                var checksumExpr = new SqlFunctionExpression(
+                                        "CHECKSUM",
+                                        [castToBinaryExpr],
+                                        true,
+                                        [true],
+                                        typeof(int),
+                                        intMapping);
+
+                                var absExpr = new SqlFunctionExpression(
+                                        "ABS",
+                                        [checksumExpr],
+                                        true,
+                                        [true],
+                                        typeof(int),
+                                        intMapping);
+
+                                var modExpr = new SqlBinaryExpression(
+                                        ExpressionType.Modulo,
+                                        absExpr,
+                                        new SqlConstantExpression(10000, intMapping),
+                                        typeof(int),
+                                        intMapping);
+
+                                var divideExpr = new SqlBinaryExpression(
+                                        ExpressionType.Divide,
+                                        modExpr,
+                                        new SqlConstantExpression(10000.0, doubleMapping),
+                                        typeof(double),
+                                        doubleMapping);
+
+                                return divideExpr;
+                        });
 
                 builder.Ignore<AggreggateRoot>();
                 builder.Ignore<ValueObject>();
@@ -68,9 +143,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .OnDelete(DeleteBehavior.NoAction);
                 artPiece.Property(a => a.ImagePath)
                         .IsRequired();
-                artPiece.Ignore(a => a.AverageRating);
                 artPiece.Property(a => a.UploadDate)
                         .IsRequired();
+                artPiece.Property(r => r.AverageRating)
+                        .HasConversion(rating => rating.Value, value => value == 0 ? Rating.Empty : new Rating(value));
 
                 var review = builder.Entity<Review>();
                 review.HasKey(r => r.Id);

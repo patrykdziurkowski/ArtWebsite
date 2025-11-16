@@ -9,35 +9,24 @@ public class ArtistRepository(ApplicationDbContext dbContext)
         {
                 Artist? artist = await dbContext.Artists
                         .SingleOrDefaultAsync(a => a.Id == artistId);
-                if (artist is null)
-                {
-                        return null;
-                }
 
-                return InitializeArtist(artist);
-
+                return await InitializeArtistAsync(artist);
         }
 
         public async Task<Artist?> GetByNameAsync(string name)
         {
-                Artist? artist = await dbContext.Artists.SingleOrDefaultAsync(a => a.Name == name);
-                if (artist is null)
-                {
-                        return null;
-                }
+                Artist? artist = await dbContext.Artists
+                        .SingleOrDefaultAsync(a => a.Name == name);
 
-                return InitializeArtist(artist);
+                return await InitializeArtistAsync(artist);
         }
 
         public async Task<Artist?> GetByUserIdAsync(Guid userId)
         {
-                Artist? artist = await dbContext.Artists.SingleOrDefaultAsync(a => a.UserId == userId);
-                if (artist is null)
-                {
-                        return null;
-                }
+                Artist? artist = await dbContext.Artists
+                        .SingleOrDefaultAsync(a => a.UserId == userId);
 
-                return InitializeArtist(artist);
+                return await InitializeArtistAsync(artist);
         }
 
         public async Task SaveChangesAsync(Artist artist)
@@ -64,20 +53,21 @@ public class ArtistRepository(ApplicationDbContext dbContext)
                 await dbContext.SaveChangesAsync();
         }
 
-        private Artist InitializeArtist(Artist artist)
+        private async Task<Artist?> InitializeArtistAsync(Artist? artist)
         {
-                // workaround to initialize computed properties or arbitrarily load related data
-                Artist newArtist = new()
+                if (artist is null)
                 {
-                        Id = artist.Id,
-                        Name = artist.Name,
-                        Summary = artist.Summary,
-                        UserId = artist.UserId,
-                        ActiveBoost = dbContext.Boosts.SingleOrDefault(b => b.ArtistId == artist.Id
-                                                && b.ExpirationDate >= DateTimeOffset.UtcNow)
-                };
-                dbContext.Entry(artist).State = EntityState.Detached;
-                dbContext.Artists.Attach(newArtist);
-                return newArtist;
+                        return null;
+                }
+
+                // a somewhat dirty workaround for initializing artist with an active boost
+                // without arbitrarily adding navigation properties to Artist domain class
+                // or exposing the property's setter which we wanna keep encapsulated
+                Boost? activeBoost = await dbContext.Boosts.SingleOrDefaultAsync(b =>
+                        b.ArtistId == artist.Id
+                        && b.ExpirationDate >= DateTimeOffset.UtcNow);
+                typeof(Artist).GetProperty(nameof(Artist.ActiveBoost))!.SetValue(artist, activeBoost);
+
+                return artist;
         }
 }

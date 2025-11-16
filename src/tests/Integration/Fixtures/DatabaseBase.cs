@@ -7,6 +7,7 @@ using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.Reviewers;
 using web.Features.Reviews;
+using Xunit.Abstractions;
 
 namespace tests.Integration.Fixtures;
 
@@ -14,12 +15,14 @@ namespace tests.Integration.Fixtures;
 public abstract class DatabaseTest : IDisposable
 {
         public ApplicationDbContext DbContext { get; init; }
+        public IServiceProvider Services { get; init; }
         public IServiceScope Scope { get; init; }
         public UserManager<IdentityUser<Guid>> UserManager { get; init; }
 
         public DatabaseTest(DatabaseTestContext databaseContext)
         {
-                Scope = databaseContext.Services.CreateScope();
+                Services = databaseContext.Services;
+                Scope = Services.CreateScope();
                 DbContext = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 UserManager = Scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
 
@@ -147,6 +150,21 @@ public abstract class DatabaseTest : IDisposable
                 }
                 await DbContext.SaveChangesAsync();
                 return reviewer;
+        }
+
+        public async Task<ReviewerId> CreateReviewer(string userName = "johnSmith2")
+        {
+                IdentityUser<Guid> user = new(userName);
+                await UserManager.CreateAsync(user);
+                ReviewerId reviewerId = new();
+                DbContext.Reviewers.Add(new Reviewer()
+                {
+                        Id = reviewerId,
+                        Name = "SomeUser123",
+                        UserId = user.Id,
+                });
+                await DbContext.SaveChangesAsync();
+                return reviewerId;
         }
 
         public async Task<Guid> CreateReviewerWithLikes(List<ArtPieceId> artPiecesToLike)

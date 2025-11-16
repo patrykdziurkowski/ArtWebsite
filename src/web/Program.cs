@@ -9,6 +9,7 @@ using web.Features.Artists;
 using web.Features.Artists.BoostArtPiece;
 using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.SetupArtist;
+using web.Features.ArtPieces;
 using web.Features.ArtPieces.LoadArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Browse.ByTag;
@@ -84,6 +85,7 @@ services.AddTransient<LikesQuery>();
 
 services.AddTransient<ReviewerRepository>();
 services.AddTransient<ArtistRepository>();
+services.AddTransient<ArtPieceRepository>();
 
 services.AddSingleton<ImageTaggingQueue>();
 services.AddTransient<ImageTagger>();

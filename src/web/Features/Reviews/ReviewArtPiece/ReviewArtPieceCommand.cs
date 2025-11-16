@@ -25,6 +25,15 @@ public class ReviewArtPieceCommand(ApplicationDbContext dbContext)
 
                 reviewer.Points += POINTS_PER_REVIEW;
 
+                ArtPiece artPieceToReview = dbContext.ArtPieces.First(a => a.Id == artPieceId);
+
+                var reviewsQuery = dbContext.Reviews
+                        .Where(r => r.ArtPieceId == artPieceId);
+                int countOfReviews = (await reviewsQuery.CountAsync()) + 1;
+                int sumOfRatingValues = (await reviewsQuery.SumAsync(r => r.Rating)) + review.Rating;
+
+                artPieceToReview.AverageRating = new Rating((double)sumOfRatingValues / sumOfRatingValues);
+
                 await dbContext.AddAsync(review);
                 await dbContext.SaveChangesAsync();
                 return review;

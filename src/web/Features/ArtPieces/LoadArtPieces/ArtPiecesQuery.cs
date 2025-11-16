@@ -14,24 +14,7 @@ public class ArtPiecesQuery(ApplicationDbContext dbContext)
                         .Skip(offset)
                         .Take(number)
                         .ToListAsync();
-                await AssignAverageRatings(artPieces);
 
                 return artPieces;
-        }
-
-        private async Task AssignAverageRatings(List<ArtPiece> artPieces)
-        {
-                foreach (ArtPiece artPiece in artPieces)
-                {
-                        List<int> ratings = await dbContext.Reviews
-                                .Where(r => r.ArtPieceId == artPiece.Id)
-                                .Select(r => r.Rating.Value)
-                                .ToListAsync();
-                        if (ratings.Count == 0)
-                        {
-                                continue;
-                        }
-                        artPiece.AverageRating = (int)double.Round(ratings.Average());
-                }
         }
 }
