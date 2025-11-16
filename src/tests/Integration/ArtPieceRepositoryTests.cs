@@ -149,15 +149,15 @@ public class ArtPieceRepositoryTests : DatabaseTest
 
                 for (int i = 0; i < barelyPopularArtPiecesCount; i++)
                 {
-                        ArtistId popularArtistId = await CreateUserWithArtistProfile($"barelypopularartist{i}", $"barelypopularartist{i}");
-                        Artist popularArtist = DbContext.Artists.First(a => a.Id == popularArtistId);
-                        ArtPiece popularArtPiece = await _uploadArtPieceCommand.ExecuteAsync(GetExampleFile(), "description", popularArtist.UserId);
-                        popularArtist.Points = 1000;
-                        popularArtPiece.AverageRating = new Rating(2);
+                        ArtistId barelyPopularArtistId = await CreateUserWithArtistProfile($"barelypopularartist{i}", $"barelypopularartist{i}");
+                        Artist barelyPopularArtist = DbContext.Artists.First(a => a.Id == barelyPopularArtistId);
+                        ArtPiece barelyPopularArtPiece = await _uploadArtPieceCommand.ExecuteAsync(GetExampleFile(), "description", barelyPopularArtist.UserId);
+                        barelyPopularArtist.Points = 1000;
+                        barelyPopularArtPiece.AverageRating = new Rating(2);
                         typeof(ArtPiece).GetProperty(nameof(ArtPiece.UploadDate))!
-                               .SetValue(popularArtPiece, popularArtPiece.UploadDate.Subtract(TimeSpan.FromDays(10)));
+                               .SetValue(barelyPopularArtPiece, barelyPopularArtPiece.UploadDate.Subtract(TimeSpan.FromDays(10)));
                         await DbContext.SaveChangesAsync();
-                        artPieceArchetypes.Add(popularArtPiece.Id, ArtPieceArchetype.BARELY_POPULAR);
+                        artPieceArchetypes.Add(barelyPopularArtPiece.Id, ArtPieceArchetype.BARELY_POPULAR);
                 }
 
                 for (int i = 0; i < unpopularArtPiecesCount; i++)
