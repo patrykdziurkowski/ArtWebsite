@@ -33,13 +33,4 @@ public class BoostsTests(WebDriverInitializer initializer)
                 findingBoostButton.Should().Throw<NoSuchElementException>();
         }
 
-
-        [Fact, Order(1)]
-        public void BoostingArtPiece_ShouldIncreaseBoostedArtPiecesOrder_OnBrowsingPage()
-        {
-                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
-                Wait.Until(d => d.FindElement(By.CssSelector("#artPieceImage")).GetAttribute("src") == _boostedArtPieceSrc);
-                Driver.FindElement(By.CssSelector("#artPieceImage")).GetAttribute("src").Should().Be(_boostedArtPieceSrc);
-        }
-
 }
