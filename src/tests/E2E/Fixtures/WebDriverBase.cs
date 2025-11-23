@@ -43,7 +43,7 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/");
                 Wait.Until(d => d.FindElement(By.Id("logout"))).Click();
-                Wait.Until(d => d.Url.Contains("Logout") == false);
+                Wait.Until(d => d.FindElement(By.Id("login")));
         }
 
         public void CreateArtistProfile(string name = "SomeArtist")

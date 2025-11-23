@@ -179,10 +179,10 @@
                     const reviewEl = document.createElement('div');
                     reviewEl.className = 'd-flex mb-3';
                     reviewEl.innerHTML =
-                        '<div>' +
-                        '<div><strong>' + r.reviewerName + '</strong> - ' + r.rating.value + '★ - <small>' + new Date(r.date).toLocaleDateString() + '</small></div>' +
-                        '<div>' + r.comment + '</div>' +
-                        '</div>';
+                        `<div>` +
+                        `<div><strong>${r.reviewerName}</strong> -  <span class="review-points">${r.points} points</span> - <small>${new Date(r.date).toLocaleDateString()}</small></div>` +
+                        `<div><span class="review-rating">${r.rating.value}★</span> ${r.comment}</div>` +
+                        `</div>`;
                     container.appendChild(reviewEl);
                 });
 
