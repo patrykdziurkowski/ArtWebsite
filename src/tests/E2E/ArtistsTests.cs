@@ -98,7 +98,7 @@ public class ArtistsTests(WebDriverInitializer initializer)
         public void Deactivate_RedirectsToIndex()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
-                Driver.FindElement(By.Id("deactivate-artist-popup")).Click();
+                Wait.Until(d => d.FindElement(By.Id("deactivate-artist-popup"))).Click();
 
                 Wait.Until(ExpectedConditions.ElementIsVisible(By.Id("deactivate-artist"))).Click();
 

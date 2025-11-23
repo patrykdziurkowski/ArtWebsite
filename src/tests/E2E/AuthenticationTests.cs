@@ -15,7 +15,7 @@ public class AuthenticationTests(WebDriverInitializer initializer)
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Register");
 
-                Driver.Title.Should().Contain("Register");
+                Wait.Until(d => d.Title.Contains("Register")).Should().BeTrue();
         }
 
         [Fact, Order(1)]

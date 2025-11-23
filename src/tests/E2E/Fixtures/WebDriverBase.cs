@@ -17,7 +17,7 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
                 string email = "john@smith.com", string password = "Ex@mpl3")
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Register");
-                Driver.FindElement(By.Id("Input_UserName")).SendKeys(userName);
+                Wait.Until(d => d.FindElement(By.Id("Input_UserName"))).SendKeys(userName);
                 Driver.FindElement(By.Id("Input_Email")).SendKeys(email);
                 Driver.FindElement(By.Id("Input_Password")).SendKeys(password);
                 Driver.FindElement(By.Id("Input_ConfirmPassword")).SendKeys(password);
@@ -31,7 +31,7 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
         public void Login(string email = "john@smith.com", string password = "Ex@mpl3")
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Login");
-                Driver.FindElement(By.Id("Input_Email")).SendKeys(email);
+                Wait.Until(d => d.FindElement(By.Id("Input_Email"))).SendKeys(email);
                 Driver.FindElement(By.Id("Input_Password")).SendKeys(password);
 
                 Driver.FindElement(By.Id("login-submit")).Click();
@@ -42,7 +42,7 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
         public void Logout()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/");
-                Driver.FindElement(By.Id("logout")).Click();
+                Wait.Until(d => d.FindElement(By.Id("logout"))).Click();
                 Wait.Until(d => d.Url.Contains("Logout") == false);
         }
 
@@ -50,7 +50,7 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Setup");
 
-                Driver.FindElement(By.Id("Name")).SendKeys(name);
+                Wait.Until(d => d.FindElement(By.Id("Name"))).SendKeys(name);
                 Driver.FindElement(By.Id("Summary")).SendKeys("My description!");
                 Driver.FindElement(By.Id("setup-artist")).Click();
 
@@ -70,7 +70,7 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
         {
                 string filePath = "../../../resources/exampleImage.png";
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
-                Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
+                Wait.Until(d => d.FindElement(By.Id("image-input"))).SendKeys(Path.GetFullPath(filePath));
                 Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
 
                 var submit = Driver.FindElement(By.Id("upload-submit"));

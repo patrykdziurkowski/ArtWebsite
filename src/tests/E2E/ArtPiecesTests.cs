@@ -15,7 +15,7 @@ public class ArtPiecesTests(WebDriverInitializer initializer)
                 CreateUserWithArtistProfile();
                 string filePath = "../../../resources/exampleNonImage.txt";
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
-                Driver.FindElement(By.Id("image-input")).SendKeys(Path.GetFullPath(filePath));
+                Wait.Until(d => d.FindElement(By.Id("image-input"))).SendKeys(Path.GetFullPath(filePath));
                 Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
 
                 var submit = Driver.FindElement(By.Id("upload-submit"));

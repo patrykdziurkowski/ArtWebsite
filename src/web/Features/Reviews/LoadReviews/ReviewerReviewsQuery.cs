@@ -18,13 +18,21 @@ public class ReviewerReviewsQuery(ApplicationDbContext dbContext)
                                 dbContext.ArtPieces,
                                 review => review.ArtPieceId,
                                 artPiece => artPiece.Id,
-                                (review, artPiece) => new ReviewerReviewDto
+                                (review, artPiece) => new { review, artPiece }
+                        )
+                        .Join(
+                                dbContext.Reviewers,
+                                x => x.review.ReviewerId,
+                                reviewer => reviewer.Id,
+                                (x, reviewer) => new ReviewerReviewDto
                                 {
-                                        Date = review.Date,
-                                        Comment = review.Comment,
-                                        Rating = review.Rating.Value,
-                                        ImagePath = artPiece.ImagePath
-                                })
+                                        Date = x.review.Date,
+                                        Comment = x.review.Comment,
+                                        Rating = x.review.Rating.Value,
+                                        ImagePath = x.artPiece.ImagePath,
+                                        ReviewerName = reviewer.Name
+                                }
+                        )
                         .ToListAsync();
         }
 

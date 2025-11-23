@@ -27,7 +27,10 @@ public class ReviewsTests(WebDriverInitializer initializer)
                 Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
                 Driver.FindElement(By.CssSelector("#reviewForm button")).Click();
 
-                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("reviewForm")));
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
+                Wait.Until(d => d.FindElement(By.CssSelector("#postReviewModal .btn-close"))).Click();
+
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("postReviewModal")));
                 string imagePathAfterReview = Driver.FindElement(By.Id("artPieceImage")).GetDomAttribute("src");
                 imagePathAfterReview.Should().NotBe(imagePathBeforeReview);
         }
@@ -46,7 +49,14 @@ public class ReviewsTests(WebDriverInitializer initializer)
         public async Task LikingArtPiece_ShowsLikeOnReviewerProfile()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
+                Wait.Until(d => d.FindElement(By.Id("reviewArt"))).Click();
+                Wait.Until(ExpectedConditions.ElementToBeClickable(Driver.FindElement(By.Id("reviewForm"))));
 
+                Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
+                Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
+                Driver.FindElement(By.CssSelector("#reviewForm button")).Click();
+
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
                 Wait.Until(d => d.FindElement(By.Id("likeArtPiece"))).Click();
                 await Task.Delay(1000);
 
@@ -60,18 +70,48 @@ public class ReviewsTests(WebDriverInitializer initializer)
         public void ReviewingArtPieceAgain_ShowsNoArtPiecesLeft_WhenAllHaveBeenReviewed()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
-                string imagePathBeforeReview = Wait.Until(d => d.FindElement(By.Id("artPieceImage"))
-                        .GetDomAttribute("src"));
-                Driver.FindElement(By.Id("reviewArt")).Click();
-                Wait.Until(ExpectedConditions.ElementToBeClickable(
-                        Driver.FindElement(By.Id("reviewForm"))));
-
-                Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
-                Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
-                Driver.FindElement(By.CssSelector("#reviewForm button")).Click();
-
-                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("reviewForm")));
-                Driver.FindElement(By.XPath("//*[text()='No more images to review.']")).Should().NotBeNull();
+                Wait.Until(d => d.FindElement(By.XPath("//*[text()='No more images to review.']"))).Should().NotBeNull();
         }
 
+        [Fact, Order(4)]
+        public void DetailsPage_ShowsOtherReviewersReviews_WhenPresent()
+        {
+                ResetTestContext();
+                CreateUserWithArtistProfile();
+                UploadArtPiece();
+
+                const int REVIEWERS_COUNT = 11;
+                const int LAST_REVIEWER = REVIEWERS_COUNT;
+                for (int i = 1; i <= REVIEWERS_COUNT; i++)
+                {
+                        CreateUserWithArtistProfile(
+                                userName: $"userName{i}",
+                                email: $"email{i}@someEmail.com",
+                                name: $"someArtist{i}"
+                        );
+                        Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
+                        Driver.FindElement(By.Id("reviewArt")).Click();
+                        Wait.Until(ExpectedConditions.ElementToBeClickable(Driver.FindElement(By.Id("reviewForm"))));
+
+                        Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
+                        Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
+                        Driver.FindElement(By.CssSelector("#reviewForm button")).Click();
+
+                        Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
+
+                        if (i == LAST_REVIEWER)
+                        {
+                                int totalReviewsOnThisArtPiece = REVIEWERS_COUNT;
+                                Driver.FindElement(By.Id("viewArtPiece")).Click();
+                                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+                                Driver.FindElement(By.Id("loadMoreReviews")).Click();
+                                Wait.Until(d => d.FindElements(By.CssSelector("#artReviewsContainer > *")).Count == totalReviewsOnThisArtPiece).Should().BeTrue();
+                        }
+                        else
+                        {
+                                Wait.Until(d => d.FindElement(By.CssSelector("#postReviewModal .btn-close"))).Click();
+                        }
+
+                }
+        }
 }
