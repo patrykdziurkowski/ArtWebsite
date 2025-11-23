@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
 using web.Features.Artists;
 using web.Features.ArtPieces;
+using web.Features.PointAwards;
+using web.Features.PointAwards.Reviewer;
 using web.Features.Reviewers;
 using web.Features.Reviews;
 using web.Features.Shared.domain;
@@ -25,6 +27,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         public DbSet<Boost> Boosts { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ArtPieceTag> ArtPieceTags { get; set; }
+        public DbSet<PointAward> PointAwards { get; set; }
 
         /// <summary>
         /// This is a custom method mapped to an SQL Server function used for generating
@@ -211,5 +214,16 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 artPieceTag.HasKey(apt => apt.Id);
                 artPieceTag.Property(apt => apt.Id)
                         .HasConversion(id => id.Value, guid => new ArtPieceTagId { Value = guid });
+
+                var pointAward = builder.Entity<PointAward>();
+                pointAward.HasKey(pa => pa.Id);
+                pointAward.Property(pa => pa.Id)
+                        .HasConversion(id => id.Value, guid => new PointAwardId { Value = guid });
+                pointAward.Property(pa => pa.DateAwarded)
+                        .IsRequired();
+                pointAward.HasOne<Reviewer>()
+                        .WithMany()
+                        .HasForeignKey(pa => pa.ReviewerId)
+                        .OnDelete(DeleteBehavior.NoAction);
         }
 }

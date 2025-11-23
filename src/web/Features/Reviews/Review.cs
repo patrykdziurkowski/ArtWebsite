@@ -12,5 +12,4 @@ public class Review : AggreggateRoot
         public DateTimeOffset Date { get; init; } = DateTimeOffset.UtcNow;
         public required ArtPieceId ArtPieceId { get; init; }
         public required ReviewerId ReviewerId { get; init; }
-
 }

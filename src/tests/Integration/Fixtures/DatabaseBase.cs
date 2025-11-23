@@ -7,8 +7,6 @@ using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.Reviewers;
 using web.Features.Reviews;
-using Xunit.Abstractions;
-
 namespace tests.Integration.Fixtures;
 
 [Collection("Database collection")]
@@ -26,6 +24,7 @@ public abstract class DatabaseTest : IDisposable
                 DbContext = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 UserManager = Scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
 
+                DbContext.PointAwards.ExecuteDelete();
                 DbContext.ArtPieceTags.ExecuteDelete();
                 DbContext.Tags.ExecuteDelete();
                 DbContext.Boosts.ExecuteDelete();

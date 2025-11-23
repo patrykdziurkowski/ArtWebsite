@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.ArtPieces;
+using web.Features.PointAwards.Reviewer;
 using web.Features.Reviewers;
 
 namespace web.Features.Reviews.ReviewArtPiece;
@@ -24,6 +25,11 @@ public class ReviewArtPieceCommand(ApplicationDbContext dbContext)
                 };
 
                 reviewer.Points += POINTS_PER_REVIEW;
+                await dbContext.PointAwards.AddAsync(new PointAward()
+                {
+                        ReviewerId = reviewer.Id,
+                        PointValue = POINTS_PER_REVIEW,
+                });
 
                 ArtPiece artPieceToReview = dbContext.ArtPieces.First(a => a.Id == artPieceId);
 
