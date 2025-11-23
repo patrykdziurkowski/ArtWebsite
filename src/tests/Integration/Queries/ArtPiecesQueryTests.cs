@@ -29,7 +29,7 @@ public class ArtPiecesQueryTests : DatabaseTest
         public async Task Execute_ShouldReturnEmpty_WhenArtPieceExistsButByADifferentArtist()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
-                await Create6ArtPiecesForArtist(artistId);
+                await CreateArtPiecesForArtist(artistId);
 
                 List<ArtPiece> artPieces = await _command.ExecuteAsync(new ArtistId(), 10);
 
@@ -40,7 +40,7 @@ public class ArtPiecesQueryTests : DatabaseTest
         public async Task Execute_ShouldReturn6ArtPieces_WhenArtistHas6ArtPieces()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
-                await Create6ArtPiecesForArtist(artistId);
+                await CreateArtPiecesForArtist(artistId);
 
                 List<ArtPiece> artPieces = await _command.ExecuteAsync(artistId, 10);
 
@@ -51,7 +51,7 @@ public class ArtPiecesQueryTests : DatabaseTest
         public async Task Execute_ShouldReturn1ArtPiece_GivenOffsetWhenArtistHas6ArtPieces()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
-                await Create6ArtPiecesForArtist(artistId);
+                await CreateArtPiecesForArtist(artistId);
 
                 List<ArtPiece> artPieces = await _command.ExecuteAsync(artistId, 10, 5);
 
@@ -62,7 +62,7 @@ public class ArtPiecesQueryTests : DatabaseTest
         public async Task Execute_ShouldReturn3ArtPieces_WhenAskedFor3AndArtistHas6()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
-                await Create6ArtPiecesForArtist(artistId);
+                await CreateArtPiecesForArtist(artistId);
 
                 List<ArtPiece> artPieces = await _command.ExecuteAsync(artistId, 3, 0);
 

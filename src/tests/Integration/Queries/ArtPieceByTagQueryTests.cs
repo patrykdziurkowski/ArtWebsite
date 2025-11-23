@@ -37,7 +37,7 @@ public class ArtPieceByTagQueryTests : DatabaseTest
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 Guid currentUserId = DbContext.Users.First().Id;
-                await Create6ArtPiecesForArtist(artistId);
+                await CreateArtPiecesForArtist(artistId);
                 await _uploadArtPieceCommand.ExecuteAsync(GetExampleFile(), "description", currentUserId);
                 await WaitWhileNoTagsInDatabaseAsync();
                 string tagName = await DbContext.Tags.Select(t => t.Name).FirstAsync() + "someInvalidTagName";

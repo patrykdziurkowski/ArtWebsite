@@ -33,7 +33,7 @@ public class ArtPieceQueryTests : DatabaseTest
         public async Task Execute_ShouldReturnAnArtPiece_WhenOneExists()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
-                await Create6ArtPiecesForArtist(artistId);
+                await CreateArtPiecesForArtist(artistId);
                 Guid currentUserId = DbContext.Users.First().Id;
 
                 ArtPieceDto? artPiece = await _query.ExecuteAsync(currentUserId);

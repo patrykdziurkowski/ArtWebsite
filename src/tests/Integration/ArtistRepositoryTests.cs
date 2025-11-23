@@ -196,7 +196,7 @@ public class ArtistRepositoryTests : DatabaseTest
         public async Task SaveChangesAsync_SavesArtistsBoost_WhenCalled()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
-                await Create6ArtPiecesForArtist(artistId);
+                await CreateArtPiecesForArtist(artistId);
                 Artist? artist = await _artistRepository.GetByIdAsync(artistId);
                 ArtPieceId artPieceId = DbContext.ArtPieces.First().Id;
 
@@ -211,7 +211,7 @@ public class ArtistRepositoryTests : DatabaseTest
         public async Task SaveChangesAsync_DeletesArtist_WhenDeactivated()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
-                await Create6ArtPiecesForArtist(artistId);
+                await CreateArtPiecesForArtist(artistId);
                 Artist? artist = await _artistRepository.GetByIdAsync(artistId);
 
                 artist!.Deactivate();

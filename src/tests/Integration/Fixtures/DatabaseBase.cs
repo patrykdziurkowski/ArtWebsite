@@ -77,9 +77,9 @@ public abstract class DatabaseTest : IDisposable
                 return artistId;
         }
 
-        public async Task Create6ArtPiecesForArtist(ArtistId artistId)
+        public async Task CreateArtPiecesForArtist(ArtistId artistId, int amount = 6)
         {
-                for (int i = 0; i < 6; ++i)
+                for (int i = 0; i < amount; ++i)
                 {
                         ArtPiece artPiece = new()
                         {
