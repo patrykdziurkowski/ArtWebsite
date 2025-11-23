@@ -25,7 +25,7 @@ public class ReviewArtPieceCommand(ApplicationDbContext dbContext)
                 };
 
                 reviewer.Points += POINTS_PER_REVIEW;
-                await dbContext.PointAwards.AddAsync(new PointAward()
+                await dbContext.ReviewerPointAwards.AddAsync(new ReviewerPointAward()
                 {
                         ReviewerId = reviewer.Id,
                         PointValue = POINTS_PER_REVIEW,

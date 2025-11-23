@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Artists;
+using web.Features.PointAwards.Artist;
 using web.Features.Tags;
 
 namespace web.Features.ArtPieces.UploadArtPiece;
@@ -39,6 +40,11 @@ public class UploadArtPieceCommand(
                 };
 
                 artist.Points += POINTS_PER_UPLOAD;
+                dbContext.ArtistPointAwards.Add(new ArtistPointAward()
+                {
+                        ArtistId = artist.Id,
+                        PointValue = POINTS_PER_UPLOAD,
+                });
 
                 await dbContext.ArtPieces.AddAsync(artPiece);
                 await dbContext.SaveChangesAsync();

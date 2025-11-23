@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.PointAwards;
+using web.Features.PointAwards.Artist;
 using web.Features.PointAwards.Reviewer;
 using web.Features.Reviewers;
 using web.Features.Reviews;
@@ -27,7 +28,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         public DbSet<Boost> Boosts { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ArtPieceTag> ArtPieceTags { get; set; }
-        public DbSet<PointAward> PointAwards { get; set; }
+        public DbSet<ReviewerPointAward> ReviewerPointAwards { get; set; }
+        public DbSet<ArtistPointAward> ArtistPointAwards { get; set; }
 
         /// <summary>
         /// This is a custom method mapped to an SQL Server function used for generating
@@ -215,15 +217,27 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 artPieceTag.Property(apt => apt.Id)
                         .HasConversion(id => id.Value, guid => new ArtPieceTagId { Value = guid });
 
-                var pointAward = builder.Entity<PointAward>();
-                pointAward.HasKey(pa => pa.Id);
-                pointAward.Property(pa => pa.Id)
-                        .HasConversion(id => id.Value, guid => new PointAwardId { Value = guid });
-                pointAward.Property(pa => pa.DateAwarded)
+                var reviewerPointAward = builder.Entity<ReviewerPointAward>();
+                reviewerPointAward.HasKey(pa => pa.Id);
+                reviewerPointAward.Property(pa => pa.Id)
+                        .HasConversion(id => id.Value, guid => new ReviewerPointAwardId { Value = guid });
+                reviewerPointAward.Property(pa => pa.DateAwarded)
                         .IsRequired();
-                pointAward.HasOne<Reviewer>()
+                reviewerPointAward.HasOne<Reviewer>()
                         .WithMany()
                         .HasForeignKey(pa => pa.ReviewerId)
                         .OnDelete(DeleteBehavior.NoAction);
+
+                var artistPointAward = builder.Entity<ArtistPointAward>();
+                artistPointAward.HasKey(pa => pa.Id);
+                artistPointAward.Property(pa => pa.Id)
+                        .HasConversion(id => id.Value, guid => new ArtistPointAwardId { Value = guid });
+                artistPointAward.Property(pa => pa.DateAwarded)
+                        .IsRequired();
+                artistPointAward.HasOne<Artist>()
+                        .WithMany()
+                        .HasForeignKey(pa => pa.ArtistId)
+                        .OnDelete(DeleteBehavior.NoAction);
+
         }
 }

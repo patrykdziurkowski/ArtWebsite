@@ -44,6 +44,7 @@ public class UploadArtPieceCommandTests : DatabaseTest
                 DbContext.ArtPieces.FirstOrDefault(a => a.Description == "description")
                         .Should().NotBeNull();
                 DbContext.Artists.First().Points.Should().Be(10);
+                DbContext.ArtistPointAwards.Single().PointValue.Should().Be(10);
         }
 
         [Fact]

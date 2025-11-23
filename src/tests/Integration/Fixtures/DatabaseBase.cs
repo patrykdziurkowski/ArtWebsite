@@ -24,7 +24,8 @@ public abstract class DatabaseTest : IDisposable
                 DbContext = Scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 UserManager = Scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
 
-                DbContext.PointAwards.ExecuteDelete();
+                DbContext.ArtistPointAwards.ExecuteDelete();
+                DbContext.ReviewerPointAwards.ExecuteDelete();
                 DbContext.ArtPieceTags.ExecuteDelete();
                 DbContext.Tags.ExecuteDelete();
                 DbContext.Boosts.ExecuteDelete();

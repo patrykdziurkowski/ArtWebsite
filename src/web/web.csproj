@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features/PointAwards/Artist/" />
     <Folder Include="wwwroot/img/" />
   </ItemGroup>
 
