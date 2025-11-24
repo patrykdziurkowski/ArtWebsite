@@ -120,4 +120,36 @@ public class ReviewerLeaderboardQueryTests : DatabaseTest
                 topReviewers.Should().Contain(r => r.PointsInThatTimeSpan == 30);
                 topReviewers.Should().Contain(r => r.PointsInThatTimeSpan == 0);
         }
+
+        [Fact]
+        public async Task Execute_ReturnsAllTimeArtistsPoints_WhenNoTimeSpanSpecified()
+        {
+                await CreateUserWithArtistProfile();
+                for (int i = 0; i < 5; i++)
+                {
+                        await _uploadArtPieceCommand.ExecuteAsync(GetExampleFile(), "description", DbContext.Users.First().Id);
+                }
+                List<ArtPiece> artPieces = await DbContext.ArtPieces.ToListAsync();
+
+                ArtistId artistId = await CreateUserWithArtistProfile("johnSmith1", "artistName1");
+                Guid currentUserId = DbContext.Artists.Single(a => a.Id == artistId).UserId;
+
+                for (int i = 0; i < 5; i++)
+                {
+                        await _reviewArtPieceCommand.ExecuteAsync("Some comment.", rating: 3, artPieces[i].Id, currentUserId);
+                }
+
+                var awards = await DbContext.ReviewerPointAwards.OrderByDescending(award => award.DateAwarded).ToListAsync();
+                typeof(ReviewerPointAward).GetProperty(nameof(ReviewerPointAward.DateAwarded))!
+                        .SetValue(awards[0], new DateTimeOffset(new DateTime(1994, 10, 25)));
+                typeof(ReviewerPointAward).GetProperty(nameof(ReviewerPointAward.DateAwarded))!
+                        .SetValue(awards[1], new DateTimeOffset(new DateTime(2010, 10, 25)));
+                await DbContext.SaveChangesAsync();
+
+                List<LeaderboardDto> topReviewers = await _query.ExecuteAsync(0, 10);
+
+                topReviewers.Count.Should().Be(2);
+                topReviewers.Should().Contain(r => r.PointsInThatTimeSpan == 50);
+                topReviewers.Should().Contain(r => r.PointsInThatTimeSpan == 0);
+        }
 }

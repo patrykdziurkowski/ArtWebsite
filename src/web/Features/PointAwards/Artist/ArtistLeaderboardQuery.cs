@@ -5,9 +5,11 @@ namespace web.Features.PointAwards.Artist;
 
 public class ArtistLeaderboardQuery(ApplicationDbContext dbContext)
 {
-        public async Task<List<LeaderboardDto>> ExecuteAsync(int offset, int amount, TimeSpan timeSpan)
+        public async Task<List<LeaderboardDto>> ExecuteAsync(int offset, int amount, TimeSpan? timeSpan = null)
         {
-                DateTimeOffset cutoffTime = DateTimeOffset.UtcNow.Subtract(timeSpan);
+                DateTimeOffset cutoffTime = (timeSpan is not null)
+                        ? DateTimeOffset.UtcNow.Subtract(timeSpan!.Value)
+                        : DateTimeOffset.MinValue;
 
                 return await dbContext.Artists
                         .Select(a => new LeaderboardDto

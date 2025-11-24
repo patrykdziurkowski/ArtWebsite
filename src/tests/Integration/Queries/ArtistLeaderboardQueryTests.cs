@@ -96,4 +96,30 @@ public class ArtistLeaderboardQueryTests : DatabaseTest
                 topArtists.Count.Should().Be(1);
                 topArtists.Single().PointsInThatTimeSpan.Should().Be(30);
         }
+
+        [Fact]
+        public async Task Execute_ReturnsAllTimeArtistsPoints_WhenNoTimeSpecified()
+        {
+                ArtistId artistId = await CreateUserWithArtistProfile();
+                for (int j = 0; j < 5; j++)
+                {
+                        await _uploadArtPieceCommand.ExecuteAsync(
+                                GetExampleFile(),
+                                "description",
+                                DbContext.Artists.Single(a => a.Id == artistId).UserId);
+                }
+
+                var awards = await DbContext.ArtistPointAwards.OrderByDescending(award => award.DateAwarded).ToListAsync();
+                for (int i = 0; i < 5; i++)
+                {
+                        typeof(ArtistPointAward).GetProperty(nameof(ArtistPointAward.DateAwarded))!
+                                .SetValue(awards[i], new DateTimeOffset(new DateTime(1970, 10, 25)));
+                }
+                await DbContext.SaveChangesAsync();
+
+                List<LeaderboardDto> topArtists = await _query.ExecuteAsync(0, 10);
+
+                topArtists.Count.Should().Be(1);
+                topArtists.Single().PointsInThatTimeSpan.Should().Be(50);
+        }
 }
