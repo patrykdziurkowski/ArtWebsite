@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 
-namespace web.Features.PointAwards.Artist;
+namespace web.Features.Leaderboard.Artist;
 
 public class ArtistLeaderboardQuery(ApplicationDbContext dbContext)
 {

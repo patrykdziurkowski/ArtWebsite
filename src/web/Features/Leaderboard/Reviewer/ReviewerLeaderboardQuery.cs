@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 
-namespace web.Features.PointAwards.Reviewer;
+namespace web.Features.Leaderboard.Reviewer;
 
 public class ReviewerLeaderboardQuery(ApplicationDbContext dbContext)
 {

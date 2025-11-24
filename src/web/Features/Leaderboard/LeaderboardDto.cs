@@ -1,4 +1,4 @@
-namespace web.Features.PointAwards;
+namespace web.Features.Leaderboard;
 
 public record LeaderboardDto
 {

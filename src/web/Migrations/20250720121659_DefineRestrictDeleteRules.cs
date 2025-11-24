@@ -2,11 +2,11 @@
 
 #nullable disable
 
-namespace web.Migrations
+namespace web.Migrations;
+
+/// <inheritdoc />
+public partial class DefineRestrictDeleteRules : Migration
 {
-    /// <inheritdoc />
-    public partial class DefineRestrictDeleteRules : Migration
-    {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -18,5 +18,4 @@ namespace web.Migrations
         {
 
         }
-    }
 }

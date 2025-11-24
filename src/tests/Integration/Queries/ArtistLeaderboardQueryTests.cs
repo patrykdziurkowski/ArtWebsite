@@ -4,8 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces.UploadArtPiece;
-using web.Features.PointAwards;
-using web.Features.PointAwards.Artist;
+using web.Features.Leaderboard;
+using web.Features.Leaderboard.Artist;
 
 namespace tests.Integration.Queries;
 

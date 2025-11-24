@@ -1,6 +1,6 @@
 using web.Features.Artists;
 
-namespace web.Features.PointAwards.Artist;
+namespace web.Features.Leaderboard.Artist;
 
 public class ArtistPointAward
 {

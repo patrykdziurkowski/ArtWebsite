@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.ArtPieces;
-using web.Features.PointAwards.Reviewer;
+using web.Features.Leaderboard.Reviewer;
 using web.Features.Reviewers;
 
 namespace web.Features.Reviews.ReviewArtPiece;

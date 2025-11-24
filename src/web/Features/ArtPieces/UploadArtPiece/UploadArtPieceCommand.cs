@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Artists;
-using web.Features.PointAwards.Artist;
+using web.Features.Leaderboard.Artist;
 using web.Features.Tags;
 
 namespace web.Features.ArtPieces.UploadArtPiece;

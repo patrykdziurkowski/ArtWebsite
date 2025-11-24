@@ -1,6 +1,6 @@
 using web.Features.Reviewers;
 
-namespace web.Features.PointAwards.Reviewer;
+namespace web.Features.Leaderboard.Reviewer;
 
 public class ReviewerPointAward
 {

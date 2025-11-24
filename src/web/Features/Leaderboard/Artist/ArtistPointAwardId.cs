@@ -1,5 +1,5 @@
 using web.Features.Shared.domain;
 
-namespace web.Features.PointAwards.Artist;
+namespace web.Features.Leaderboard.Artist;
 
 public class ArtistPointAwardId : DomainId;

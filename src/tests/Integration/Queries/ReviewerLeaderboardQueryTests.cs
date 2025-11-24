@@ -5,8 +5,8 @@ using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
-using web.Features.PointAwards;
-using web.Features.PointAwards.Reviewer;
+using web.Features.Leaderboard;
+using web.Features.Leaderboard.Reviewer;
 using web.Features.Reviewers;
 using web.Features.Reviews.ReviewArtPiece;
 
