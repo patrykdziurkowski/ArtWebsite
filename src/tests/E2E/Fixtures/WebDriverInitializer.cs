@@ -32,6 +32,7 @@ public class WebDriverInitializer : IDisposable
                 options.AddArguments("--allow-running-insecure-content");
                 Driver = new ChromeDriver(options);
                 Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(5));
+                Wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException));
                 WebServer = new WebServer();
         }
 

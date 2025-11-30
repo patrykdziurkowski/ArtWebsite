@@ -11,7 +11,7 @@ public class SetupModelValidationTests : ValidationBase
         [InlineData("")]
         [InlineData(null)]
         [InlineData("ab")]
-        [InlineData("abcdefghijklm")]
+        [InlineData("abcdefghijklmnopr")]
         [InlineData("Some User")]
         [InlineData(" SomeUser")]
         [InlineData("SomeUser ")]

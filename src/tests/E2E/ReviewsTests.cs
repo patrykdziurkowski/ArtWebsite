@@ -19,18 +19,9 @@ public class ReviewsTests(WebDriverInitializer initializer)
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
                 string imagePathBeforeReview = Wait.Until(d => d.FindElement(By.Id("artPieceImage"))
                         .GetDomAttribute("src"));
-                Driver.FindElement(By.Id("reviewArt")).Click();
-                Wait.Until(ExpectedConditions.ElementToBeClickable(
-                        Driver.FindElement(By.Id("reviewForm"))));
 
-                Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
-                Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
-                Driver.FindElement(By.CssSelector("#reviewForm button")).Click();
+                ReviewThisArtPiece();
 
-                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
-                Wait.Until(d => d.FindElement(By.CssSelector("#postReviewModal .btn-close"))).Click();
-
-                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("postReviewModal")));
                 string imagePathAfterReview = Driver.FindElement(By.Id("artPieceImage")).GetDomAttribute("src");
                 imagePathAfterReview.Should().NotBe(imagePathBeforeReview);
         }

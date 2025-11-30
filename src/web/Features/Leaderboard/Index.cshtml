@@ -1,0 +1,100 @@
+<div class="d-flex justify-content-center mb-3">
+    <button id="btn-reviewers" class="btn btn-outline-primary">Reviewers</button>
+    <button id="btn-artists" class="btn btn-primary me-2">Artists</button>
+</div>
+
+<div class="d-flex justify-content-center mb-4">
+    <button data-days="1" class="time-btn btn btn-outline-secondary">Today</button>
+    <button data-days="7" class="time-btn btn btn-outline-secondary me-2">1 Week</button>
+    <button data-days="31" class="time-btn btn btn-outline-secondary me-2">1 Month</button>
+    <button data-days="365" class="time-btn btn btn-outline-secondary me-2">1 Year</button>
+    <button class="time-btn btn btn-outline-secondary me-2">All-Time</button>
+</div>
+
+<table class="table table-striped text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>Place</th>
+            <th>Name</th>
+            <th>Points</th>
+        </tr>
+    </thead>
+    <tbody id="leaderboard-body"></tbody>
+    <button id="load-more-leaderboard" class="btn btn-outline-primary mt-2 d-none">Load more</button>
+</table>
+
+@section Scripts
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentMode = 'artists';
+            let currentDays = null;
+            let offset = 0;
+
+            const loadMoreBtn = document.getElementById('load-more-leaderboard');
+            const btnArtists = document.getElementById('btn-artists');
+            const btnReviewers = document.getElementById('btn-reviewers');
+
+            btnArtists.onclick = () => switchMode('artists');
+            btnReviewers.onclick = () => switchMode('reviewers');
+            loadMoreBtn.onclick = () => loadLeaderboard();
+
+            document.querySelectorAll('.time-btn').forEach(btn => {
+                btn.onclick = () => {
+                    currentDays = btn.getAttribute('data-days');
+                    offset = 0;
+                    loadLeaderboard(true);
+                };
+            });
+
+            function switchMode(mode) {
+                currentMode = mode;
+                offset = 0;
+                currentDays = null;
+                btnArtists.classList.toggle('btn-primary', mode === 'artists');
+                btnArtists.classList.toggle('btn-outline-primary', mode !== 'artists');
+                btnReviewers.classList.toggle('btn-primary', mode === 'reviewers');
+                btnReviewers.classList.toggle('btn-outline-primary', mode !== 'reviewers');
+                loadLeaderboard(true);
+            }
+
+            async function loadLeaderboard(reset = false) {
+                document.querySelectorAll('.time-btn').forEach(button => {
+                    button.classList.toggle('btn-primary', currentDays === button.getAttribute('data-days'));
+                    button.classList.toggle('btn-outline-secondary', currentDays !== button.getAttribute('data-days'));
+                });
+
+                const currentDaysParameter = (currentDays === null) ? '' : `&days=${currentDays}`;
+                const endpoint = currentMode === 'artists'
+                    ? `/api/leaderboards/artists?offset=${offset}${currentDaysParameter}`
+                    : `/api/leaderboards/reviewers?offset=${offset}${currentDaysParameter}`
+
+                const res = await fetch(endpoint);
+                const data = await res.json();
+
+                if (reset) {
+                    document.getElementById('leaderboard-body').innerHTML = '';
+                }
+
+                renderTable(data);
+
+                loadMoreBtn.classList.toggle('d-none', data.length < 20);
+                offset += data.length;
+            }
+
+            function renderTable(entries) {
+                const body = document.getElementById('leaderboard-body');
+                entries.forEach((e, i) => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = '<td>' + (offset + i + 1) + '</td>' +
+                        '<td>' + e.name + '</td>' +
+                        '<td>' + e.pointsInThatTimeSpan + '</td>';
+                    body.appendChild(tr);
+                });
+            }
+
+            loadLeaderboard(true);
+        });
+    </script>
+
+}

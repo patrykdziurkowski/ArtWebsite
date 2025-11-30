@@ -80,6 +80,22 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
                 Wait.Until(d => d.Url.Contains("/ArtPiece/Upload") == false);
         }
 
+        public void ReviewThisArtPiece()
+        {
+                Wait.Until(d => d.FindElement(By.Id("reviewArt"))).Click();
+
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("reviewModal")));
+                Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
+                Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
+                Driver.FindElement(By.CssSelector("#reviewForm > button")).Click();
+
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("reviewModal")));
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
+                Wait.Until(d => d.FindElement(By.CssSelector("#postReviewModal .btn-close"))).Click();
+
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("postReviewModal")));
+        }
+
         public bool DriverIsAtBaseUrl()
         {
                 return Wait.Until(d =>

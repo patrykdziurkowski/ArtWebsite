@@ -5,7 +5,7 @@ namespace web.Features.Artists.SetupArtist;
 public class SetupModel
 {
         [Required]
-        [StringLength(12, MinimumLength = 3)]
+        [StringLength(16, MinimumLength = 3)]
         [RegularExpression(@"^[a-zA-Z0-9]*$", ErrorMessage = "Only alphanumeric characters are allowed.")]
         public required string Name { get; set; }
         [Required]

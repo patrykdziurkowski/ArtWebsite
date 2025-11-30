@@ -63,8 +63,13 @@ public class WebServer : IDisposable
 
         public void ClearData()
         {
+                ExecuteSql(TRUNCATE_DATA_QUERY);
+        }
+
+        public void ExecuteSql(string query)
+        {
                 IContainerService db = Server.Containers.Single(c => c.Name.Contains("db"));
-                db.Execute($"/opt/mssql-tools18/bin/sqlcmd -U sa -S localhost -P {DB_TEST_PASSWORD} -No -b -Q \"{TRUNCATE_DATA_QUERY}\"");
+                db.Execute($"/opt/mssql-tools18/bin/sqlcmd -U sa -S localhost -P {DB_TEST_PASSWORD} -No -b -Q \"{query}\"");
         }
 
         public void Dispose()
