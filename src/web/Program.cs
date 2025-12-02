@@ -16,6 +16,7 @@ using web.Features.Browse.ByTag;
 using web.Features.Browse.Index;
 using web.Features.Leaderboard.Artist;
 using web.Features.Leaderboard.Reviewer;
+using web.Features.Missions;
 using web.Features.Reviewers;
 using web.Features.Reviewers.Index;
 using web.Features.Reviewers.LikeArtPiece;
@@ -95,6 +96,9 @@ services.AddTransient<ArtPieceRepository>();
 services.AddSingleton<ImageTaggingQueue>();
 services.AddTransient<ImageTagger>();
 services.AddHostedService<ImageProcessor>();
+
+services.AddTransient<MissionGenerator>();
+services.AddTransient<MissionManager>();
 
 services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
 

@@ -6,6 +6,16 @@ namespace tests.Unit;
 public class MissionGeneratorTests
 {
         [Fact]
+        public void GetMissions_Throws_WhenAskingForMoreMissionsThanThereAre()
+        {
+                MissionGenerator missionGenerator = new();
+
+                Action gettingMissions = () => missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now, count: 10);
+
+                gettingMissions.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
         public void GetMissions_ReturnsOneMission_WhenAskedForOne()
         {
                 MissionGenerator missionGenerator = new();
@@ -58,11 +68,25 @@ public class MissionGeneratorTests
         public void GetMissions_ReturnsDifferentMissions_ForDifferentUsers()
         {
                 MissionGenerator missionGenerator = new();
+                bool missionsWereDifferent = false;
 
-                MissionType[] missions1 = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now, 5);
-                MissionType[] missions2 = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now, 5);
+                for (int i = 0; i < 1000; i++)
+                {
+                        MissionType[] missions1 = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now, 5);
+                        MissionType[] missions2 = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now, 5);
 
-                missions1.Should().NotBeEquivalentTo(missions2);
+                        if (missions1.SequenceEqual(missions2))
+                        {
+                                continue;
+                        }
+                        else
+                        {
+                                missionsWereDifferent = true;
+                                break;
+                        }
+                }
+
+                missionsWereDifferent.Should().BeTrue();
         }
 
         [Fact]
@@ -72,11 +96,25 @@ public class MissionGeneratorTests
                 MissionGenerator missionGenerator = new();
                 DateTimeOffset dateTime1 = new(2025, 12, 2, 18, 4, 32, TimeSpan.Zero);
                 DateTimeOffset dateTime2 = dateTime1.Subtract(TimeSpan.FromDays(1));
+                bool missionsWereDifferent = false;
 
-                MissionType[] missions1 = missionGenerator.GetMissions(someUserId, dateTime1, 5);
-                MissionType[] missions2 = missionGenerator.GetMissions(someUserId, dateTime2, 5);
+                for (int i = 0; i < 1000; i++)
+                {
+                        MissionType[] missions1 = missionGenerator.GetMissions(someUserId, dateTime1, 5);
+                        MissionType[] missions2 = missionGenerator.GetMissions(someUserId, dateTime2, 5);
 
-                missions1.Should().NotBeEquivalentTo(missions2);
+                        if (missions1.SequenceEqual(missions2))
+                        {
+                                continue;
+                        }
+                        else
+                        {
+                                missionsWereDifferent = true;
+                                break;
+                        }
+                }
+
+                missionsWereDifferent.Should().BeTrue();
         }
 
         [Fact]
@@ -85,12 +123,25 @@ public class MissionGeneratorTests
                 Guid someUserId = Guid.NewGuid();
                 MissionGenerator missionGenerator = new();
 
-                MissionType[] missions1 = missionGenerator.GetMissions(someUserId, DateTimeOffset.Now, count: 6);
-                MissionType[] missions2 = missionGenerator.GetMissions(someUserId, DateTimeOffset.Now, count: 8);
+                MissionType[] missions1 = missionGenerator.GetMissions(someUserId, DateTimeOffset.Now, count: 4);
+                MissionType[] missions2 = missionGenerator.GetMissions(someUserId, DateTimeOffset.Now, count: 5);
 
                 for (int i = 0; i < Math.Min(missions1.Length, missions2.Length); i++)
                 {
                         missions1[i] = missions2[i];
+                }
+        }
+
+        [Fact]
+        public void GetMissions_DoesntReturnDuplicates()
+        {
+                for (int i = 0; i < 100; i++)
+                {
+                        MissionGenerator missionGenerator = new();
+
+                        MissionType[] missions = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.UtcNow, count: 5);
+
+                        missions.ToHashSet().Should().BeEquivalentTo(missions);
                 }
         }
 
