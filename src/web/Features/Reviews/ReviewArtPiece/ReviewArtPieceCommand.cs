@@ -2,17 +2,23 @@ using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.ArtPieces;
 using web.Features.Leaderboard.Reviewer;
+using web.Features.Missions;
 using web.Features.Reviewers;
 
 namespace web.Features.Reviews.ReviewArtPiece;
 
-public class ReviewArtPieceCommand(ApplicationDbContext dbContext)
+public class ReviewArtPieceCommand(
+        ApplicationDbContext dbContext,
+        MissionManager missionManager)
 {
         private const int POINTS_PER_REVIEW = 10;
 
         public async Task<Review> ExecuteAsync(string comment,
-                int rating, ArtPieceId artPieceId, Guid userId)
+                int rating, ArtPieceId artPieceId, Guid userId,
+                DateTimeOffset? now = null)
         {
+                now ??= DateTimeOffset.UtcNow;
+
                 Reviewer reviewer = await dbContext.Reviewers
                         .FirstAsync(r => r.UserId == userId);
 
@@ -42,6 +48,9 @@ public class ReviewArtPieceCommand(ApplicationDbContext dbContext)
 
                 await dbContext.AddAsync(review);
                 await dbContext.SaveChangesAsync();
+
+                await missionManager.RecordProgressAsync(MissionType.ReviewArt, userId, now.Value);
+
                 return review;
         }
 }

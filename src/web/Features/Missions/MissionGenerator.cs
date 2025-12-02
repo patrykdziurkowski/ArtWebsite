@@ -1,6 +1,11 @@
 namespace web.Features.Missions;
 
-public class MissionGenerator
+public interface IMissionGenerator
+{
+        MissionType[] GetMissions(Guid userId, DateTimeOffset now, int count = 1);
+}
+
+public class MissionGenerator : IMissionGenerator
 {
         /// <summary>
         /// This uses a seeded random number generator based off of input parameters to

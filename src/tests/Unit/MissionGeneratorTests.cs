@@ -10,7 +10,7 @@ public class MissionGeneratorTests
         {
                 MissionGenerator missionGenerator = new();
 
-                Action gettingMissions = () => missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now, count: 10);
+                Action gettingMissions = () => missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.UtcNow, count: 10);
 
                 gettingMissions.Should().Throw<ArgumentException>();
         }
@@ -20,7 +20,7 @@ public class MissionGeneratorTests
         {
                 MissionGenerator missionGenerator = new();
 
-                MissionType[] missions = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now);
+                MissionType[] missions = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.UtcNow);
 
                 missions.Should().HaveCount(1);
         }
@@ -30,7 +30,7 @@ public class MissionGeneratorTests
         {
                 MissionGenerator missionGenerator = new();
 
-                MissionType[] missions = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now, 5);
+                MissionType[] missions = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.UtcNow, 5);
 
                 missions.Should().HaveCount(5);
         }
@@ -42,9 +42,9 @@ public class MissionGeneratorTests
                 MissionGenerator missionGenerator1 = new();
                 MissionGenerator missionGenerator2 = new();
 
-                MissionType[] missions1 = missionGenerator1.GetMissions(someUserId, DateTimeOffset.Now, 5);
-                MissionType[] missions2 = missionGenerator1.GetMissions(someUserId, DateTimeOffset.Now, 5);
-                MissionType[] missions3 = missionGenerator2.GetMissions(someUserId, DateTimeOffset.Now, 5);
+                MissionType[] missions1 = missionGenerator1.GetMissions(someUserId, DateTimeOffset.UtcNow, 5);
+                MissionType[] missions2 = missionGenerator1.GetMissions(someUserId, DateTimeOffset.UtcNow, 5);
+                MissionType[] missions3 = missionGenerator2.GetMissions(someUserId, DateTimeOffset.UtcNow, 5);
 
                 missions1.Should().BeEquivalentTo(missions2);
                 missions2.Should().BeEquivalentTo(missions3);
@@ -72,8 +72,8 @@ public class MissionGeneratorTests
 
                 for (int i = 0; i < 1000; i++)
                 {
-                        MissionType[] missions1 = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now, 5);
-                        MissionType[] missions2 = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.Now, 5);
+                        MissionType[] missions1 = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.UtcNow, 5);
+                        MissionType[] missions2 = missionGenerator.GetMissions(Guid.NewGuid(), DateTimeOffset.UtcNow, 5);
 
                         if (missions1.SequenceEqual(missions2))
                         {
@@ -123,8 +123,8 @@ public class MissionGeneratorTests
                 Guid someUserId = Guid.NewGuid();
                 MissionGenerator missionGenerator = new();
 
-                MissionType[] missions1 = missionGenerator.GetMissions(someUserId, DateTimeOffset.Now, count: 4);
-                MissionType[] missions2 = missionGenerator.GetMissions(someUserId, DateTimeOffset.Now, count: 5);
+                MissionType[] missions1 = missionGenerator.GetMissions(someUserId, DateTimeOffset.UtcNow, count: 4);
+                MissionType[] missions2 = missionGenerator.GetMissions(someUserId, DateTimeOffset.UtcNow, count: 5);
 
                 for (int i = 0; i < Math.Min(missions1.Length, missions2.Length); i++)
                 {

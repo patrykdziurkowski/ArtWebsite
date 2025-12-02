@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
@@ -13,21 +14,26 @@ namespace tests.Integration.Commands;
 public class UploadArtPieceCommandTests : DatabaseTest
 {
         private readonly UploadArtPieceCommand _command;
+        private readonly IMissionGenerator _mockMissionGenerator;
 
         public UploadArtPieceCommandTests(DatabaseTestContext databaseContext)
                 : base(databaseContext)
         {
+                _mockMissionGenerator = Substitute.For<IMissionGenerator>();
+                MissionManager missionManager = new(DbContext, _mockMissionGenerator);
                 _command = new(
                         DbContext,
                         Scope.ServiceProvider.GetRequiredService<ArtistRepository>(),
                         Scope.ServiceProvider.GetRequiredService<ImageTaggingQueue>(),
-                        Scope.ServiceProvider.GetRequiredService<MissionManager>(),
+                        missionManager,
                         Scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>());
         }
 
         [Fact]
         public async Task ExecuteAsync_SavesImageObject()
         {
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
+                        .Returns([MissionType.BoostArt]);
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
                 DbContext.Artists.Add(new Artist
@@ -52,33 +58,25 @@ public class UploadArtPieceCommandTests : DatabaseTest
         [Fact]
         public async Task ExecuteAsync_AddsExtraPoints_WhenUploadingArtPieceMissionCompleted()
         {
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
+                        .Returns([MissionType.UploadArt]);
                 const int POINTS_PER_UPLOAD = 10;
                 const int POINTS_PER_QUEST = 25;
 
-                for (int i = 0; i < 1000; i++)
+                IdentityUser<Guid> user = new("johnSmith");
+                await UserManager.CreateAsync(user);
+                DbContext.Artists.Add(new Artist
                 {
-                        ClearDatabase();
-                        IdentityUser<Guid> user = new("johnSmith");
-                        await UserManager.CreateAsync(user);
-                        DbContext.Artists.Add(new Artist
-                        {
-                                UserId = user.Id,
-                                Name = "ArtistName",
-                                Summary = "A profile summary for an artist.",
-                        });
-                        await DbContext.SaveChangesAsync();
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                });
+                await DbContext.SaveChangesAsync();
 
-                        _ = await _command.ExecuteAsync(
-                                GetExampleFile(), "description", user.Id);
+                _ = await _command.ExecuteAsync(
+                        GetExampleFile(), "description", user.Id);
 
-                        int points = DbContext.Artists.Single().Points;
-                        if (points == POINTS_PER_UPLOAD + POINTS_PER_QUEST)
-                        {
-                                return;
-                        }
-                }
-
-                throw new InvalidOperationException("Iteration limit exceeded. Test conditions not met.");
+                DbContext.Artists.Single().Points.Should().Be(POINTS_PER_UPLOAD + POINTS_PER_QUEST);
         }
 
         [Fact]

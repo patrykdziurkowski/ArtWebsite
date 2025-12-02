@@ -8,7 +8,7 @@ namespace web.Features.Missions;
 
 public class MissionManager(
         ApplicationDbContext dbContext,
-        MissionGenerator missionGenerator)
+        IMissionGenerator missionGenerator)
 {
         private const int POINTS_PER_QUEST = 25;
 

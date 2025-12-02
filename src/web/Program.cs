@@ -97,7 +97,7 @@ services.AddSingleton<ImageTaggingQueue>();
 services.AddTransient<ImageTagger>();
 services.AddHostedService<ImageProcessor>();
 
-services.AddTransient<MissionGenerator>();
+services.AddTransient<IMissionGenerator, MissionGenerator>();
 services.AddTransient<MissionManager>();
 
 services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
