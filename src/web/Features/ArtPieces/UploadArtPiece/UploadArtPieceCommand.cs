@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Artists;
 using web.Features.Leaderboard.Artist;
+using web.Features.Missions;
 using web.Features.Tags;
 
 namespace web.Features.ArtPieces.UploadArtPiece;
@@ -10,13 +11,16 @@ public class UploadArtPieceCommand(
         ApplicationDbContext dbContext,
         ArtistRepository artistRepository,
         ImageTaggingQueue imageTaggingQueue,
+        MissionManager missionManager,
         IServiceScopeFactory scopeFactory)
 {
         private const int POINTS_PER_UPLOAD = 10;
 
         public async Task<ArtPiece> ExecuteAsync(IFormFile image,
-                string description, Guid userId)
+                string description, Guid userId, DateTimeOffset? now = null)
         {
+                now ??= DateTimeOffset.UtcNow;
+
                 Artist artist = await artistRepository.GetByUserIdAsync(userId)
                         ?? throw new InvalidOperationException("Cannot upload an art piece due to user not having an artist profile.");
 
@@ -48,6 +52,8 @@ public class UploadArtPieceCommand(
 
                 await dbContext.ArtPieces.AddAsync(artPiece);
                 await dbContext.SaveChangesAsync();
+
+                await missionManager.RecordProgressAsync(MissionType.UploadArt, userId, now.Value);
 
                 imageTaggingQueue.Add(artPieceId, imagePath, async (tags) => await AssignTagsAsync(artPiece.Id, tags));
 

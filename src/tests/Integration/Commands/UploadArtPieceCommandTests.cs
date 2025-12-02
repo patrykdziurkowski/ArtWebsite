@@ -5,6 +5,7 @@ using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Missions;
 using web.Features.Tags;
 
 namespace tests.Integration.Commands;
@@ -20,6 +21,7 @@ public class UploadArtPieceCommandTests : DatabaseTest
                         DbContext,
                         Scope.ServiceProvider.GetRequiredService<ArtistRepository>(),
                         Scope.ServiceProvider.GetRequiredService<ImageTaggingQueue>(),
+                        Scope.ServiceProvider.GetRequiredService<MissionManager>(),
                         Scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>());
         }
 
@@ -48,6 +50,38 @@ public class UploadArtPieceCommandTests : DatabaseTest
         }
 
         [Fact]
+        public async Task ExecuteAsync_AddsExtraPoints_WhenUploadingArtPieceMissionCompleted()
+        {
+                const int POINTS_PER_UPLOAD = 10;
+                const int POINTS_PER_QUEST = 25;
+
+                for (int i = 0; i < 1000; i++)
+                {
+                        ClearDatabase();
+                        IdentityUser<Guid> user = new("johnSmith");
+                        await UserManager.CreateAsync(user);
+                        DbContext.Artists.Add(new Artist
+                        {
+                                UserId = user.Id,
+                                Name = "ArtistName",
+                                Summary = "A profile summary for an artist.",
+                        });
+                        await DbContext.SaveChangesAsync();
+
+                        _ = await _command.ExecuteAsync(
+                                GetExampleFile(), "description", user.Id);
+
+                        int points = DbContext.Artists.Single().Points;
+                        if (points == POINTS_PER_UPLOAD + POINTS_PER_QUEST)
+                        {
+                                return;
+                        }
+                }
+
+                throw new InvalidOperationException("Iteration limit exceeded. Test conditions not met.");
+        }
+
+        [Fact]
         public async Task ExecuteAsync_SavesImageAsAFile()
         {
                 IdentityUser<Guid> user = new("johnSmith");
@@ -69,5 +103,7 @@ public class UploadArtPieceCommandTests : DatabaseTest
                         $"{artistId}", $"{artPiece.Id}.png");
                 File.Exists(path).Should().BeTrue();
         }
+
+
 
 }

@@ -7,7 +7,7 @@ namespace tests.Integration;
 
 public class MissionManagerTests : DatabaseTest
 {
-        private MissionManager missionManager;
+        private readonly MissionManager missionManager;
 
         public MissionManagerTests(DatabaseTestContext databaseContext)
                 : base(databaseContext)
@@ -33,7 +33,7 @@ public class MissionManagerTests : DatabaseTest
                 int artistPointsBefore = DbContext.Artists.Single().Points;
                 int reviewerPointsBefore = DbContext.Reviewers.Single().Points;
 
-                await missionManager.RecordProgress(missionType, userId, date);
+                await missionManager.RecordProgressAsync(missionType, userId, date);
 
                 int artistPointsAfter = DbContext.Artists.Single().Points;
                 int reviewerPointsAfter = DbContext.Reviewers.Single().Points;

@@ -1,11 +1,11 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Missions;
 using web.Features.Tags;
 
 namespace tests.Integration.Queries;
@@ -26,6 +26,7 @@ public class ArtPieceTagsQueryTests : DatabaseTest
                         DbContext,
                         Scope.ServiceProvider.GetRequiredService<ArtistRepository>(),
                         _imageTaggingQueue,
+                        Scope.ServiceProvider.GetRequiredService<MissionManager>(),
                         Scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>());
         }
 

@@ -12,7 +12,7 @@ public class MissionManager(
 {
         private const int POINTS_PER_QUEST = 25;
 
-        public async Task RecordProgress(MissionType missionType, Guid userId, DateTimeOffset now)
+        public async Task RecordProgressAsync(MissionType missionType, Guid userId, DateTimeOffset now)
         {
                 MissionType[] missions = missionGenerator.GetMissions(userId, now);
                 if (!missions.Contains(missionType))
