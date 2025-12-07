@@ -44,6 +44,18 @@ public static class MissionTypeExtensions
                 MissionType.VisitArtistsProfiles => 3,
                 MissionType.VisitReviewersProfiles => 3,
                 MissionType.Unknown => throw new InvalidEnumArgumentException($"Uninitialized (UNKNOWN) enum value for {nameof(MissionType.Unknown)}"),
-                _ => throw new InvalidEnumArgumentException($"Could not map the mission type to its progress count."),
+                _ => throw new InvalidEnumArgumentException($"Could not map the mission type '{missionType}' to its progress count."),
+        };
+
+        public static string GetDescription(this MissionType missionType) => missionType switch
+        {
+                MissionType.UploadArt => "Upload art pieces",
+                MissionType.BoostArt => "Boost your art pieces",
+                MissionType.ReviewArt => "Review people's art pieces",
+                MissionType.LikeArt => "Like art pieces",
+                MissionType.VisitArtistsProfiles => "Visit unique artist's profiles",
+                MissionType.VisitReviewersProfiles => "Visit unique reviewer's profiles",
+                MissionType.Unknown => throw new InvalidEnumArgumentException($"Uninitialized (UNKNOWN) enum value for {nameof(MissionType.Unknown)}"),
+                _ => throw new InvalidEnumArgumentException($"Could not map the mission type '{missionType}' to its description."),
         };
 }
