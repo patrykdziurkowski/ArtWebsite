@@ -1,20 +1,29 @@
+using AutoMapper;
 using FluentAssertions;
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.Artists.BoostArtPiece;
 using web.Features.ArtPieces;
+using web.Features.Missions;
 
 namespace tests.Integration.Commands;
 
 public class BoostArtPieceCommandTests : DatabaseTest
 {
         private readonly BoostArtPieceCommand _command;
+        private readonly IMissionGenerator _mockMissionGenerator;
+
         public BoostArtPieceCommandTests(DatabaseTestContext context) : base(context)
         {
-                _command = Scope.ServiceProvider.GetRequiredService<BoostArtPieceCommand>();
+                IMapper mapper = Scope.ServiceProvider.GetRequiredService<IMapper>();
+                ArtistRepository artistRepository = Scope.ServiceProvider.GetRequiredService<ArtistRepository>();
+                _mockMissionGenerator = Substitute.For<IMissionGenerator>();
+                MissionManager missionManager = new(DbContext, _mockMissionGenerator);
+                _command = new(artistRepository, DbContext, mapper, missionManager);
         }
 
         [Fact]
@@ -78,5 +87,19 @@ public class BoostArtPieceCommandTests : DatabaseTest
 
                 result.IsSuccess.Should().BeTrue();
                 result.Value.Should().NotBeNull();
+        }
+
+        [Fact]
+        public async Task Execute_ShouldAddExtraPoints_WhenMissionComplete()
+        {
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
+                        .Returns([MissionType.BoostArt]);
+                await CreateArtistUserWithArtPieces();
+                Guid currentUserId = DbContext.Users.First().Id;
+                ArtPieceId artPieceId = DbContext.ArtPieces.First().Id;
+
+                _ = await _command.ExecuteAsync(currentUserId, artPieceId);
+
+                DbContext.Artists.Single().Points.Should().Be(25);
         }
 }
