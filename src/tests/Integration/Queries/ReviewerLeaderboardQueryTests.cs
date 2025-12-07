@@ -1,14 +1,17 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Leaderboard;
 using web.Features.Leaderboard.Reviewer;
+using web.Features.Missions;
 using web.Features.Reviewers;
 using web.Features.Reviews.ReviewArtPiece;
+using web.Features.Tags;
 
 namespace tests.Integration.Queries;
 
@@ -17,12 +20,21 @@ public class ReviewerLeaderboardQueryTests : DatabaseTest
         private readonly ReviewerLeaderboardQuery _query;
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;
         private readonly ReviewArtPieceCommand _reviewArtPieceCommand;
+        private readonly IMissionGenerator _mockMissionGenerator;
 
         public ReviewerLeaderboardQueryTests(DatabaseTestContext databaseContext) : base(databaseContext)
         {
                 _query = Scope.ServiceProvider.GetRequiredService<ReviewerLeaderboardQuery>();
-                _reviewArtPieceCommand = Scope.ServiceProvider.GetRequiredService<ReviewArtPieceCommand>();
-                _uploadArtPieceCommand = Scope.ServiceProvider.GetRequiredService<UploadArtPieceCommand>();
+                ArtistRepository artistRepository = Scope.ServiceProvider.GetRequiredService<ArtistRepository>();
+                IServiceScopeFactory serviceScopeFactory = Scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
+                ImageTaggingQueue imageTaggingQueue = Scope.ServiceProvider.GetRequiredService<ImageTaggingQueue>();
+                _mockMissionGenerator = Substitute.For<IMissionGenerator>();
+                MissionManager missionManager = new(DbContext, _mockMissionGenerator);
+                _uploadArtPieceCommand = new(DbContext, artistRepository, imageTaggingQueue, missionManager, serviceScopeFactory);
+                _reviewArtPieceCommand = new(DbContext, missionManager);
+
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
+                        .Returns([MissionType.BoostArt]);
         }
 
         [Fact]

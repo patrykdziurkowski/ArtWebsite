@@ -20,7 +20,45 @@ public class MissionManager(
                         return;
                 }
 
-                MissionRecipient missionRecipient = Missions.GetRecipient(missionType);
+                bool missionJustFinished = false;
+                int maxMissionProgressCount = missionType.GetMaxProgressCount();
+                MissionProgress? missionProgress = await dbContext.MissionProgresses
+                        .FirstOrDefaultAsync(mp => mp.UserId == userId);
+                if (missionProgress is not null
+                        && missionProgress.Date.Date != now.Date)
+                {
+                        dbContext.MissionProgresses.Remove(missionProgress);
+                        missionProgress = null;
+                }
+
+                if (missionProgress is null)
+                {
+                        missionProgress = new()
+                        {
+                                MissionType = missionType,
+                                UserId = userId,
+                                Date = now,
+                        };
+                        await dbContext.AddAsync(missionProgress);
+                        missionJustFinished = missionProgress.Count >= maxMissionProgressCount;
+                }
+                else if (missionProgress.Count < maxMissionProgressCount)
+                {
+                        missionProgress.Count++;
+                        missionJustFinished = missionProgress.Count >= maxMissionProgressCount;
+                }
+
+                if (missionJustFinished)
+                {
+                        await AssignPointsForMissionCompletionAsync(missionType, userId);
+                }
+
+                await dbContext.SaveChangesAsync();
+        }
+
+        private async Task AssignPointsForMissionCompletionAsync(MissionType missionType, Guid userId)
+        {
+                MissionRecipient missionRecipient = MissionTypeExtensions.GetRecipient(missionType);
 
                 if (missionRecipient == MissionRecipient.Both
                         || missionRecipient == MissionRecipient.Artist)
@@ -53,7 +91,5 @@ public class MissionManager(
                 {
                         throw new InvalidEnumArgumentException($"Unknown enum value: {missionRecipient}");
                 }
-
-                await dbContext.SaveChangesAsync();
         }
 }

@@ -30,7 +30,7 @@ public class ReviewArtPieceCommandTests : DatabaseTest
         [Fact]
         public async Task Execute_CreatesReviewEntity_WhenSuccessful()
         {
-                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
                         .Returns([MissionType.BoostArt]);
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
@@ -51,8 +51,7 @@ public class ReviewArtPieceCommandTests : DatabaseTest
 
                 await _command.ExecuteAsync("Review comment!", 5, artPiece.Id, user.Id);
 
-                DbContext.Reviews.FirstOrDefault()
-                        .Should().NotBeNull();
+                DbContext.Reviews.FirstOrDefault().Should().NotBeNull();
                 DbContext.Reviewers.First().Points.Should().Be(10);
                 DbContext.ReviewerPointAwards.Single().PointValue.Should().Be(10);
         }
@@ -60,10 +59,11 @@ public class ReviewArtPieceCommandTests : DatabaseTest
         [Fact]
         public async Task Execute_CompletesMission_WhenAReviewMissionIsPresent()
         {
-                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
                         .Returns([MissionType.ReviewArt]);
                 const int POINTS_PER_REVIEW = 10;
                 const int POINTS_PER_QUEST = 25;
+                int countOfReviewsToPerform = MissionType.ReviewArt.GetMaxProgressCount();
 
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
@@ -79,12 +79,17 @@ public class ReviewArtPieceCommandTests : DatabaseTest
                         Summary = "A profile summary for an artist.",
                 });
                 await DbContext.SaveChangesAsync();
-                ArtPiece artPiece = await _uploadArtPiece.ExecuteAsync(
-                        GetExampleFile(), "description", user.Id);
 
-                await _command.ExecuteAsync("Review comment!", 5, artPiece.Id, user.Id);
 
-                DbContext.Reviewers.Single().Points.Should().Be(POINTS_PER_REVIEW + POINTS_PER_QUEST);
+                for (int i = 0; i < countOfReviewsToPerform; i++)
+                {
+                        ArtPiece artPiece = await _uploadArtPiece.ExecuteAsync(
+                                GetExampleFile(), "description", user.Id);
+                        await _command.ExecuteAsync("Review comment!", 5, artPiece.Id, user.Id);
+                }
+
+
+                DbContext.Reviewers.Single().Points.Should().Be(countOfReviewsToPerform * POINTS_PER_REVIEW + POINTS_PER_QUEST);
         }
 
 }

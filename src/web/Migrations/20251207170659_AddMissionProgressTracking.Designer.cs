@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using web.Data;
 
@@ -11,9 +12,11 @@ using web.Data;
 namespace web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class IdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251207170659_AddMissionProgressTracking")]
+    partial class AddMissionProgressTracking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -358,7 +361,7 @@ namespace web.Migrations
                     b.Property<int>("Count")
                         .HasColumnType("int");
 
-                    b.Property<DateTimeOffset>("Date")
+                    b.Property<DateTimeOffset>("DateOccurred")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("MissionType")

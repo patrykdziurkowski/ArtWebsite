@@ -30,6 +30,7 @@ public abstract class DatabaseTest : IDisposable
 
         public void ClearDatabase()
         {
+                DbContext.MissionProgresses.ExecuteDelete();
                 DbContext.ArtistPointAwards.ExecuteDelete();
                 DbContext.ReviewerPointAwards.ExecuteDelete();
                 DbContext.ArtPieceTags.ExecuteDelete();

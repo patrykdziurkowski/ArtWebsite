@@ -32,7 +32,7 @@ public class UploadArtPieceCommandTests : DatabaseTest
         [Fact]
         public async Task ExecuteAsync_SavesImageObject()
         {
-                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
                         .Returns([MissionType.BoostArt]);
                 IdentityUser<Guid> user = new("johnSmith");
                 await UserManager.CreateAsync(user);
@@ -58,7 +58,7 @@ public class UploadArtPieceCommandTests : DatabaseTest
         [Fact]
         public async Task ExecuteAsync_AddsExtraPoints_WhenUploadingArtPieceMissionCompleted()
         {
-                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), Arg.Any<int>())
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
                         .Returns([MissionType.UploadArt]);
                 const int POINTS_PER_UPLOAD = 10;
                 const int POINTS_PER_QUEST = 25;

@@ -9,6 +9,7 @@ public class WebServer : IDisposable
         private const string DB_TEST_PASSWORD = "exampleP@ssword123";
         private const string TRUNCATE_DATA_QUERY = @"
                 SET QUOTED_IDENTIFIER ON;
+                DELETE FROM [dbo].[MissionProgresses];
                 DELETE FROM [dbo].[ReviewerPointAwards];
                 DELETE FROM [dbo].[ArtistPointAwards];
                 DELETE FROM [dbo].[Tags];

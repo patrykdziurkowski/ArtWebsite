@@ -9,6 +9,7 @@ using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.Leaderboard.Artist;
 using web.Features.Leaderboard.Reviewer;
+using web.Features.Missions;
 using web.Features.Reviewers;
 using web.Features.Reviews;
 using web.Features.Shared.domain;
@@ -29,6 +30,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         public DbSet<ArtPieceTag> ArtPieceTags { get; set; }
         public DbSet<ReviewerPointAward> ReviewerPointAwards { get; set; }
         public DbSet<ArtistPointAward> ArtistPointAwards { get; set; }
+        public DbSet<MissionProgress> MissionProgresses { get; set; }
 
         /// <summary>
         /// This is a custom method mapped to an SQL Server function used for generating
@@ -238,5 +240,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .HasForeignKey(pa => pa.ArtistId)
                         .OnDelete(DeleteBehavior.NoAction);
 
+                var missionProgress = builder.Entity<MissionProgress>();
+                missionProgress.HasKey(mp => mp.Id);
+                missionProgress.Property(mp => mp.Id)
+                        .HasConversion(id => id.Value, guid => new MissionProgressId { Value = guid });
+                missionProgress.Property(mp => mp.Date)
+                        .IsRequired();
+                missionProgress.Property(mp => mp.MissionType)
+                        .HasConversion(
+                                type => type.ToString(),
+                                stringValue => Enum.Parse<MissionType>(stringValue))
+                        .IsRequired();
+                missionProgress.Property(mp => mp.Count)
+                        .IsRequired();
+                missionProgress.HasOne<IdentityUser<Guid>>()
+                        .WithOne()
+                        .HasForeignKey<MissionProgress>(mp => mp.UserId)
+                        .OnDelete(DeleteBehavior.NoAction);
         }
 }

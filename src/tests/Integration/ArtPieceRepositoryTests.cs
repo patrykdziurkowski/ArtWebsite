@@ -1,13 +1,17 @@
+using AutoMapper;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.Artists.BoostArtPiece;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Missions;
 using web.Features.Reviewers;
 using web.Features.Reviews;
+using web.Features.Tags;
 using Xunit.Abstractions;
 
 namespace tests.Integration;
@@ -18,6 +22,7 @@ public class ArtPieceRepositoryTests : DatabaseTest
 
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;
         private readonly BoostArtPieceCommand _boostArtPieceCommand;
+        private readonly IMissionGenerator _mockMissionGenerator;
         private readonly ITestOutputHelper _output;
 
         public ArtPieceRepositoryTests(DatabaseTestContext databaseContext, ITestOutputHelper output)
@@ -26,8 +31,14 @@ public class ArtPieceRepositoryTests : DatabaseTest
                 _output = output;
 
                 _artPieceRepository = Scope.ServiceProvider.GetRequiredService<ArtPieceRepository>();
-                _uploadArtPieceCommand = Scope.ServiceProvider.GetRequiredService<UploadArtPieceCommand>();
-                _boostArtPieceCommand = Scope.ServiceProvider.GetRequiredService<BoostArtPieceCommand>();
+                ArtistRepository artistRepository = Scope.ServiceProvider.GetRequiredService<ArtistRepository>();
+                IServiceScopeFactory serviceScopeFactory = Scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
+                ImageTaggingQueue imageTaggingQueue = Scope.ServiceProvider.GetRequiredService<ImageTaggingQueue>();
+                IMapper mapper = Scope.ServiceProvider.GetRequiredService<IMapper>();
+                _mockMissionGenerator = Substitute.For<IMissionGenerator>();
+                MissionManager missionManager = new(DbContext, _mockMissionGenerator);
+                _uploadArtPieceCommand = new UploadArtPieceCommand(DbContext, artistRepository, imageTaggingQueue, missionManager, serviceScopeFactory);
+                _boostArtPieceCommand = new BoostArtPieceCommand(artistRepository, DbContext, mapper);
         }
 
         [Fact]
@@ -35,6 +46,8 @@ public class ArtPieceRepositoryTests : DatabaseTest
         {
                 // ARRANGE
                 // Popular art piece - artist has high points, uploaded recently, high average rating, boosted.
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
+                        .Returns([MissionType.ReviewArt]);
                 ArtistId popularArtistId = await CreateUserWithArtistProfile("popularArtist", "popularArtist");
                 Artist popularArtist = DbContext.Artists.First(a => a.Id == popularArtistId);
                 popularArtist.Points = 10000;

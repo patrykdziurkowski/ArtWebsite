@@ -1,11 +1,14 @@
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Leaderboard;
 using web.Features.Leaderboard.Artist;
+using web.Features.Missions;
+using web.Features.Tags;
 
 namespace tests.Integration.Queries;
 
@@ -13,11 +16,20 @@ public class ArtistLeaderboardQueryTests : DatabaseTest
 {
         private readonly ArtistLeaderboardQuery _query;
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;
+        private readonly IMissionGenerator _mockMissionGenerator;
 
         public ArtistLeaderboardQueryTests(DatabaseTestContext databaseContext) : base(databaseContext)
         {
                 _query = Scope.ServiceProvider.GetRequiredService<ArtistLeaderboardQuery>();
-                _uploadArtPieceCommand = Scope.ServiceProvider.GetRequiredService<UploadArtPieceCommand>();
+                ArtistRepository artistRepository = Scope.ServiceProvider.GetRequiredService<ArtistRepository>();
+                IServiceScopeFactory serviceScopeFactory = Scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>();
+                ImageTaggingQueue imageTaggingQueue = Scope.ServiceProvider.GetRequiredService<ImageTaggingQueue>();
+                _mockMissionGenerator = Substitute.For<IMissionGenerator>();
+                MissionManager missionManager = new(DbContext, _mockMissionGenerator);
+                _uploadArtPieceCommand = new UploadArtPieceCommand(DbContext, artistRepository, imageTaggingQueue, missionManager, serviceScopeFactory);
+
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
+                        .Returns([MissionType.BoostArt]);
         }
 
         [Fact]

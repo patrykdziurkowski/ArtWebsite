@@ -21,9 +21,9 @@ public enum MissionRecipient
         Both
 }
 
-public static class Missions
+public static class MissionTypeExtensions
 {
-        public static MissionRecipient GetRecipient(MissionType missionType) => missionType switch
+        public static MissionRecipient GetRecipient(this MissionType missionType) => missionType switch
         {
                 MissionType.UploadArt => MissionRecipient.Artist,
                 MissionType.BoostArt => MissionRecipient.Artist,
@@ -33,5 +33,17 @@ public static class Missions
                 MissionType.VisitReviewersProfiles => MissionRecipient.Both,
                 MissionType.Unknown => throw new InvalidEnumArgumentException($"Uninitialized (UNKNOWN) enum value for {nameof(MissionType.Unknown)}"),
                 _ => throw new InvalidEnumArgumentException($"Could not map the mission type to which entity it is awarded to for value '{missionType}'"),
+        };
+
+        public static int GetMaxProgressCount(this MissionType missionType) => missionType switch
+        {
+                MissionType.UploadArt => 1,
+                MissionType.BoostArt => 1,
+                MissionType.ReviewArt => 4,
+                MissionType.LikeArt => 2,
+                MissionType.VisitArtistsProfiles => 3,
+                MissionType.VisitReviewersProfiles => 3,
+                MissionType.Unknown => throw new InvalidEnumArgumentException($"Uninitialized (UNKNOWN) enum value for {nameof(MissionType.Unknown)}"),
+                _ => throw new InvalidEnumArgumentException($"Could not map the mission type to its progress count."),
         };
 }
