@@ -58,7 +58,7 @@ public class MissionManager(
 
         private async Task AssignPointsForMissionCompletionAsync(MissionType missionType, Guid userId)
         {
-                MissionRecipient missionRecipient = MissionTypeExtensions.GetRecipient(missionType);
+                MissionRecipient missionRecipient = MissionTypeHelpers.GetRecipient(missionType);
 
                 if (missionRecipient == MissionRecipient.Both
                         || missionRecipient == MissionRecipient.Artist)

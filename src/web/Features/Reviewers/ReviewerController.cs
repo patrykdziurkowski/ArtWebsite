@@ -1,13 +1,16 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using web.Features.Missions;
 using web.Features.Reviewers.Index;
 using web.Features.Shared;
 
 namespace web.Features.Reviewers;
 
 [Authorize]
-public class ReviewerController(UserReviewerQuery userReviewerQuery) : Controller
+public class ReviewerController(
+        UserReviewerQuery userReviewerQuery,
+        MissionManager missionManager) : Controller
 {
 
         public async Task<ActionResult> Index()
@@ -18,6 +21,12 @@ public class ReviewerController(UserReviewerQuery userReviewerQuery) : Controlle
                         return View("Error", new ErrorViewModel(404,
                                 "No reviewer profile found for a given user."));
                 }
+
+                await missionManager.RecordProgressAsync(
+                        MissionType.VisitReviewersProfiles,
+                        GetUserId(),
+                        DateTimeOffset.UtcNow);
+
                 return View(reviewer);
         }
 

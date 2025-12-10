@@ -1,0 +1,30 @@
+<div id="daily-quest-card" class="card text-white bg-success mb-3 loading-gradient" style="max-width: 18rem;">
+    <div class="card-header">Daily mission:</div>
+    <div class="card-body">
+        <h5 id="mission-title" class="card-title">Loading...</h5>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/api/mission');
+            if (!response.ok) {
+                throw new Error('Network response was not OK.');
+            }
+            const dto = await response.json();
+
+            const missionText = `<span id="mission-progress">${dto.currentProgress}</span>/<span id="mission-max-progress">${dto.maxProgress}</span> <span id="mission-description">${dto.description}</span>`;
+            const missionTitle = document.getElementById('mission-title');
+            missionTitle.innerHTML = missionText;
+            missionTitle.style.textDecoration = (dto.currentProgress == dto.maxProgress)
+                ? 'line-through'
+                : '';
+        } catch (error) {
+            console.error('Error fetching the mission:', error);
+            document.getElementById('mission-title').innerText = 'Failed to load mission';
+        }
+
+        document.querySelector('#daily-quest-card').classList.remove('loading-gradient');
+    });
+</script>

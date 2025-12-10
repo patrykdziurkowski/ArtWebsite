@@ -8,6 +8,7 @@ using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.Index;
 using web.Features.Artists.SetupArtist;
 using web.Features.ArtPieces;
+using web.Features.Missions;
 using web.Features.Shared;
 
 namespace web.Features.Artists;
@@ -18,6 +19,7 @@ public class ArtistController(
         UserManager<IdentityUser<Guid>> userManager,
         DeactivateArtistCommand deactivateArtistCommand,
         ArtistRepository artistRepository,
+        MissionManager missionManager,
         ApplicationDbContext dbContext) : Controller
 {
         public async Task<ActionResult> Index()
@@ -66,6 +68,12 @@ public class ArtistController(
                         BoostedArtPiecePath = boostedArtPiece?.ImagePath,
                         BoostExpirationDate = artist.ActiveBoost?.ExpirationDate,
                 };
+
+                await missionManager.RecordProgressAsync(
+                        MissionType.VisitArtistsProfiles,
+                        GetUserId(),
+                        DateTimeOffset.UtcNow);
+
                 return View("Index", model);
         }
 

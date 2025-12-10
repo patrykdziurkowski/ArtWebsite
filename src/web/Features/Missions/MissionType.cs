@@ -21,8 +21,18 @@ public enum MissionRecipient
         Both
 }
 
-public static class MissionTypeExtensions
+public static class MissionTypeHelpers
 {
+        private static readonly Dictionary<MissionType, string> _missionsAndTheirDescriptions = new()
+        {
+                { MissionType.UploadArt, "Upload art pieces" },
+                { MissionType.BoostArt, "Boost your art pieces" },
+                { MissionType.ReviewArt, "Review people's art pieces" },
+                { MissionType.LikeArt, "Like art pieces" },
+                { MissionType.VisitArtistsProfiles, "Visit unique artist's profiles" },
+                { MissionType.VisitReviewersProfiles, "Visit unique reviewer's profiles" },
+        };
+
         public static MissionRecipient GetRecipient(this MissionType missionType) => missionType switch
         {
                 MissionType.UploadArt => MissionRecipient.Artist,
@@ -47,15 +57,20 @@ public static class MissionTypeExtensions
                 _ => throw new InvalidEnumArgumentException($"Could not map the mission type '{missionType}' to its progress count."),
         };
 
-        public static string GetDescription(this MissionType missionType) => missionType switch
+        public static string GetDescription(this MissionType missionType)
         {
-                MissionType.UploadArt => "Upload art pieces",
-                MissionType.BoostArt => "Boost your art pieces",
-                MissionType.ReviewArt => "Review people's art pieces",
-                MissionType.LikeArt => "Like art pieces",
-                MissionType.VisitArtistsProfiles => "Visit unique artist's profiles",
-                MissionType.VisitReviewersProfiles => "Visit unique reviewer's profiles",
-                MissionType.Unknown => throw new InvalidEnumArgumentException($"Uninitialized (UNKNOWN) enum value for {nameof(MissionType.Unknown)}"),
-                _ => throw new InvalidEnumArgumentException($"Could not map the mission type '{missionType}' to its description."),
-        };
+                return _missionsAndTheirDescriptions.GetValueOrDefault(missionType)
+                        ?? throw new InvalidEnumArgumentException($"Could not map the mission type '{missionType}' to its description.");
+        }
+
+        public static MissionType GetMissionForDescription(string description)
+        {
+                MissionType key = _missionsAndTheirDescriptions.FirstOrDefault(kvp => kvp.Value == description).Key;
+                if (key == default)
+                {
+                        throw new InvalidEnumArgumentException($"Could not map the mission description '{description}' to its corresponding mission type.");
+                }
+
+                return key;
+        }
 }
