@@ -58,6 +58,33 @@ public class ReviewerRepositoryTests : DatabaseTest
         }
 
         [Fact]
+        public async Task GetByNameAsync_ReturnsReviewer_WhenGivenExistingReviewerName()
+        {
+                List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
+                Reviewer reviewer = await CreateReviewerWith20Reviews(
+                        artPieceIds, "otherUser123");
+                await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
+
+                Reviewer? queriedReviewer = await _reviewerRepository.GetByNameAsync(reviewer.Name);
+
+                queriedReviewer!.Id.Should().Be(reviewer.Id);
+                queriedReviewer!.ReviewCount.Should().Be(20);
+                queriedReviewer!.ActiveLikes.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public async Task GetByNameAsync_ReturnsNull_WhenGivenNonExistantReviewerName()
+        {
+                List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
+                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
+
+                Reviewer? queriedReviewer = await _reviewerRepository.GetByNameAsync("nonExistantReviewer");
+
+                queriedReviewer!.Should().BeNull();
+        }
+
+        [Fact]
         public async Task SaveAsync_SavesChanges_WhenCalled()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();

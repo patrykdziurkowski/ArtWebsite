@@ -84,6 +84,7 @@ services.AddTransient<ReviewerLeaderboardQuery>();
 services.AddTransient<TodaysMissionQuery>();
 services.AddTransient<ArtPieceReviewsQuery>();
 services.AddTransient<UserReviewerQuery>();
+services.AddTransient<ReviewerQuery>();
 services.AddTransient<ArtPieceTagsQuery>();
 services.AddTransient<ReviewArtPieceCommand>();
 services.AddTransient<LikeArtPieceCommand>();

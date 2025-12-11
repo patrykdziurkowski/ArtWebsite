@@ -132,7 +132,9 @@ public abstract class DatabaseTest : IDisposable
                 return artPieceIds;
         }
 
-        public async Task<Reviewer> CreateReviewerWith20Reviews(List<ArtPieceId> artPiecesToReview)
+        public async Task<Reviewer> CreateReviewerWith20Reviews(
+                List<ArtPieceId> artPiecesToReview,
+                string reviewerName = "SomeUser123")
         {
                 IdentityUser<Guid> user = new("johnSmith2");
                 await UserManager.CreateAsync(user);
@@ -140,7 +142,7 @@ public abstract class DatabaseTest : IDisposable
                 Reviewer reviewer = new()
                 {
                         Id = reviewerId,
-                        Name = "SomeUser123",
+                        Name = reviewerName,
                         UserId = user.Id,
                 };
                 DbContext.Reviewers.Add(reviewer);

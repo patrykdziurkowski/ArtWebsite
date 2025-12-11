@@ -83,6 +83,7 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
 
         public void ReviewThisArtPiece()
         {
+                Driver.Navigate().Refresh();
                 Wait.Until(d => d.FindElement(By.Id("reviewArt"))).Click();
 
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("reviewModal")));

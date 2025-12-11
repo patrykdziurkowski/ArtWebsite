@@ -38,6 +38,25 @@ public class ReviewerRepository(ApplicationDbContext dbContext)
                 return reviewer;
         }
 
+        public async Task<Reviewer?> GetByNameAsync(string name)
+        {
+                Reviewer? reviewer = await dbContext.Reviewers
+                        .FirstOrDefaultAsync(reviewer => reviewer.Name == name);
+                if (reviewer is null)
+                {
+                        return null;
+                }
+
+                reviewer.ReviewCount = dbContext.Reviews
+                        .Where(r => r.ReviewerId == reviewer.Id)
+                        .Count();
+                reviewer.ActiveLikes = await dbContext.Likes
+                        .Where(l => l.ExpirationDate >= DateTimeOffset.UtcNow
+                                && l.ReviewerId == reviewer.Id)
+                        .ToListAsync();
+                return reviewer;
+        }
+
         public async Task<List<Like>> GetLikesAsync(Guid currentUserId,
                 int count, int offset = 0)
         {

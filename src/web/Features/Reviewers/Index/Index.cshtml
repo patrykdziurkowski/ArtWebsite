@@ -2,7 +2,7 @@
 @model Reviewer
 
 <div class="container mt-5">
-    <h2>@Model.Name's profile</h2>
+    <h2><span id="reviewerName">@Model.Name</span>'s profile</h2>
     <p>Joined: <span id="reviewerJoinDate">@Html.Raw(Model.JoinDate.ToString("o"))</span> | @Model.ReviewCount total
         reviews</p>
 

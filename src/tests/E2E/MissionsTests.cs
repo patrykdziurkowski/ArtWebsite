@@ -18,6 +18,18 @@ public class MissionsTests(WebDriverInitializer initializer)
         [Fact, Order(0)]
         public void MissionWidget_ShowsNoProgress_ForNewUser()
         {
+                ResetTestContext();
+                // set up other artist/reviewer profiles here to be used for missions later
+                for (int i = 0; i < 5; i++)
+                {
+                        CreateUserWithArtistProfile(
+                        userName: $"otherUser{i}",
+                        email: $"otherEmail{i}@email.com",
+                        name: $"otherArtist{i}");
+
+                        Logout();
+                }
+
                 CreateUserWithArtistProfile(
                         userName: $"SomeUser",
                         email: $"someEmail@email.com",
@@ -45,8 +57,11 @@ public class MissionsTests(WebDriverInitializer initializer)
                 ProgressMission(missionType, times: 1);
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
-                int missionProgress = int.Parse(Wait.Until(d => d.FindElement(By.Id("mission-progress"))).Text);
-                missionProgress.Should().Be(1);
+                Wait.Until(d =>
+                {
+                        Driver.Navigate().Refresh();
+                        return int.Parse(d.FindElement(By.Id("mission-progress")).Text) == 1;
+                }).Should().BeTrue();
         }
 
         [Fact, Order(2)]
@@ -56,43 +71,54 @@ public class MissionsTests(WebDriverInitializer initializer)
                 string missionDescription = Wait.Until(d => d.FindElement(By.Id("mission-description"))).Text;
                 MissionType missionType = MissionTypeHelpers.GetMissionForDescription(missionDescription);
 
-                int stepsAlreadyPerformed = 1;
-                int stepsToPerform = missionType.GetMaxProgressCount() - stepsAlreadyPerformed;
+                const int STEPS_ALREADY_PERFORMED = 1;
+                int stepsToPerform = missionType.GetMaxProgressCount() - STEPS_ALREADY_PERFORMED;
 
                 ProgressMission(missionType, times: stepsToPerform);
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
-                int missionProgress = int.Parse(Wait.Until(d => d.FindElement(By.Id("mission-progress"))).Text);
-                missionProgress.Should().Be(missionType.GetMaxProgressCount());
+                Wait.Until(d =>
+                {
+                        Driver.Navigate().Refresh();
+                        return d.FindElement(By.Id("mission-progress")).Text == missionType.GetMaxProgressCount().ToString();
+                }).Should().BeTrue();
 
-                int artistQuestPointValue = (missionType.GetRecipient() == MissionRecipient.Artist)
+                int artistQuestPointValue = (missionType.GetRecipient() == MissionRecipient.Artist
+                        || missionType.GetRecipient() == MissionRecipient.Both)
                         ? 25
                         : 0;
-                int reviewerQuestPointValue = (missionType.GetRecipient() == MissionRecipient.Reviewer)
+                int reviewerQuestPointValue = (missionType.GetRecipient() == MissionRecipient.Reviewer
+                        || missionType.GetRecipient() == MissionRecipient.Both)
                         ? 25
                         : 0;
                 Wait.Until(d =>
                 {
                         var artistRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
-                        var artistPoints = artistRows.Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text).ToList();
-                        if (artistPoints.Count != 1)
+                        var artistPoints = artistRows
+                                .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
+                                .Select(p => int.Parse(p))
+                                .ToList();
+                        if (artistPoints.Count != 6)
                         {
                                 return false;
                         }
 
-                        return int.Parse(artistPoints.Single()) == _artistPoints + artistQuestPointValue;
+                        return artistPoints.Any(a => a == _artistPoints + artistQuestPointValue);
                 }).Should().BeTrue();
                 Driver.FindElement(By.Id("btn-reviewers")).Click();
                 Wait.Until(d =>
                 {
                         var reviewerRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
-                        var reviewerPoints = reviewerRows.Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text).ToList();
-                        if (reviewerPoints.Count != 1)
+                        var reviewerPoints = reviewerRows
+                                .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
+                                .Select(p => int.Parse(p))
+                                .ToList();
+                        if (reviewerPoints.Count != 6)
                         {
                                 return false;
                         }
 
-                        return int.Parse(reviewerPoints.Single()) == _reviewerPoints + reviewerQuestPointValue;
+                        return reviewerPoints.Any(a => a == _reviewerPoints + reviewerQuestPointValue);
                 }).Should().BeTrue();
         }
 
@@ -167,11 +193,13 @@ public class MissionsTests(WebDriverInitializer initializer)
                         }
                         else if (missionType == MissionType.VisitArtistsProfiles)
                         {
-                                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artists/someArtist");
+                                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artists/otherArtist{i}");
+                                Wait.Until(d => d.FindElement(By.Id("artistName")).Text == $"otherArtist{i}");
                         }
                         else if (missionType == MissionType.VisitReviewersProfiles)
                         {
-                                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
+                                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/otherUser{i}");
+                                Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == $"otherUser{i}");
                         }
                         else
                         {
