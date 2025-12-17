@@ -23,8 +23,16 @@ public class WebServer : IDisposable
                 DELETE FROM [dbo].[AspNetUserClaims];
                 DELETE FROM [dbo].[AspNetUserLogins];
                 DELETE FROM [dbo].[AspNetUserTokens];
-                DELETE FROM [dbo].[AspNetUserRoles];
-                DELETE FROM [dbo].[AspNetUsers];
+                -- Delete AspNetUserRoles for users who are not admins
+                DELETE FROM [dbo].[AspNetUserRoles] WHERE UserId NOT IN (
+                        SELECT UserId FROM [dbo].[AspNetUserRoles] ur
+                        JOIN [dbo].[AspNetRoles] r ON ur.RoleId = r.Id
+                        WHERE r.Name = 'Admin');
+                -- Delete AspNetUsers for users who are not admins
+                DELETE FROM [dbo].[AspNetUsers] WHERE Id NOT IN (
+                        SELECT UserId FROM [dbo].[AspNetUserRoles] ur
+                        JOIN [dbo].[AspNetRoles] r ON ur.RoleId = r.Id
+                        WHERE r.Name = 'Admin');
                 ";
         public ICompositeService Server { get; }
 

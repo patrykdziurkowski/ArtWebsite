@@ -138,5 +138,6 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
                         Logout();
                 }
                 WebServer.ClearData();
+
         }
 }
