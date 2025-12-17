@@ -9,6 +9,7 @@ using web.Features.Artists;
 using web.Features.Artists.BoostArtPiece;
 using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.SetupArtist;
+using web.Features.Artists.UpdateArtistProfile;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.LoadArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
@@ -80,6 +81,7 @@ services.AddAutoMapper(typeof(AutoMapperProfile));
 services.AddTransient<SetupArtistCommand>();
 services.AddTransient<DeactivateArtistCommand>();
 services.AddTransient<UploadArtPieceCommand>();
+services.AddTransient<UpdateArtistCommand>();
 services.AddTransient<BoostArtPieceCommand>();
 services.AddTransient<ArtPieceQuery>();
 services.AddTransient<ArtPieceByTagQuery>();
@@ -160,7 +162,7 @@ static async Task CreateRolesIfNotPresentAsync(IServiceScope scope)
 {
         RoleManager<IdentityRole<Guid>> roleManager = scope.ServiceProvider
             .GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-        string[] roles = ["Admin", "Artist"];
+        string[] roles = [Constants.ADMIN_ROLE, Constants.ARTIST_ROLE];
         foreach (string role in roles)
         {
                 if (await roleManager.RoleExistsAsync(role) == false)
@@ -187,7 +189,7 @@ static async Task CreateRootUserIfNotPresentAsync(string rootUserName, string ro
                         throw new InvalidOperationException("Unable to create the root user: " + string.Join(',', result.Errors.Select(e => e.Description)));
                 }
 
-                IdentityResult roleResult = await userManager.AddToRoleAsync(root, "Admin");
+                IdentityResult roleResult = await userManager.AddToRoleAsync(root, Constants.ADMIN_ROLE);
                 if (!roleResult.Succeeded)
                 {
                         throw new InvalidOperationException("Unable to add the root user to the administrator role: " + string.Join(',', roleResult.Errors.Select(e => e.Description)));

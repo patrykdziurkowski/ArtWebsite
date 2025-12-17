@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
+using web;
 using web.Features.Artists;
 using web.Features.Artists.SetupArtist;
 
@@ -51,6 +52,6 @@ public class SetupArtistCommandTests : DatabaseTest
                 artist.Name.Should().Be("ArtistName");
                 artist.Summary.Should().Be("Some other summary for some other artist.");
                 result.IsSuccess.Should().BeTrue();
-                (await UserManager.IsInRoleAsync(user, "Artist")).Should().BeTrue();
+                (await UserManager.IsInRoleAsync(user, Constants.ARTIST_ROLE)).Should().BeTrue();
         }
 }

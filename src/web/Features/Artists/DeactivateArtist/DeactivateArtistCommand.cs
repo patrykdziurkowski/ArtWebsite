@@ -19,6 +19,6 @@ public class DeactivateArtistCommand(UserManager<IdentityUser<Guid>> userManager
                         .ExecuteDeleteAsync();
                 artist.Deactivate();
                 await artistRepository.SaveChangesAsync(artist);
-                await userManager.RemoveFromRoleAsync(user, "Artist");
+                await userManager.RemoveFromRoleAsync(user, Constants.ARTIST_ROLE);
         }
 }

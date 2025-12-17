@@ -13,6 +13,9 @@ namespace tests.Integration.Fixtures;
 public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDisposable
 {
         private const string DB_TEST_PASSWORD = "exampleP@ssword123";
+        private const string ROOT_USERNAME = "RootUser";
+        private const string ROOT_PASSWORD = "RootP@ss123";
+        private const string ROOT_EMAIL = "root@email.com";
         private const string TEST_CONNECTION_STRING = $"Data Source=localhost,14332;User ID=SA;Password={DB_TEST_PASSWORD};Encrypt=False";
         private readonly IContainerImageService _databaseImage;
         public IContainerService Database { get; }
@@ -70,9 +73,19 @@ public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDispo
                         config.AddInMemoryCollection([
                                 new KeyValuePair<string, string?>(
                                         "CONNECTION_STRING",
-                                        TEST_CONNECTION_STRING)
+                                        TEST_CONNECTION_STRING),
+                                new KeyValuePair<string, string?>(
+                                        "ROOT_USERNAME",
+                                        ROOT_USERNAME),
+                                new KeyValuePair<string, string?>(
+                                        "ROOT_EMAIL",
+                                        ROOT_EMAIL),
+                                new KeyValuePair<string, string?>(
+                                        "ROOT_PASSWORD",
+                                        ROOT_PASSWORD),
                         ]);
                 });
+
                 return base.CreateHost(builder);
         }
 

@@ -40,6 +40,9 @@ public class ArtistController(
                         Name = artist.Name,
                         Summary = artist.Summary,
                         IsOwner = true,
+                        IsAdmin = await userManager.IsInRoleAsync(
+                                (await userManager.FindByIdAsync(GetUserId().ToString()))!,
+                                Constants.ADMIN_ROLE),
                         BoostedArtPiecePath = boostedArtPiece?.ImagePath,
                         BoostExpirationDate = artist.ActiveBoost?.ExpirationDate,
                 };
@@ -65,6 +68,9 @@ public class ArtistController(
                         Name = artist.Name,
                         Summary = artist.Summary,
                         IsOwner = artist.UserId == GetUserId(),
+                        IsAdmin = await userManager.IsInRoleAsync(
+                                (await userManager.FindByIdAsync(GetUserId().ToString()))!,
+                                Constants.ADMIN_ROLE),
                         BoostedArtPiecePath = boostedArtPiece?.ImagePath,
                         BoostExpirationDate = artist.ActiveBoost?.ExpirationDate,
                 };
@@ -135,7 +141,7 @@ public class ArtistController(
                         return false;
                 }
 
-                return await userManager.IsInRoleAsync(user, "Artist");
+                return await userManager.IsInRoleAsync(user, Constants.ARTIST_ROLE);
         }
 
 }

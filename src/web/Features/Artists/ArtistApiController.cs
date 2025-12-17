@@ -1,7 +1,9 @@
 using System.Security.Claims;
 using FluentResults;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using web.Data;
 using web.Features.Artists.BoostArtPiece;
 using web.Features.Artists.UpdateArtistProfile;
 using web.Features.ArtPieces;
@@ -10,22 +12,25 @@ namespace web.Features.Artists;
 
 [Authorize]
 [ApiController]
-public class ArtistApiController(ArtistRepository artistRepository,
-        BoostArtPieceCommand boostArtPieceCommand) : ControllerBase
+public class ArtistApiController(
+        BoostArtPieceCommand boostArtPieceCommand,
+        UpdateArtistCommand updateArtistCommand
+        ) : ControllerBase
 {
         [HttpPut("/api/artist")]
         public async Task<IActionResult> UpdateArtistProfile(UpdateArtistProfileModel model)
         {
-                Artist? artist = await artistRepository.GetByUserIdAsync(GetUserId());
-                if (artist is null)
+                Result result = await updateArtistCommand.ExecuteAsync(
+                        GetUserId(), new ArtistId() { Value = model.ArtistId }, model.Name, model.Summary);
+
+                if (result.IsFailed)
                 {
                         return Forbid();
                 }
-
-                artist.Name = model.Name;
-                artist.Summary = model.Summary;
-                await artistRepository.SaveChangesAsync(artist);
-                return Ok();
+                else
+                {
+                        return Ok();
+                }
         }
 
         [HttpPost("/api/artist/boost")]

@@ -4,15 +4,18 @@
 <div class="container mt-4">
     <h2>
         <span id="artistName">@Model.Name</span>'s Profile
-        <button id="editProfileModalButton" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-            <i id="editProfile" class="bi bi-pencil-square"></i>
-        </button>
+        @if (@Model.IsOwner || @Model.IsAdmin)
+        {
+            <button id="editProfileModalButton" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                <i id="editProfile" class="bi bi-pencil-square"></i>
+            </button>
+        }
     </h2>
     <p><strong>Summary:</strong> <span id="artistSummary">@Model.Summary</span></p>
-    <a asp-controller="ArtPiece" asp-action="Upload" class="btn btn-primary">Upload!</a>
-
-    @if (@Model.IsOwner)
+    @if (@Model.IsOwner || @Model.IsAdmin)
     {
+        <a asp-controller="ArtPiece" asp-action="Upload" class="btn btn-primary">Upload!</a>
+
         <button id="deactivate-artist-popup" class="btn btn-danger" data-bs-toggle="modal"
             data-bs-target="#deleteModal">Delete Profile</button>
     }
@@ -39,6 +42,7 @@
                             <input type="text" value="@Model.Summary" name="Summary" placeholder="Profile summary">
                             <span asp-validation-for="Summary" class="text-danger"></span>
                         </div>
+                        <input type="hidden" value="@Model.Id" name="ArtistId">
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -75,6 +79,7 @@
     document.querySelector('#editArtistProfile').addEventListener('click', async (e) => {
         const form = new FormData(document.querySelector('#editForm'));
         const data = {
+            artistId: form.get('ArtistId'),
             name: form.get('Name'),
             summary: form.get('Summary'),
         };

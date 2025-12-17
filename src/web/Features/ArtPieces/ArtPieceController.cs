@@ -46,7 +46,7 @@ public class ArtPieceController(UploadArtPieceCommand uploadArtPieceCommand,
                         return false;
                 }
 
-                return await userManager.IsInRoleAsync(user, "Artist");
+                return await userManager.IsInRoleAsync(user, Constants.ARTIST_ROLE);
         }
 
 }

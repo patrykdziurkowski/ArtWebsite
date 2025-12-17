@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
+using web;
 using web.Features.Artists;
 using web.Features.Artists.DeactivateArtist;
 
@@ -43,7 +44,7 @@ public class DeactivateArtistCommandTests : DatabaseTest
 
                 (await DbContext.Artists.FirstOrDefaultAsync(a => a.Name == "ArtistName"))
                         .Should().BeNull();
-                (await UserManager.IsInRoleAsync(user, "Artist")).Should().BeFalse();
+                (await UserManager.IsInRoleAsync(user, Constants.ARTIST_ROLE)).Should().BeFalse();
         }
 
 }

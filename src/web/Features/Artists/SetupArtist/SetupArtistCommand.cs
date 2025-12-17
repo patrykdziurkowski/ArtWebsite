@@ -25,7 +25,7 @@ public class SetupArtistCommand(ArtistRepository artistRepository,
                         Summary = summary,
                 };
                 await artistRepository.SaveChangesAsync(artist);
-                await userManager.AddToRoleAsync(user, "Artist");
+                await userManager.AddToRoleAsync(user, Constants.ARTIST_ROLE);
                 return Result.Ok();
         }
 }
