@@ -32,6 +32,12 @@ IServiceCollection services = builder.Services;
 
 string connectionString = builder.Configuration["CONNECTION_STRING"]
         ?? throw new InvalidOperationException("Connection string not found.");
+string rootUserName = builder.Configuration["ROOT_USERNAME"]
+        ?? throw new InvalidOperationException("Root user does not have a username set.");
+string rootEmail = builder.Configuration["ROOT_EMAIL"]
+        ?? throw new InvalidOperationException("Root user does not have an email set.");
+string rootPassword = builder.Configuration["ROOT_PASSWORD"]
+        ?? throw new InvalidOperationException("Root user does not have a password set.");
 
 services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
@@ -122,16 +128,8 @@ else
 
 using (IServiceScope scope = app.Services.CreateScope())
 {
-        RoleManager<IdentityRole<Guid>> roleManager = scope.ServiceProvider
-            .GetRequiredService<RoleManager<IdentityRole<Guid>>>();
-        string[] roles = ["Admin", "Artist"];
-        foreach (string role in roles)
-        {
-                if (await roleManager.RoleExistsAsync(role) == false)
-                {
-                        await roleManager.CreateAsync(new IdentityRole<Guid>(role));
-                }
-        }
+        await CreateRolesIfNotPresentAsync(scope);
+        await CreateRootUserIfNotPresentAsync(rootUserName, rootPassword, rootEmail, scope);
 }
 
 app.UseStaticFiles();
@@ -157,5 +155,44 @@ app.MapRazorPages();
 app.MapHub<TagsHub>("/tagshub");
 
 await app.RunAsync();
+
+static async Task CreateRolesIfNotPresentAsync(IServiceScope scope)
+{
+        RoleManager<IdentityRole<Guid>> roleManager = scope.ServiceProvider
+            .GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+        string[] roles = ["Admin", "Artist"];
+        foreach (string role in roles)
+        {
+                if (await roleManager.RoleExistsAsync(role) == false)
+                {
+                        await roleManager.CreateAsync(new IdentityRole<Guid>(role));
+                }
+        }
+}
+
+static async Task CreateRootUserIfNotPresentAsync(string rootUserName, string rootPassword, string rootEmail, IServiceScope scope)
+{
+        UserManager<IdentityUser<Guid>> userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
+        if (await userManager.FindByNameAsync(rootUserName) is null)
+        {
+                IdentityUser<Guid> root = new(rootUserName)
+                {
+                        Email = rootEmail,
+                        EmailConfirmed = true,
+                };
+
+                IdentityResult result = await userManager.CreateAsync(root, rootPassword);
+                if (!result.Succeeded)
+                {
+                        throw new InvalidOperationException("Unable to create the root user: " + string.Join(',', result.Errors.Select(e => e.Description)));
+                }
+
+                IdentityResult roleResult = await userManager.AddToRoleAsync(root, "Admin");
+                if (!roleResult.Succeeded)
+                {
+                        throw new InvalidOperationException("Unable to add the root user to the administrator role: " + string.Join(',', roleResult.Errors.Select(e => e.Description)));
+                }
+        }
+}
 
 public partial class Program { }

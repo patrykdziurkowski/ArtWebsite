@@ -23,6 +23,9 @@ services:
       - ASPNETCORE_URLS=http://+:8080
       - ASPNETCORE_ENVIRONMENT=Release
       - CONNECTION_STRING=Data Source=db,1433;User ID=SA;Password=${MSSQL_SA_PASSWORD};Encrypt=False
+      - ROOT_USERNAME=${ROOT_USERNAME}
+      - ROOT_EMAIL=${ROOT_EMAIL}
+      - ROOT_PASSWORD=${ROOT_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
