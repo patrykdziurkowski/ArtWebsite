@@ -10,5 +10,4 @@ public class ArtPieceDto
         public int AverageRating { get; set; } = 0;
         public DateTimeOffset UploadDate { get; init; } = DateTimeOffset.UtcNow;
         public required ArtistId ArtistId { get; init; }
-        public required bool IsLikedByCurrentUser { get; set; }
 }

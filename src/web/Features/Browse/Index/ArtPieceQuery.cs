@@ -24,10 +24,7 @@ public class ArtPieceQuery(
                         return null;
                 }
 
-                ArtPieceDto artPieceDto = mapper.Map<ArtPieceDto>(artPiece);
-                artPieceDto.IsLikedByCurrentUser = await dbContext.Likes
-                        .AnyAsync(l => l.ReviewerId == reviewerId && l.ArtPieceId == artPiece.Id);
-                return artPieceDto;
+                return mapper.Map<ArtPieceDto>(artPiece);
         }
 
 }
