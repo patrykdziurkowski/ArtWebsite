@@ -114,15 +114,14 @@ public class ArtistController(
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Deactivate()
+        public async Task<ActionResult> Deactivate(Guid artistId)
         {
                 if (await IsArtistAsync() == false)
                 {
                         return RedirectToAction(nameof(Setup));
                 }
 
-
-                await deactivateArtistCommand.ExecuteAsync(GetUserId());
+                await deactivateArtistCommand.ExecuteAsync(GetUserId(), new ArtistId() { Value = artistId });
                 return Redirect("/");
         }
 

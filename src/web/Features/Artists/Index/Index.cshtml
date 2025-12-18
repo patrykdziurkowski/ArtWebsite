@@ -67,6 +67,7 @@
                     <form asp-controller="Artist" asp-action="Deactivate" method="POST" class="d-inline">
                         @Html.AntiForgeryToken()
                         <button id="deactivate-artist" type="submit" class="btn btn-danger">Delete</button>
+                        <input type="hidden" name="artistId" value="@Model.Id" />
                     </form>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 </div>

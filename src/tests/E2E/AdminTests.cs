@@ -40,4 +40,17 @@ public class AdminTests(WebDriverInitializer initializer)
                 Wait.Until(d => d.FindElement(By.Id("artistName")).Text == "NewName").Should().BeTrue();
                 Wait.Until(d => d.FindElement(By.Id("artistSummary")).Text == "New summary text!").Should().BeTrue();
         }
+
+        [Fact, Order(1)]
+        public void DeactivatingSomeoneElsesArtistProfile_ShouldWork()
+        {
+                Driver.FindElement(By.Id("deactivate-artist-popup")).Click();
+                IWebElement submitButton = Wait.Until(ExpectedConditions
+                        .ElementToBeClickable(By.Id("deactivate-artist")));
+                submitButton.Click();
+
+                Driver.Navigate().Refresh();
+
+                Wait.Until(d => d.Url.Contains("/Artist/Setup"));
+        }
 }
