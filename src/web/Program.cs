@@ -11,6 +11,7 @@ using web.Features.Artists.DeactivateArtist;
 using web.Features.Artists.SetupArtist;
 using web.Features.Artists.UpdateArtistProfile;
 using web.Features.ArtPieces;
+using web.Features.ArtPieces.DeleteArtPiece;
 using web.Features.ArtPieces.LoadArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Browse.ByTag;
@@ -80,6 +81,7 @@ services.AddAutoMapper(typeof(AutoMapperProfile));
 
 services.AddTransient<SetupArtistCommand>();
 services.AddTransient<DeactivateArtistCommand>();
+services.AddTransient<DeleteArtPieceCommand>();
 services.AddTransient<UploadArtPieceCommand>();
 services.AddTransient<UpdateArtistCommand>();
 services.AddTransient<BoostArtPieceCommand>();

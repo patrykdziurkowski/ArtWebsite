@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features/ArtPieces/DeleteArtPiece/" />
     <Folder Include="wwwroot/img/" />
   </ItemGroup>
 
