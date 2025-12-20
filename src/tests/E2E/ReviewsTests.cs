@@ -22,8 +22,12 @@ public class ReviewsTests(WebDriverInitializer initializer)
 
                 ReviewThisArtPiece();
 
-                string imagePathAfterReview = Driver.FindElement(By.Id("artPieceImage")).GetDomAttribute("src");
-                imagePathAfterReview.Should().NotBe(imagePathBeforeReview);
+                Wait.Until(d =>
+                {
+                        string imagePathAfterReview = Driver.FindElement(By.Id("artPieceImage")).GetDomAttribute("src");
+                        return imagePathAfterReview != imagePathBeforeReview;
+                });
+
         }
 
         [Fact, Order(1)]

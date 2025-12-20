@@ -31,41 +31,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="artPieceDetailsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Art piece details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body d-flex flex-column flex-md-row">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div id="artDetailsImageContainer" class="col-7 text-center">
-                            <img id="artDetailsImage" src="" class="img-fluid rounded mb-3" alt="Art Piece">
-                            <p id="detailsDescription" class="mt-3"></p>
-                        </div>
-
-                        <div class="col-5 d-flex flex-column" style="max-height: 70vh;">
-                            <h6 class="fw-bold mb-2">Reviews</h6>
-
-                            <div id="artReviewsContainer" class="flex-grow-1 overflow-auto border rounded p-2"
-                                style="min-height: 0;"></div>
-
-                            <button id="loadMoreReviews" class="btn btn-outline-secondary mt-2">
-                                Load more
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button id="backToPostReview" class="btn btn-light">Back</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -105,40 +70,42 @@
     </div>
 </div>
 
+<partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
+
 @section Scripts {
     <script>
         let artPieceId;
         let currentTag = null;
-        let reviewsOffset = 0;
 
         document.addEventListener('DOMContentLoaded', async () => {
+            let artPieceDetails;
             let isLiked = false;
             let artPiece = await loadArtPiece();
+            if (artPiece === null) return;
+
             artPieceId = artPiece.id.value;
 
             const likeButton = document.querySelector('#likeArtPiece');
             const reviewForm = document.querySelector('#reviewForm');
             const reviewModal = new bootstrap.Modal(document.querySelector('#reviewModal'));
             const postReviewModal = new bootstrap.Modal(document.querySelector('#postReviewModal'));
-            const artPieceDetailsModal = new bootstrap.Modal(document.querySelector('#artPieceDetailsModal'));
 
             async function nextArtPiece() {
                 postReviewModal.hide();
-                artPieceDetailsModal.hide();
+                artPieceDetails.hide();
                 await loadArtPiece();
             }
 
             function showDetails() {
                 document.getElementById('artDetailsImage').src = artPiece.imagePath;
-                reviewsOffset = 0;
-                loadReviews(artPieceId, false);
+                artPieceDetails.loadReviews(false);
 
                 postReviewModal.hide();
-                artPieceDetailsModal.show();
+                artPieceDetails.show();
             }
 
             function showPostReview() {
-                artPieceDetailsModal.hide();
+                artPieceDetails.hide();
                 postReviewModal.show();
             }
 
@@ -163,30 +130,8 @@
                 artContainer.innerHTML = `<img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded"><div class="p-2"><p>${data.description}</p></div>`;
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
                 artPieceId = data.id.value;
+                artPieceDetails = new ArtPieceDetails(artPieceId);
                 return data;
-            }
-
-            async function loadReviews(artPieceId, append = true) {
-                const response = await fetch(`/api/artPieces/${artPieceId}/reviews?offset=${reviewsOffset}`);
-                if (!response.ok) return;
-
-                const reviews = await response.json();
-                const container = document.getElementById('artReviewsContainer');
-
-                if (!append) container.innerHTML = '';
-
-                reviews.forEach(r => {
-                    const reviewEl = document.createElement('div');
-                    reviewEl.className = 'd-flex mb-3';
-                    reviewEl.innerHTML =
-                        `<div>` +
-                        `<div><strong>${r.reviewerName}</strong> -  <span class="review-points">${r.points} points</span> - <small>${new Date(r.date).toLocaleDateString()}</small></div>` +
-                        `<div><span class="review-rating">${r.rating.value}★</span> ${r.comment}</div>` +
-                        `</div>`;
-                    container.appendChild(reviewEl);
-                });
-
-                if (reviews.length > 0) reviewsOffset += reviews.length;
             }
 
             async function like(e) {
@@ -266,22 +211,17 @@
             document.querySelector('#viewArtPiece').addEventListener('click', showDetails);
             document.querySelector('#backToPostReview').addEventListener('click', showPostReview);
 
-            document.getElementById('loadMoreReviews').addEventListener('click', () => {
-                if (!artPieceId) return;
-                loadReviews(artPieceId);
-            });
-
             postReviewModal._element.addEventListener('hidden.bs.modal', async () => {
-                if (!artPieceDetailsModal._element.classList.contains('show')) {
+                if (!artPieceDetails.isShown) {
                     await loadArtPiece();
                 }
             });
 
-            artPieceDetailsModal._element.addEventListener('hidden.bs.modal', async () => {
+            artPieceDetails.onHidden = async () => {
                 if (!postReviewModal._element.classList.contains('show')) {
                     await loadArtPiece();
                 }
-            });
+            };
         });
     </script>
 }
