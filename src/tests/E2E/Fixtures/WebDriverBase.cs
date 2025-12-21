@@ -193,8 +193,6 @@ public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDispos
                 ILogs logs = Driver.Manage().Logs;
                 List<LogEntry> browserLogs = [.. logs.GetLog(LogType.Browser)
                         .Where(entry => entry.Level == LogLevel.Severe)
-                        // TODO: this is a local/test setup issue
-                        .Where(entry => !entry.Message.Contains("Failed to load resource"))
                         // TODO: this seems to be caused by hot reload in the local/test setup
                         .Where(entry => !entry.Message.Contains("WebSocket connection to 'ws://"))];
                 return browserLogs;
