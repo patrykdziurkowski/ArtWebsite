@@ -22,7 +22,31 @@
         </div>
     </div>
 </div>
-<script>
-    document.querySelector('#reviewerJoinDate').innerText = new Date(
-        '@Html.Raw(Model.JoinDate.ToString("o"))').toLocaleString();
-</script>
+
+<partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
+
+@section Scripts
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.querySelector('#reviewerJoinDate').innerText = new Date(
+                '@Html.Raw(Model.JoinDate.ToString("o"))').toLocaleString();
+
+            let artPieceDetails = null;
+            for (const container of document.querySelectorAll('#likesList, #reviewsList')) {
+                container.addEventListener('click', (e) => {
+                    const element = e.target;
+                    if (element.parentNode != container) return;
+
+                    const artPieceId = element.dataset.artPieceId;
+                    if (artPieceId === null) {
+                        throw new Error('Expected art piece id not to be null for clicked review/like element.');
+                    }
+
+                    artPieceDetails = new ArtPieceDetails(artPieceId, element.dataset.artPieceImagePath);
+                    artPieceDetails.show();
+                });
+            }
+        });
+    </script>
+}

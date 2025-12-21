@@ -24,7 +24,7 @@ public class UploadArtPieceCommand(
                 Artist artist = await artistRepository.GetByUserIdAsync(userId)
                         ?? throw new InvalidOperationException("Cannot upload an art piece due to user not having an artist profile.");
 
-                string directoryPath = Path.Combine("user-images", "art-pieces", $"{artist.Id}");
+                string directoryPath = $"user-images/art-pieces/{artist.Id}/";
                 Directory.CreateDirectory(directoryPath);
 
                 ArtPieceId artPieceId = new();
@@ -39,7 +39,8 @@ public class UploadArtPieceCommand(
                 {
                         Id = artPieceId,
                         Description = description,
-                        ImagePath = imagePath,
+                        // the slash here at the start is important to avoid relative image urls
+                        ImagePath = '/' + imagePath,
                         ArtistId = artist.Id,
                 };
 

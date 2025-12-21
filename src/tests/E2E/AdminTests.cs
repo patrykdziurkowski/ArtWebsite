@@ -6,14 +6,12 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class AdminTests(WebDriverInitializer initializer)
-        : WebDriverBase(initializer)
+public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass shared)
+        : WebDriverBase(initializer, shared)
 {
         [Fact, Order(0)]
         public void ArtistProfileInfo_ShouldBeUpdated_WhenChangedByAdmin_WhoIsNotTheOwner()
         {
-                ResetTestContext();
-
                 CreateUserWithArtistProfile(
                         userName: "userName",
                         name: "artistName"

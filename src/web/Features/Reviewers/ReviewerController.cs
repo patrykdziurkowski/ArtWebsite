@@ -13,7 +13,6 @@ public class ReviewerController(
         ReviewerQuery reviewerQuery,
         MissionManager missionManager) : Controller
 {
-
         public async Task<ActionResult> Index()
         {
                 Reviewer? reviewer = await userReviewerQuery.ExecuteAsync(GetUserId())
@@ -36,7 +35,7 @@ public class ReviewerController(
                         GetUserId(),
                         DateTimeOffset.UtcNow);
 
-                return View(reviewer);
+                return View("Index", reviewer);
         }
 
         private Guid GetUserId()

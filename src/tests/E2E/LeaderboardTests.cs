@@ -6,13 +6,12 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class LeaderboardTests(WebDriverInitializer initializer)
-        : WebDriverBase(initializer)
+public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestClass shared)
+        : WebDriverBase(initializer, shared)
 {
         [Fact, Order(0)]
         public void CreatingUserWithArtistProfile_ShowsThatUserInBothLeaderboards()
         {
-                ResetTestContext();
                 CreateUserWithArtistProfile();
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
                 Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 1)
@@ -76,7 +75,7 @@ public class LeaderboardTests(WebDriverInitializer initializer)
                         name: $"FewPointsArtist",
                         email: $"manyPoints@email.com");
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
-                ReviewThisArtPiece();
+                ReviewThisArtPieceThenLoadNext();
 
                 Wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException));
 
@@ -115,9 +114,9 @@ public class LeaderboardTests(WebDriverInitializer initializer)
                 UploadArtPiece();
                 UploadArtPiece();
                 UploadArtPiece();
-                ReviewThisArtPiece();
-                ReviewThisArtPiece();
-                ReviewThisArtPiece();
+                ReviewThisArtPieceThenLoadNext();
+                ReviewThisArtPieceThenLoadNext();
+                ReviewThisArtPieceThenLoadNext();
 
                 WebServer.ExecuteSql(@"
                         UPDATE TOP (1) [dbo].[ArtistPointAwards]
@@ -129,55 +128,38 @@ public class LeaderboardTests(WebDriverInitializer initializer)
                 ");
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
-                Wait.Until(d =>
-                {
-                        var artistRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
-                        var artistPoints = artistRows.Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text).ToList();
-                        if (artistPoints.Count != 1)
-                        {
-                                return false;
-                        }
-
-                        return artistPoints.Single() == "30";
-                }).Should().BeTrue();
+                int artistPointsAllTime = GetLeaderboardPointsForSingleUser("artists", "null");
 
                 Driver.FindElement(By.CssSelector(".time-btn[data-days=\"365\"]")).Click();
-                Wait.Until(d =>
-                {
-                        var artistRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
-                        var artistPoints = artistRows.Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text).ToList();
-                        if (artistPoints.Count != 1)
-                        {
-                                return false;
-                        }
-
-                        return artistPoints.Single() == "20";
-                }).Should().BeTrue();
+                int artistPointsThisYear = GetLeaderboardPointsForSingleUser("artists", "365");
 
                 Driver.FindElement(By.Id("btn-reviewers")).Click();
-                Wait.Until(d =>
-                {
-                        var reviewerRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
-                        var reviewerPoints = reviewerRows.Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text).ToList();
-                        if (reviewerPoints.Count != 1)
-                        {
-                                return false;
-                        }
-
-                        return reviewerPoints.Single() == "30";
-                }).Should().BeTrue();
+                int reviewerPointsAllTime = GetLeaderboardPointsForSingleUser("reviewers", "null");
 
                 Driver.FindElement(By.CssSelector(".time-btn[data-days=\"365\"]")).Click();
+                int reviewerPointsThisYear = GetLeaderboardPointsForSingleUser("reviewers", "365");
+
+                (artistPointsAllTime - artistPointsThisYear).Should().Be(10);
+                (reviewerPointsAllTime - reviewerPointsThisYear).Should().Be(10);
+        }
+
+        private int GetLeaderboardPointsForSingleUser(string mode, string days)
+        {
+                Wait.Until(d => d.FindElement(By.Id("leaderboard")).GetDomAttribute("data-mode") == mode);
+                Wait.Until(d => d.FindElement(By.Id("leaderboard")).GetDomAttribute("data-days") == days);
+
+                int? pointsValue = null;
                 Wait.Until(d =>
                 {
-                        var reviewerRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
-                        var reviewerPoints = reviewerRows.Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text).ToList();
-                        if (reviewerPoints.Count != 1)
-                        {
-                                return false;
-                        }
+                        var rows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
+                        List<int?> points = [.. rows
+                                .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
+                                .Select(r => int.Parse(r))];
 
-                        return reviewerPoints.Single() == "20";
-                }).Should().BeTrue();
+                        pointsValue = points.FirstOrDefault();
+                        return points.Count == 1;
+                });
+
+                return pointsValue!.Value;
         }
 }

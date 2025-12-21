@@ -78,7 +78,7 @@
         let currentTag = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            let artPieceDetails;
+            let artPieceDetails = null;
             let isLiked = false;
             let artPiece = await loadArtPiece();
             if (artPiece === null) return;
@@ -97,16 +97,32 @@
             }
 
             function showDetails() {
-                document.getElementById('artDetailsImage').src = artPiece.imagePath;
-                artPieceDetails.loadReviews(false);
-
                 postReviewModal.hide();
                 artPieceDetails.show();
             }
 
-            function showPostReview() {
-                artPieceDetails.hide();
+            function artPieceReviewed() {
+                console.log("Art piece reviewed!");
+                reviewModal.hide();
                 postReviewModal.show();
+
+                artPieceDetails = new ArtPieceDetails(artPieceId, artPiece.imagePath);
+                artPieceDetails.onBack = () => {
+                    postReviewModal.show();
+                };
+                artPieceDetails.onHidden = async () => {
+                    if (!postReviewModal._element.classList.contains('show')) {
+                        await loadArtPiece();
+                    }
+                };
+
+                postReviewModal._element.addEventListener('hidden.bs.modal', async () => {
+                    console.log("Post review modal hidden.");
+                    if (!artPieceDetails.isShown) {
+                        console.log("Art piece details is not shown.");
+                        await loadArtPiece();
+                    }
+                });
             }
 
             async function loadArtPiece() {
@@ -130,7 +146,7 @@
                 artContainer.innerHTML = `<img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded"><div class="p-2"><p>${data.description}</p></div>`;
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
                 artPieceId = data.id.value;
-                artPieceDetails = new ArtPieceDetails(artPieceId);
+                console.log("Loaded another art piece: " + artPieceId);
                 return data;
             }
 
@@ -193,8 +209,7 @@
                     return;
                 }
 
-                reviewModal.hide();
-                showPostReview();
+                artPieceReviewed();
             }
 
             async function selectTag(tag) {
@@ -209,19 +224,6 @@
 
             document.querySelector('#nextArtPiece').addEventListener('click', nextArtPiece);
             document.querySelector('#viewArtPiece').addEventListener('click', showDetails);
-            document.querySelector('#backToPostReview').addEventListener('click', showPostReview);
-
-            postReviewModal._element.addEventListener('hidden.bs.modal', async () => {
-                if (!artPieceDetails.isShown) {
-                    await loadArtPiece();
-                }
-            });
-
-            artPieceDetails.onHidden = async () => {
-                if (!postReviewModal._element.classList.contains('show')) {
-                    await loadArtPiece();
-                }
-            };
         });
     </script>
 }

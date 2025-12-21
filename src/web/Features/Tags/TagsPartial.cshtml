@@ -21,8 +21,11 @@
         await connection.invoke("JoinArtGroup", artPieceId);
 
         const res = await fetch(`/api/artpieces/${artPieceId}/tags`);
-        const tags = await res.json();
+        if (!res.ok) {
+            throw new Error(`HTTP error! Status: ${res.status}`);
+        }
 
+        const tags = await res.json();
         if (tags.length === 0) {
             return;
         }

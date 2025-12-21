@@ -27,7 +27,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button id="backToPostReview" class="btn btn-light">Back</button>
+                <button id="details-back" class="btn btn-light">Back</button>
             </div>
         </div>
     </div>
@@ -35,18 +35,28 @@
 
 <script>
     class ArtPieceDetails {
-        onHidden;
+        onHidden = null;
+        onBack = null;
 
-        constructor(artPieceId) {
+        constructor(artPieceId, artPieceImagePath) {
             this.reviewsOffset = 0;
             this.artPieceId = artPieceId;
             this.artPieceDetailsModal = new bootstrap.Modal(document.querySelector('#artPieceDetailsModal'));
+            document.getElementById('artDetailsImage').src = artPieceImagePath;
+            this.loadReviews(false);
 
             document.getElementById('loadMoreReviews').addEventListener('click', () => {
                 this.loadReviews();
             });
 
-            this.artPieceDetailsModal._element.addEventListener('hidden.bs.modal', this.onHidden);
+            document.getElementById('details-back').addEventListener('click', () => {
+                this.hide();
+                if (this.onBack !== null) this.onBack();
+            });
+
+            this.artPieceDetailsModal._element.addEventListener('hidden.bs.modal', () => {
+                if (this.onHidden !== null) this.onHidden();
+            });
         }
 
         get isShown() {

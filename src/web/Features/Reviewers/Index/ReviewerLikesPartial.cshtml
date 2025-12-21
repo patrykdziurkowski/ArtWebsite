@@ -33,9 +33,10 @@
             likeItem.classList.add('list-group-item');
             likeItem.innerHTML = `
                 <strong>${new Date(like.date).toLocaleString()}</strong>
-                <p> ${like.artPieceId.value}</p>
                 <img src="${like.imagePath}">
             `;
+            likeItem.dataset.artPieceId = like.artPieceId.value;
+            likeItem.dataset.artPieceImagePath = like.imagePath;
             list.appendChild(likeItem);
         });
         likesOffset += likesPerPage;

@@ -39,6 +39,8 @@
                         <p> ${review.comment}</p>
                         <img src="${review.imagePath}">
                     `;
+                    reviewItem.dataset.artPieceId = review.artPieceId.value;
+                    reviewItem.dataset.artPieceImagePath = review.imagePath;
                     list.appendChild(reviewItem);
                 });
                 reviewsOffset += reviewsPerPage;

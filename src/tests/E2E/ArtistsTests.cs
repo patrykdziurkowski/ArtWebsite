@@ -6,14 +6,12 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class ArtistsTests(WebDriverInitializer initializer)
-        : WebDriverBase(initializer)
+public class ArtistsTests(WebDriverInitializer initializer, SharedPerTestClass shared)
+        : WebDriverBase(initializer, shared)
 {
         [Fact, Order(0)]
         public void Index_RedirectsToLogin_WhenNotLoggedIn()
         {
-                ResetTestContext();
-
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/Index");
 
                 Wait.Until(d => d.Url.Contains("Login")).Should().BeTrue();

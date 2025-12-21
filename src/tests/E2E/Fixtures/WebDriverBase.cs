@@ -3,16 +3,32 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using tests.E2E.Utils;
 
 namespace tests.E2E.Fixtures;
 
 [Collection("Web server collection")]
-public abstract class WebDriverBase(WebDriverInitializer initializer)
+public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDisposable
 {
         public const string HTTP_PROTOCOL_PREFIX = "https://";
-        public IWebDriver Driver { get; } = initializer.Driver;
-        public WebDriverWait Wait { get; } = initializer.Wait;
-        public WebServer WebServer { get; } = initializer.WebServer;
+        public IWebDriver Driver { get; }
+        public WebDriverWait Wait { get; }
+        public WebServer WebServer { get; }
+
+        public WebDriverBase(WebDriverInitializer initializer, SharedPerTestClass shared)
+        {
+                Driver = initializer.Driver;
+                WebServer = initializer.WebServer;
+
+                Wait = new CustomWebDriverWait(Driver, TimeSpan.FromSeconds(5), GetConsoleErrors);
+                Wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException));
+
+                if (!shared.SetupCompleted)
+                {
+                        shared.SetupCompleted = true;
+                        ResetTestContext();
+                }
+        }
 
         public void Register(string userName = "SomeUser123",
                 string email = "john@smith.com", string password = "Ex@mpl3")
@@ -81,9 +97,24 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
                 Wait.Until(d => d.Url.Contains("/ArtPiece/Upload") == false);
         }
 
-        public void ReviewThisArtPiece()
+        public void ReviewRandomArtPiece()
         {
-                Driver.Navigate().Refresh();
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
+                Wait.Until(d => d.FindElement(By.Id("reviewArt"))).Click();
+
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("reviewModal")));
+                Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
+                Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
+                Driver.FindElement(By.CssSelector("#reviewForm > button")).Click();
+
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("reviewModal")));
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
+
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
+        }
+
+        public void ReviewThisArtPieceThenLoadNext()
+        {
                 Wait.Until(d => d.FindElement(By.Id("reviewArt"))).Click();
 
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("reviewModal")));
@@ -139,5 +170,33 @@ public abstract class WebDriverBase(WebDriverInitializer initializer)
                 }
                 WebServer.ClearData();
 
+        }
+
+        public void EnsureNoErrorsInBrowserConsole()
+        {
+                List<LogEntry> browserLogs = GetConsoleErrors();
+                if (browserLogs.Count > 0)
+                {
+                        string errorsMessage = "Unexpected errors found in browser console: " + string.Join(
+                                ',', browserLogs.Select(entry => entry.Message));
+                        throw new InvalidOperationException(errorsMessage);
+                }
+        }
+
+        public void Dispose()
+        {
+                EnsureNoErrorsInBrowserConsole();
+        }
+
+        private List<LogEntry> GetConsoleErrors()
+        {
+                ILogs logs = Driver.Manage().Logs;
+                List<LogEntry> browserLogs = [.. logs.GetLog(LogType.Browser)
+                        .Where(entry => entry.Level == LogLevel.Severe)
+                        // TODO: this is a local/test setup issue
+                        .Where(entry => !entry.Message.Contains("Failed to load resource"))
+                        // TODO: this seems to be caused by hot reload in the local/test setup
+                        .Where(entry => !entry.Message.Contains("WebSocket connection to 'ws://"))];
+                return browserLogs;
         }
 }

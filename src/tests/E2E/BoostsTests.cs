@@ -6,13 +6,12 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class BoostsTests(WebDriverInitializer initializer)
-        : WebDriverBase(initializer)
+public class BoostsTests(WebDriverInitializer initializer, SharedPerTestClass shared)
+        : WebDriverBase(initializer, shared)
 {
         [Fact, Order(0)]
         public void BoostingArtPiece_ShouldShowBoostedArtPiece_OnArtistProfile()
         {
-                ResetTestContext();
                 CreateUserWithArtistProfile();
                 UploadArtPiece();
                 UploadArtPiece();

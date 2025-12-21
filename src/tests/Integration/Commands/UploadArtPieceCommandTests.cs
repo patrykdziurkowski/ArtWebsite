@@ -97,8 +97,8 @@ public class UploadArtPieceCommandTests : DatabaseTest
                 ArtPiece artPiece = await _command.ExecuteAsync(
                         GetExampleFile(), "description", user.Id);
 
-                string path = Path.Combine("user-images", "art-pieces",
-                        $"{artistId}", $"{artPiece.Id}.png");
+                string path = $"./user-images/art-pieces/{artistId}/{artPiece.Id}.png";
+
                 File.Exists(path).Should().BeTrue();
         }
 

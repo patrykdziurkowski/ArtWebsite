@@ -13,7 +13,7 @@
     <button class="time-btn btn btn-outline-secondary me-2">All-Time</button>
 </div>
 
-<table class="table table-striped text-center align-middle">
+<table id="leaderboard" class="table table-striped text-center align-middle">
     <thead class="table-dark">
         <tr>
             <th>Place</th>
@@ -36,6 +36,7 @@
             const loadMoreBtn = document.getElementById('load-more-leaderboard');
             const btnArtists = document.getElementById('btn-artists');
             const btnReviewers = document.getElementById('btn-reviewers');
+            const leaderboard = document.getElementById('leaderboard');
 
             btnArtists.onclick = () => switchMode('artists');
             btnReviewers.onclick = () => switchMode('reviewers');
@@ -82,6 +83,9 @@
 
                 loadMoreBtn.classList.toggle('d-none', data.length < 20);
                 offset += data.length;
+
+                leaderboard.dataset.mode = currentMode;
+                leaderboard.dataset.days = currentDays;
             }
 
             function renderTable(entries) {

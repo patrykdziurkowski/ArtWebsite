@@ -5,14 +5,12 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class AuthenticationTests(WebDriverInitializer initializer)
-        : WebDriverBase(initializer)
+public class AuthenticationTests(WebDriverInitializer initializer, SharedPerTestClass shared)
+        : WebDriverBase(initializer, shared)
 {
         [Fact, Order(0)]
         public void RegisterPage_Loads()
         {
-                ResetTestContext();
-
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Register");
 
                 Wait.Until(d => d.Title.Contains("Register")).Should().BeTrue();

@@ -8,7 +8,6 @@ namespace tests.E2E.Fixtures;
 public class WebDriverInitializer : IDisposable
 {
         public IWebDriver Driver { get; }
-        public WebDriverWait Wait { get; }
         public WebServer WebServer { get; }
 
         public WebDriverInitializer()
@@ -31,8 +30,6 @@ public class WebDriverInitializer : IDisposable
                 options.AddArguments("--disable-web-security");
                 options.AddArguments("--allow-running-insecure-content");
                 Driver = new ChromeDriver(options);
-                Wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(5));
-                Wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException));
                 WebServer = new WebServer();
         }
 

@@ -5,13 +5,12 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class ArtPiecesTests(WebDriverInitializer initializer)
-        : WebDriverBase(initializer)
+public class ArtPiecesTests(WebDriverInitializer initializer, SharedPerTestClass shared)
+        : WebDriverBase(initializer, shared)
 {
         [Fact, Order(0)]
         public void UploadingArtPiece_Fails_WhenUploadedNonImageFile()
         {
-                ResetTestContext();
                 CreateUserWithArtistProfile();
                 string filePath = "../../../resources/exampleNonImage.txt";
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");

@@ -80,21 +80,25 @@
             // replaces the image to be sent to the server with the one
             // from the image editor
             document.querySelector('#upload-form').onsubmit = async (e) => {
-                if (!validImageLoaded) {
+                e.preventDefault();
+
+                const fileInput = document.querySelector('#image-input');
+                const file = fileInput.files[0];
+                if (!validImageLoaded || !file || !file.type.startsWith('image/')) {
+                    // send it immediately to be rejected by server side validation
+                    e.target.submit();
                     return;
                 }
 
                 const dataURL = imageEditor.toDataURL();
-                fetch(dataURL)
-                    .then(res => res.blob())
-                    .then(blob => {
-                        const fileInput = document.querySelector('#image-input');
-                        const file = new File([blob], 'edited-image.png', { type: 'image/png' });
+                const blob = await (await fetch(dataURL)).blob();
+                const newFile = new File([blob], 'edited-image.png', { type: 'image/png' });
 
-                        const container = new DataTransfer();
-                        container.items.add(file);
-                        fileInput.files = container.files;
-                    });
+                const container = new DataTransfer();
+                container.items.add(newFile);
+                fileInput.files = container.files;
+
+                e.target.submit();
             };
         });
     </script>

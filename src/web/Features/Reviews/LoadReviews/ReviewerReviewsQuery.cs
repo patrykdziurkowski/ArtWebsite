@@ -26,6 +26,7 @@ public class ReviewerReviewsQuery(ApplicationDbContext dbContext)
                                 reviewer => reviewer.Id,
                                 (x, reviewer) => new ReviewerReviewDto
                                 {
+                                        ArtPieceId = x.artPiece.Id,
                                         Date = x.review.Date,
                                         Comment = x.review.Comment,
                                         Rating = x.review.Rating.Value,

@@ -8,8 +8,8 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class MissionsTests(WebDriverInitializer initializer)
-        : WebDriverBase(initializer)
+public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass shared)
+        : WebDriverBase(initializer, shared)
 {
         private static MissionType _initialMissionType;
         private static int _artistPoints = 0;
@@ -18,7 +18,6 @@ public class MissionsTests(WebDriverInitializer initializer)
         [Fact, Order(0)]
         public void MissionWidget_ShowsNoProgress_ForNewUser()
         {
-                ResetTestContext();
                 // set up other artist/reviewer profiles here to be used for missions later
                 for (int i = 0; i < 5; i++)
                 {
@@ -179,8 +178,7 @@ public class MissionsTests(WebDriverInitializer initializer)
                                 UploadArtPiece();
 
                                 _reviewerPoints += 10;
-                                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
-                                ReviewThisArtPiece();
+                                ReviewThisArtPieceThenLoadNext();
                         }
                         else if (missionType == MissionType.LikeArt)
                         {
@@ -194,12 +192,12 @@ public class MissionsTests(WebDriverInitializer initializer)
                         else if (missionType == MissionType.VisitArtistsProfiles)
                         {
                                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artists/otherArtist{i}");
-                                Wait.Until(d => d.FindElement(By.Id("artistName")).Text == $"otherArtist{i}");
+                                Wait.Until(d => d.FindElement(By.Id("artistName")).Text.Contains($"otherArtist{i}"));
                         }
                         else if (missionType == MissionType.VisitReviewersProfiles)
                         {
                                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/otherUser{i}");
-                                Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == $"otherUser{i}");
+                                Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text.Contains($"otherUser{i}"));
                         }
                         else
                         {

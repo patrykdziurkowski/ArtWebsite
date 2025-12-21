@@ -7,15 +7,14 @@ using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
 
-public class LikeTests(WebDriverInitializer initializer)
-        : WebDriverBase(initializer)
+public class LikeTests(WebDriverInitializer initializer, SharedPerTestClass shared)
+        : WebDriverBase(initializer, shared)
 {
         private static string _likedArtPieceSrc = string.Empty;
 
         [Fact, Order(0)]
         public void LikingArtPiece_ShouldShowButtonAsUnlike_WhenLiked()
         {
-                ResetTestContext();
                 CreateUserWithArtistProfile();
                 UploadArtPiece();
                 UploadArtPiece();
