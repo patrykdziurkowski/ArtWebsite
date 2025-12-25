@@ -109,8 +109,6 @@ public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDispos
 
                 Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("reviewModal")));
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
-
-                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
         }
 
         public void ReviewThisArtPieceThenLoadNext()

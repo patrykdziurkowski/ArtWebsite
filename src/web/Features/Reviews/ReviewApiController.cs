@@ -33,7 +33,7 @@ public class ReviewApiController(
                 [Range(0, int.MaxValue)] int offset = 0)
         {
                 List<ArtPieceReviewDto> reviews = await reviewsForArtPieceQuery.ExecuteAsync(
-                        GetUserId(), new ArtPieceId { Value = artPieceId }, REVIEWS_TO_LOAD_FOR_ART_PIECE, offset);
+                        new ArtPieceId { Value = artPieceId }, REVIEWS_TO_LOAD_FOR_ART_PIECE, offset);
                 return Ok(reviews);
         }
 

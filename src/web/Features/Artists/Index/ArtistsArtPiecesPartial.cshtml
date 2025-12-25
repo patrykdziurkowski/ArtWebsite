@@ -4,56 +4,73 @@
 <div id="artPiecesList" class="list-group">Loading...</div>
 <button id="loadMoreArtPieces" class="btn btn-primary mt-3" style="display: none;">Load More</button>
 
+<partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
+
 <script>
-    let offset = 0;
-    const artPiecesPerPage = 5;
+    document.addEventListener('DOMContentLoaded', async () => {
+        let offset = 0;
+        const artPiecesPerPage = 5;
 
-    function fetchArtPieces() {
-        const list = document.querySelector('#artPiecesList');
-        const loadMore = document.querySelector('#loadMoreArtPieces');
-        const artistId = "@Model.Id";
+        let artPieceDetails = null;
+        const container = document.querySelector('#artPiecesList');
+        container.addEventListener('click', (e) => {
+            const element = e.target;
+            const artPieceElement = element.closest('.art-piece-card');
+            if (!artPieceElement) return;
 
-        fetch(`/api/artists/${artistId}/artpieces?offset=${offset}`)
-            .then(response => response.json())
-            .then(data => {
-                if (offset == 0) {
-                    list.innerText = '';
-                }
-                if (offset == 0 && data.length === 0) {
-                    list.innerText = 'No art pieces found.';
-                }
+            const artPieceId = artPieceElement.dataset.artPieceId;
+            const artPieceImagePath = artPieceElement.dataset.artPieceImagePath;
+            if (!artPieceId) {
+                throw new Error('Expected art piece id not to be null for clicked review/like element.');
+            }
 
-                // If loaded less art pieces than requested, hide the button since we're at the end
-                if (data.length < artPiecesPerPage) {
-                    loadMore.style.display = 'none';
-                } else {
-                    loadMore.style.display = 'block';
-                }
+            const artPieceDetails = new ArtPieceDetails(artPieceId, artPieceImagePath);
+            artPieceDetails.show();
+        });
 
-                data.forEach(artPiece => {
-                    const card = document.createElement("div");
-                    card.className = "col-md-4 mb-3";
-                    card.innerHTML = `<div class="card">
-                        <img src="${artPiece.imagePath}" class="card-img-top" alt="Image">
-                        <div class="card-body">
-                            ${Array.from({ length: 5 }, (_, i) =>
-                        `<label class="${i < artPiece.averageRating ? 'checked-star' : ''}">&#9733;</label>`
-                    ).join('')}
-                            <p class="card-text">${artPiece.description}</p>
-                            <small class="text-muted">${new Date(artPiece.uploadDate).toLocaleDateString()}</small>
-                            @if (Model.IsOwner && Model.BoostExpirationDate is null)
-                            {
-                                <button class="boost-btn" onclick="boostArtPiece('${artPiece.id.value}')">Boost</button>
-                            }
-                        </div>
-                    </div>`;
-                    list.appendChild(card);
-                });
-                offset += artPiecesPerPage;
+        async function fetchArtPieces() {
+            const list = document.querySelector('#artPiecesList');
+            const loadMore = document.querySelector('#loadMoreArtPieces');
+            const artistId = "@Model.Id";
+
+            const response = await fetch(`/api/artists/${artistId}/artpieces?offset=${offset}`);
+            const data = await response.json();
+
+            if (offset == 0) list.innerText = '';
+            if (offset == 0 && data.length === 0) list.innerText = 'No art pieces found.';
+
+            // If loaded less art pieces than requested, hide the button since we're at the end
+            if (data.length < artPiecesPerPage) {
+                loadMore.style.display = 'none';
+            } else {
+                loadMore.style.display = 'block';
+            }
+
+            data.forEach(artPiece => {
+                const card = document.createElement("div");
+                card.className = "col-md-4 mb-3 art-piece-card";
+                card.innerHTML = `<div class="card">
+                    <img src="${artPiece.imagePath}" class="card-img-top" alt="Image">
+                    <div class="card-body">
+                        ${Array.from({ length: 5 }, (_, i) =>
+                    `<label class="${i < artPiece.averageRating ? 'checked-star' : ''}">&#9733;</label>`
+                ).join('')}
+                        <p class="card-text">${artPiece.description}</p>
+                        <small class="text-muted">${new Date(artPiece.uploadDate).toLocaleDateString()}</small>
+                        @if (Model.IsOwner && Model.BoostExpirationDate is null)
+                        {
+                            <button class="boost-btn" onclick="boostArtPiece('${artPiece.id.value}')">Boost</button>
+                        }
+                    </div>
+                </div>`;
+
+                card.dataset.artPieceId = artPiece.id.value;
+                card.dataset.artPieceImagePath = artPiece.imagePath;
+                list.appendChild(card);
             });
-    }
+            offset += artPiecesPerPage;
+        }
 
-    document.addEventListener("DOMContentLoaded", () => {
         document.querySelector('#loadMoreArtPieces').addEventListener('click', fetchArtPieces);
 
         fetchArtPieces();

@@ -31,6 +31,7 @@
         data.forEach(like => {
             const likeItem = document.createElement('div');
             likeItem.classList.add('list-group-item');
+            likeItem.classList.add('art-piece-card');
             likeItem.innerHTML = `
                 <strong>${new Date(like.date).toLocaleString()}</strong>
                 <img src="${like.imagePath}">

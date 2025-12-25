@@ -31,6 +31,7 @@
                 data.forEach(review => {
                     const reviewItem = document.createElement('div');
                     reviewItem.classList.add('list-group-item');
+                    reviewItem.classList.add('art-piece-card');
                     reviewItem.innerHTML = `
                         <strong>${new Date(review.date).toLocaleString()}</strong>
                         ${Array.from({ length: 5 }, (_, i) =>

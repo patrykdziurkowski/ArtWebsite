@@ -17,7 +17,6 @@
         connection.on("TagsReady", tags => renderTags(tags));
 
         await connection.start();
-        console.log("Joining SignalR group for tags of art piece ", artPieceId);
         await connection.invoke("JoinArtGroup", artPieceId);
 
         const res = await fetch(`/api/artpieces/${artPieceId}/tags`);

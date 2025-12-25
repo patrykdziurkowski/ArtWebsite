@@ -36,14 +36,16 @@
             for (const container of document.querySelectorAll('#likesList, #reviewsList')) {
                 container.addEventListener('click', (e) => {
                     const element = e.target;
-                    if (element.parentNode != container) return;
+                    const artPieceElement = element.closest('.art-piece-card');
+                    if (!artPieceElement) return;
 
-                    const artPieceId = element.dataset.artPieceId;
-                    if (artPieceId === null) {
+                    const artPieceId = artPieceElement.dataset.artPieceId;
+                    const artPieceImagePath = artPieceElement.dataset.artPieceImagePath;
+                    if (!artPieceId) {
                         throw new Error('Expected art piece id not to be null for clicked review/like element.');
                     }
 
-                    artPieceDetails = new ArtPieceDetails(artPieceId, element.dataset.artPieceImagePath);
+                    const artPieceDetails = new ArtPieceDetails(artPieceId, artPieceImagePath);
                     artPieceDetails.show();
                 });
             }

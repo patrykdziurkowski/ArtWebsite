@@ -23,89 +23,92 @@
     <partial name="Index/BoostedArtPiece" model="@Model" />
 
     <partial name="Index/ArtistsArtPiecesPartial" model="@Model" />
+</div>
 
-    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editProfileModalLabel">Edit your artist profile!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="editForm">
-                        <div class="form-group">
-                            <input type="text" value="@Model.Name" name="Name" placeholder="Your username">
-                            <span asp-validation-for="Name" class="text-danger"></span>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" value="@Model.Summary" name="Summary" placeholder="Profile summary">
-                            <span asp-validation-for="Summary" class="text-danger"></span>
-                        </div>
-                        <input type="hidden" value="@Model.Id" name="ArtistId">
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button id="editArtistProfile" type="submit" class="btn btn-danger">Submit</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit your artist profile!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete this profile? This action cannot be undone.
-                </div>
-                <div class="modal-footer">
-                    <form asp-controller="Artist" asp-action="Deactivate" method="POST" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <button id="deactivate-artist" type="submit" class="btn btn-danger">Delete</button>
-                        <input type="hidden" name="artistId" value="@Model.Id" />
-                    </form>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="form-group">
+                        <input type="text" value="@Model.Name" name="Name" placeholder="Your username">
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" value="@Model.Summary" name="Summary" placeholder="Profile summary">
+                        <span asp-validation-for="Summary" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" value="@Model.Id" name="ArtistId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="editArtistProfile" type="submit" class="btn btn-danger">Submit</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    document.querySelector('#editArtistProfile').addEventListener('click', async (e) => {
-        const form = new FormData(document.querySelector('#editForm'));
-        const data = {
-            artistId: form.get('ArtistId'),
-            name: form.get('Name'),
-            summary: form.get('Summary'),
-        };
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this profile? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <form asp-controller="Artist" asp-action="Deactivate" method="POST" class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button id="deactivate-artist" type="submit" class="btn btn-danger">Delete</button>
+                    <input type="hidden" name="artistId" value="@Model.Id" />
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        await fetch('/api/artist', {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(async response => {
-                if (response.status !== 200) {
-                    const data = await response.json();
-                    throw data;
-                }
-                document.querySelector('#artistName').innerText = data.name;
-                document.querySelector('#artistSummary').innerText = data.summary;
-                document.querySelector('#editProfileModal .btn-close').click();
-            })
-            .catch(error => {
-                const validationErrorsText = document.querySelector('#editForm *[name="name"] + span');
-                validationErrorsText.innerText = error.errors.Name;
-                const validationErrorsText2 = document.querySelector('#editForm *[name="summary"] + span');
-                validationErrorsText2.innerText = error.errors.Summary;
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.querySelector('#editArtistProfile').addEventListener('click', async (e) => {
+                const form = new FormData(document.querySelector('#editForm'));
+                const data = {
+                    artistId: form.get('ArtistId'),
+                    name: form.get('Name'),
+                    summary: form.get('Summary'),
+                };
+
+                await fetch('/api/artist', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        if (response.status !== 200) {
+                            const data = await response.json();
+                            throw data;
+                        }
+                        document.querySelector('#artistName').innerText = data.name;
+                        document.querySelector('#artistSummary').innerText = data.summary;
+                        document.querySelector('#editProfileModal .btn-close').click();
+                    })
+                    .catch(error => {
+                        const validationErrorsText = document.querySelector('#editForm *[name="name"] + span');
+                        validationErrorsText.innerText = error.errors.Name;
+                        const validationErrorsText2 = document.querySelector('#editForm *[name="summary"] + span');
+                        validationErrorsText2.innerText = error.errors.Summary;
+                    });
             });
-    });
-</script>
+        });
+    </script>
+}

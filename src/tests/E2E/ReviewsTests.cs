@@ -61,61 +61,88 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
         [Fact, Order(4)]
         public void Browsing_DetailsPage_ShowsOtherReviewersReviews_InOrderByPoints()
         {
-                ResetTestContext();
-                CreateUserWithArtistProfile();
-                UploadArtPiece();
-                UploadArtPiece();
-                Logout();
-
                 const int REVIEWERS_COUNT = 11;
-                const int LAST_REVIEWER = REVIEWERS_COUNT;
-                for (int i = 1; i <= REVIEWERS_COUNT; i++)
-                {
-                        CreateUserWithArtistProfile(
-                                userName: $"userName{i}",
-                                email: $"email{i}@someEmail.com",
-                                name: $"someArtist{i}"
-                        );
-                        ReviewRandomArtPiece();
 
-                        if (i != LAST_REVIEWER)
-                        {
-                                ReviewRandomArtPiece();
-                        }
-                        else
-                        {
-                                int totalReviewsOnThisArtPiece = REVIEWERS_COUNT;
-                                Driver.FindElement(By.Id("viewArtPiece")).Click();
-                                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
-                                Driver.FindElement(By.Id("details-load-more-reviews")).Click();
-                                Wait.Until(d => d.FindElements(By.CssSelector("#artReviewsContainer > *")).Count == totalReviewsOnThisArtPiece).Should().BeTrue();
-                                var reviewElements = Driver.FindElements(By.CssSelector("#artReviewsContainer > *"));
-                                var reviewerPointsText = reviewElements.Select(r => r.FindElement(By.ClassName("review-points")).Text);
+                SetupArtPieceWithReviews(REVIEWERS_COUNT);
 
-                                int[] points = [.. reviewerPointsText.Select(text => int.Parse(text.Split(' ').First()))];
-                                int[] pointsOrderedDescending = [.. points.OrderDescending()];
-                                points.Should().BeEquivalentTo(pointsOrderedDescending);
+                Driver.FindElement(By.Id("viewArtPiece")).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+                Driver.FindElement(By.Id("details-load-more-reviews")).Click();
+                Wait.Until(d => d.FindElements(By.CssSelector("#artReviewsContainer > *")).Count == REVIEWERS_COUNT).Should().BeTrue();
+                var reviewElements = Driver.FindElements(By.CssSelector("#artReviewsContainer > *"));
+                var reviewerPointsText = reviewElements.Select(r => r.FindElement(By.ClassName("review-points")).Text);
 
-                                Driver.FindElement(By.Id("details-back")).Click();
-                                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("artPieceDetailsModal")));
-                        }
+                int[] points = [.. reviewerPointsText.Select(text => int.Parse(text.Split(' ').First()))];
+                int[] pointsOrderedDescending = [.. points.OrderDescending()];
+                points.Should().BeEquivalentTo(pointsOrderedDescending);
 
-                        Logout();
-                }
+                Driver.FindElement(By.Id("details-back")).Click();
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("artPieceDetailsModal")));
+
+                Logout();
         }
 
         [Fact, Order(5)]
         public void Reviewer_ArtPieceDetailsPage_ShowsOtherReviewersReviews_InOrderByPoints()
         {
+                const int REVIEWERS_COUNT = 11;
+
+                SetupArtPieceWithReviews(REVIEWERS_COUNT);
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Driver.FindElement(By.Id("details-load-more-reviews")).Click();
+                Wait.Until(d => d.FindElements(By.CssSelector("#artReviewsContainer > *")).Count == REVIEWERS_COUNT).Should().BeTrue();
+
+                var reviewElements = Driver.FindElements(By.CssSelector("#artReviewsContainer > *"));
+                var reviewerPointsText = reviewElements.Select(r => r.FindElement(By.ClassName("review-points")).Text);
+
+                int[] points = [.. reviewerPointsText.Select(text => int.Parse(text.Split(' ').First()))];
+                int[] pointsOrderedDescending = [.. points.OrderDescending()];
+                points.Should().BeEquivalentTo(pointsOrderedDescending);
+
+                Driver.FindElement(By.Id("details-back")).Click();
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("artPieceDetailsModal")));
+
+                Logout();
+        }
+
+        [Fact, Order(6)]
+        public void Artist_ArtPieceDetailsPage_ShowsOtherReviewersReviews_InOrderByPoints()
+        {
+                const int REVIEWERS_COUNT = 11;
+                SetupArtPieceWithReviews(REVIEWERS_COUNT);
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artists/ArtistWithArt");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Driver.FindElement(By.Id("details-load-more-reviews")).Click();
+                Wait.Until(d => d.FindElements(By.CssSelector("#artReviewsContainer > *")).Count == REVIEWERS_COUNT).Should().BeTrue();
+
+                var reviewElements = Driver.FindElements(By.CssSelector("#artReviewsContainer > *"));
+                var reviewerPointsText = reviewElements.Select(r => r.FindElement(By.ClassName("review-points")).Text);
+
+                int[] points = [.. reviewerPointsText.Select(text => int.Parse(text.Split(' ').First()))];
+                int[] pointsOrderedDescending = [.. points.OrderDescending()];
+                points.Should().BeEquivalentTo(pointsOrderedDescending);
+
+                Driver.FindElement(By.Id("details-back")).Click();
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("artPieceDetailsModal")));
+
+                Logout();
+        }
+
+        private void SetupArtPieceWithReviews(int reviewCount)
+        {
                 ResetTestContext();
-                CreateUserWithArtistProfile();
-                UploadArtPiece();
+                CreateUserWithArtistProfile(name: "ArtistWithArt");
                 UploadArtPiece();
                 Logout();
 
-                const int REVIEWERS_COUNT = 11;
-                const int LAST_REVIEWER = REVIEWERS_COUNT;
-                for (int i = 1; i <= REVIEWERS_COUNT; i++)
+                for (int i = 0; i < reviewCount; i++)
                 {
                         CreateUserWithArtistProfile(
                                 userName: $"userName{i}",
@@ -124,30 +151,9 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
                         );
                         ReviewRandomArtPiece();
 
-                        if (i != LAST_REVIEWER)
+                        if (i == reviewCount - 1)
                         {
-                                ReviewRandomArtPiece();
-                        }
-                        else
-                        {
-                                int totalReviewsOnThisArtPiece = REVIEWERS_COUNT;
-
-                                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
-                                Wait.Until(d => d.FindElement(By.CssSelector("#reviewsList > *"))).Click();
-                                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
-
-                                Driver.FindElement(By.Id("details-load-more-reviews")).Click();
-                                Wait.Until(d => d.FindElements(By.CssSelector("#artReviewsContainer > *")).Count == totalReviewsOnThisArtPiece).Should().BeTrue();
-
-                                var reviewElements = Driver.FindElements(By.CssSelector("#artReviewsContainer > *"));
-                                var reviewerPointsText = reviewElements.Select(r => r.FindElement(By.ClassName("review-points")).Text);
-
-                                int[] points = [.. reviewerPointsText.Select(text => int.Parse(text.Split(' ').First()))];
-                                int[] pointsOrderedDescending = [.. points.OrderDescending()];
-                                points.Should().BeEquivalentTo(pointsOrderedDescending);
-
-                                Driver.FindElement(By.Id("details-back")).Click();
-                                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("artPieceDetailsModal")));
+                                break;
                         }
 
                         Logout();

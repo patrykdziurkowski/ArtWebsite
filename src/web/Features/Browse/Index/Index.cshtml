@@ -102,7 +102,6 @@
             }
 
             function artPieceReviewed() {
-                console.log("Art piece reviewed!");
                 reviewModal.hide();
                 postReviewModal.show();
 
@@ -117,9 +116,7 @@
                 };
 
                 postReviewModal._element.addEventListener('hidden.bs.modal', async () => {
-                    console.log("Post review modal hidden.");
                     if (!artPieceDetails.isShown) {
-                        console.log("Art piece details is not shown.");
                         await loadArtPiece();
                     }
                 });
@@ -146,7 +143,6 @@
                 artContainer.innerHTML = `<img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded"><div class="p-2"><p>${data.description}</p></div>`;
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
                 artPieceId = data.id.value;
-                console.log("Loaded another art piece: " + artPieceId);
                 return data;
             }
 

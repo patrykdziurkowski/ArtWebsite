@@ -20,14 +20,6 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
         }
 
         [Fact]
-        public async Task Execute_ShouldThrow_WhenArtPieceWasntReviewedByCurrentReviewer()
-        {
-                Func<Task> callingExecute = async () => await _query.ExecuteAsync(Guid.NewGuid(), new ArtPieceId(), 10);
-
-                await callingExecute.Should().ThrowAsync<InvalidOperationException>();
-        }
-
-        [Fact]
         public async Task Execute_ShouldReturnReviews_WhenCurrentReviewerReviewedArtPieceAndTheyExistForArtPiece()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
@@ -43,7 +35,7 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
                 });
                 await DbContext.SaveChangesAsync();
 
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(currentUserId, artPieceWithReviewsId, count: 10);
+                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(artPieceWithReviewsId, count: 10);
 
                 reviews.Should().HaveCount(10);
         }
@@ -64,7 +56,7 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
                 });
                 await DbContext.SaveChangesAsync();
 
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(currentUserId, artPieceWithReviewsId, count: 10, offset: 10);
+                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(artPieceWithReviewsId, count: 10, offset: 10);
 
                 reviews.Should().HaveCount(4);
         }
@@ -95,7 +87,7 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
                 await DbContext.SaveChangesAsync();
 
 
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(currentUserId, artPieceWithReviewsId, reviewsToFetchCount);
+                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(artPieceWithReviewsId, reviewsToFetchCount);
 
                 for (int i = 0; i < reviewsToFetchCount; i++)
                 {
