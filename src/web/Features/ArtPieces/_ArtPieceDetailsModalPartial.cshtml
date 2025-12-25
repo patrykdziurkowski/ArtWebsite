@@ -19,7 +19,7 @@
                             <div id="artReviewsContainer" class="flex-grow-1 overflow-auto border rounded p-2"
                                 style="min-height: 0;"></div>
 
-                            <button id="loadMoreReviews" class="btn btn-outline-secondary mt-2">
+                            <button id="details-load-more-reviews" class="btn btn-outline-secondary mt-2">
                                 Load more
                             </button>
                         </div>
@@ -45,7 +45,8 @@
             document.getElementById('artDetailsImage').src = artPieceImagePath;
             this.loadReviews(false);
 
-            document.getElementById('loadMoreReviews').addEventListener('click', () => {
+            document.getElementById('details-load-more-reviews').addEventListener('click', () => {
+                console.log("Clicked load more!");
                 this.loadReviews();
             });
 
