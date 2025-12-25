@@ -35,7 +35,8 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
                 });
                 await DbContext.SaveChangesAsync();
 
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(artPieceWithReviewsId, count: 10);
+                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(
+                        currentUserId, artPieceWithReviewsId, count: 10);
 
                 reviews.Should().HaveCount(10);
         }
@@ -56,22 +57,25 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
                 });
                 await DbContext.SaveChangesAsync();
 
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(artPieceWithReviewsId, count: 10, offset: 10);
+                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(
+                        currentUserId, artPieceWithReviewsId, count: 10, offset: 10);
 
                 reviews.Should().HaveCount(4);
         }
 
         [Fact]
-        public async Task Execute_ReturnedReviews_ShouldStartFromReviewerWithHighestPoints()
+        public async Task Execute_ReturnedReviews_ShouldStartFromCurrentUserThenReviewerWithHighestPoints()
         {
                 int totalReviewsCount = 30;
                 int reviewsToFetchCount = 10;
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
+                Reviewer currentReviewer = await DbContext.Reviewers.SingleAsync();
                 Guid currentUserId = (await DbContext.Users.SingleAsync()).Id;
                 ArtPieceId artPieceWithReviewsId = artPieceIds.First();
                 await CreateReviewsForArtPiece(artPieceWithReviewsId, totalReviewsCount);
                 List<Reviewer> reviewers = await DbContext.Reviewers
                         .Where(r => r.Name.StartsWith("user"))
+                        .Where(r => r.UserId != currentUserId)
                         .ToListAsync();
                 for (int i = 0; i < reviewers.Count; i++)
                 {
@@ -87,11 +91,15 @@ public class ArtPieceReviewsQueryTests : DatabaseTest
                 await DbContext.SaveChangesAsync();
 
 
-                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(artPieceWithReviewsId, reviewsToFetchCount);
+                List<ArtPieceReviewDto> reviews = await _query.ExecuteAsync(
+                        currentUserId, artPieceWithReviewsId, reviewsToFetchCount);
 
-                for (int i = 0; i < reviewsToFetchCount; i++)
+                reviews.First().IsCurrentUser.Should().BeTrue();
+                reviews.First().ReviewerName.Should().Be(currentReviewer.Name);
+                for (int i = 1; i < reviewsToFetchCount; i++)
                 {
-                        reviews[i].Points.Should().Be((totalReviewsCount - i - 1) * 100);
+                        reviews[i].Points.Should().Be((totalReviewsCount - i) * 100);
+                        reviews[i].IsCurrentUser.Should().BeFalse();
                 }
         }
 }

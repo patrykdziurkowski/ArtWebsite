@@ -74,12 +74,16 @@
 
             reviews.forEach(r => {
                 const reviewEl = document.createElement('div');
+                const badge = r.isCurrentUser
+                    ? ' <span class="badge badge-secondary">YOU</span>'
+                    : '';
                 reviewEl.className = 'd-flex mb-3';
                 reviewEl.innerHTML =
                     `<div>` +
-                    `<div><strong>${r.reviewerName}</strong> -  <span class="review-points">${r.points} points</span> - <small>${new Date(r.date).toLocaleDateString()}</small></div>` +
+                    `<div><strong>${r.reviewerName}</strong>${badge} -  <span class="review-points">${r.points} points</span> - <small>${new Date(r.date).toLocaleDateString()}</small></div>` +
                     `<div><span class="review-rating">${r.rating.value}★</span> ${r.comment}</div>` +
                     `</div>`;
+                if (r.isCurrentUser) reviewEl.classList.add('py-4');
                 container.appendChild(reviewEl);
             });
 

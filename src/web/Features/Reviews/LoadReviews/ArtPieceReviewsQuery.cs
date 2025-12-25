@@ -6,7 +6,7 @@ namespace web.Features.Reviews.LoadReviews;
 
 public class ArtPieceReviewsQuery(ApplicationDbContext dbContext)
 {
-        public async Task<List<ArtPieceReviewDto>> ExecuteAsync(
+        public async Task<List<ArtPieceReviewDto>> ExecuteAsync(Guid currentUserId,
                 ArtPieceId artPieceId, int count, int offset = 0)
         {
                 return await dbContext.Reviews
@@ -22,8 +22,10 @@ public class ArtPieceReviewsQuery(ApplicationDbContext dbContext)
                                         Date = review.Date,
                                         Comment = review.Comment,
                                         Points = reviewer.Points,
+                                        IsCurrentUser = reviewer.UserId == currentUserId,
                                 })
-                        .OrderByDescending(dto => dto.Points)
+                        .OrderByDescending(dto => dto.IsCurrentUser ? 1 : 0)
+                        .ThenByDescending(dto => dto.Points)
                         .Skip(offset)
                         .Take(count)
                         .ToListAsync();
