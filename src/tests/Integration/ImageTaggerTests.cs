@@ -1,4 +1,5 @@
 using FluentAssertions;
+using FluentResults;
 using tests.Integration.Fixtures;
 using web.Features.Tags;
 
@@ -21,8 +22,10 @@ public class ImageTaggerTests(DatabaseTestContext databaseContext) : DatabaseTes
                         "exampleImage.png"));
                 File.Exists(image).Should().BeTrue();
 
-                List<string> tags = await imageTagger.TagImageAsync(image);
+                Result<List<string>> result = await imageTagger.TagImageAsync(image);
 
+                result.IsFailed.Should().BeFalse();
+                List<string> tags = result.Value;
                 tags.Count.Should().BeGreaterThan(1);
         }
 

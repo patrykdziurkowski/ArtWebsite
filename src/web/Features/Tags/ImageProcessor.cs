@@ -1,3 +1,4 @@
+using FluentResults;
 using Microsoft.AspNetCore.SignalR;
 
 namespace web.Features.Tags;
@@ -13,7 +14,7 @@ public class ImageProcessor(
         {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                        ImageTaggingItem? imageTaggingItem = queue.Dequeue();
+                        ImageTaggingItem? imageTaggingItem = queue.TryDequeue();
                         if (imageTaggingItem is null)
                         {
                                 await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
@@ -22,7 +23,14 @@ public class ImageProcessor(
 
                         try
                         {
-                                List<string> tags = await imageTagger.TagImageAsync(imageTaggingItem.FullImagePath);
+                                Result<List<string>> result = await imageTagger.TagImageAsync(imageTaggingItem.FullImagePath);
+                                if (result.IsFailed)
+                                {
+                                        logger.LogInformation("Info: Trying to tag an image unsuccessful: {result}", result);
+                                        continue;
+                                }
+
+                                List<string> tags = result.Value;
                                 await imageTaggingItem.CallBack(tags);
                                 logger.LogDebug("Sending TagsReady to group: {group}", $"art-{imageTaggingItem.ArtPieceId}");
                                 await tagsHub.Clients.Group($"art-{imageTaggingItem.ArtPieceId}").SendAsync("TagsReady", tags, stoppingToken);

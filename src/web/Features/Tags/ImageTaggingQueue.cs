@@ -17,7 +17,7 @@ public class ImageTaggingQueue
                 });
         }
 
-        public ImageTaggingItem? Dequeue()
+        public ImageTaggingItem? TryDequeue()
         {
                 bool itemDequeued = QueuedImages.TryDequeue(out ImageTaggingItem? result);
                 return itemDequeued ? result : null;

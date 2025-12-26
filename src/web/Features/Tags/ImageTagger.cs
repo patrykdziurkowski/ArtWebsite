@@ -1,4 +1,5 @@
 using System.Text.Json;
+using FluentResults;
 
 namespace web.Features.Tags;
 
@@ -14,11 +15,11 @@ public class ImageTagger
                 Url = $"{url}/tag";
         }
 
-        public async Task<List<string>> TagImageAsync(string fullImagePath)
+        public async Task<Result<List<string>>> TagImageAsync(string fullImagePath)
         {
                 if (!File.Exists(fullImagePath))
                 {
-                        throw new InvalidOperationException($"No image with path '{fullImagePath}' found when trying to generate tags for it.");
+                        return Result.Fail($"No image with path {fullImagePath} found when trying to generate tags for it. Presumably it has already been deleted.");
                 }
 
                 using HttpClient client = new();
@@ -35,6 +36,6 @@ public class ImageTagger
                 string json = await response.Content.ReadAsStringAsync();
                 List<string> tags = JsonSerializer.Deserialize<List<string>>(json)
                         ?? throw new InvalidOperationException("Could not parse JSON response from tag server.");
-                return tags;
+                return Result.Ok(tags);
         }
 }
