@@ -4,7 +4,7 @@ using web.Features.Shared.domain;
 
 namespace web.Features.Reviews;
 
-public class Review : AggreggateRoot
+public class Review : AggregateRoot
 {
         public ReviewId Id { get; init; } = new ReviewId();
         public required string Comment { get; set; }

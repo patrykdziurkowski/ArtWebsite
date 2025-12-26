@@ -30,6 +30,7 @@ public abstract class DatabaseTest : IDisposable
 
         public void ClearDatabase()
         {
+                DbContext.ArtPiecesServed.ExecuteDelete();
                 DbContext.MissionProgresses.ExecuteDelete();
                 DbContext.ArtistPointAwards.ExecuteDelete();
                 DbContext.ReviewerPointAwards.ExecuteDelete();
@@ -99,13 +100,16 @@ public abstract class DatabaseTest : IDisposable
                 }
         }
 
-        public async Task<List<ArtPieceId>> CreateArtistUserWithArtPieces()
+        public async Task<List<ArtPieceId>> CreateArtistUserWithArtPieces(
+                string userName = "johnSmith",
+                string reviewerName = "SomeUser123",
+                string artistName = "ArtistName")
         {
-                IdentityUser<Guid> user = new("johnSmith");
+                IdentityUser<Guid> user = new(userName);
                 await UserManager.CreateAsync(user);
                 DbContext.Reviewers.Add(new Reviewer()
                 {
-                        Name = "SomeUser123",
+                        Name = reviewerName,
                         UserId = user.Id,
                 });
                 ArtistId artistId = new();
@@ -113,7 +117,7 @@ public abstract class DatabaseTest : IDisposable
                 {
                         Id = artistId,
                         UserId = user.Id,
-                        Name = "ArtistName",
+                        Name = artistName,
                         Summary = "A profile summary for an artist.",
                 });
                 List<ArtPieceId> artPieceIds = [];

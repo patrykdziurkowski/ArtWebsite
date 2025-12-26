@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage;
 using web.Features.Artists;
 using web.Features.ArtPieces;
+using web.Features.Browse;
 using web.Features.Leaderboard.Artist;
 using web.Features.Leaderboard.Reviewer;
 using web.Features.Missions;
@@ -31,6 +32,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         public DbSet<ReviewerPointAward> ReviewerPointAwards { get; set; }
         public DbSet<ArtistPointAward> ArtistPointAwards { get; set; }
         public DbSet<MissionProgress> MissionProgresses { get; set; }
+        public DbSet<ArtPieceServed> ArtPiecesServed { get; set; }
 
         /// <summary>
         /// This is a custom method mapped to an SQL Server function used for generating
@@ -107,7 +109,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                                 return divideExpr;
                         });
 
-                builder.Ignore<AggreggateRoot>();
+                builder.Ignore<AggregateRoot>();
                 builder.Ignore<ValueObject>();
 
                 var artist = builder.Entity<Artist>();
@@ -256,6 +258,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 missionProgress.HasOne<IdentityUser<Guid>>()
                         .WithOne()
                         .HasForeignKey<MissionProgress>(mp => mp.UserId)
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                var artPieceServed = builder.Entity<ArtPieceServed>();
+                artPieceServed.HasKey(aps => aps.Id);
+                artPieceServed.Property(aps => aps.Id)
+                        .HasConversion(id => id.Value, guid => new ArtPieceServedId { Value = guid });
+                artPieceServed.Property(aps => aps.Date)
+                        .IsRequired();
+                artPieceServed.HasOne<ArtPiece>()
+                        .WithMany()
+                        .HasForeignKey(aps => aps.ArtPieceId)
                         .OnDelete(DeleteBehavior.NoAction);
         }
 }

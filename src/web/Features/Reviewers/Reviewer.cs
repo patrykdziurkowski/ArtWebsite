@@ -5,7 +5,7 @@ using web.Features.Shared.domain;
 
 namespace web.Features.Reviewers;
 
-public class Reviewer : AggreggateRoot
+public class Reviewer : AggregateRoot
 {
         private const int DAILY_LIKE_LIMIT = 5;
 

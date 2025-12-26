@@ -1,6 +1,6 @@
 namespace web.Features.Shared.domain;
 
-public abstract class AggreggateRoot
+public abstract class AggregateRoot
 {
         private readonly List<IDomainEvent> _domainEvents = [];
         public IEnumerable<IDomainEvent> DomainEvents => _domainEvents;

@@ -4,7 +4,7 @@ using web.Features.Shared.domain;
 
 namespace web.Features.Artists;
 
-public class Artist : AggreggateRoot
+public class Artist : AggregateRoot
 {
         public ArtistId Id { get; init; } = new ArtistId();
         public required string Name { get; set; }

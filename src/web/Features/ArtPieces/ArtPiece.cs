@@ -4,7 +4,7 @@ using web.Features.Shared.domain;
 
 namespace web.Features.ArtPieces;
 
-public class ArtPiece : AggreggateRoot
+public class ArtPiece : AggregateRoot
 {
         public ArtPieceId Id { get; init; } = new ArtPieceId();
         public required string ImagePath { get; init; }
