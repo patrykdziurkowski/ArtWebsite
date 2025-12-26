@@ -39,6 +39,23 @@ public class LikeArtPieceCommandTests : DatabaseTest
         }
 
         [Fact]
+        public async Task Execute_ShouldThrow_WhenLikingTheSameArtPieceMoreThanOnce()
+        {
+                List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
+                Guid currentUserId = DbContext.Users.First().Id;
+                await _reviewArtPiece.ExecuteAsync(
+                        "some comment some comment some comment some comment some comment some comment some comment some comment",
+                        3,
+                        artPieceIds.First(),
+                        currentUserId);
+                await _command.ExecuteAsync(currentUserId, artPieceIds.First());
+
+                Func<Task> executingLikeCommand = async () => await _command.ExecuteAsync(currentUserId, artPieceIds.First());
+
+                await executingLikeCommand.Should().ThrowAsync<InvalidOperationException>();
+        }
+
+        [Fact]
         public async Task Execute_ShouldReturnFail_WhenLikedTooManyArtPieces()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();

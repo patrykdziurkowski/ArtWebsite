@@ -24,9 +24,16 @@ public class LikeArtPieceCommand(
                         return Result.Fail("No reviewer profile found for this user id.");
                 }
 
-                if (await dbContext.Reviews.AnyAsync(r => r.ArtPieceId == artPieceId) == false)
+                if (await dbContext.Reviews.AnyAsync(
+                        r => r.ArtPieceId == artPieceId && r.ReviewerId == reviewer.Id) == false)
                 {
                         throw new InvalidOperationException("Could not like an unreviewed art piece.");
+                }
+
+                if (await dbContext.Likes.AnyAsync(
+                        l => l.ArtPieceId == artPieceId && l.ReviewerId == reviewer.Id))
+                {
+                        throw new InvalidOperationException("Could not like an art piece that was already liked by this reviewer.");
                 }
 
                 Result likeResult = reviewer.LikeArtPiece(artPieceId);
