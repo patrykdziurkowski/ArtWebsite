@@ -33,10 +33,33 @@ public class SetupArtistCommandTests : DatabaseTest
                 });
                 await DbContext.SaveChangesAsync();
 
-                Result<Artist> result = await _command.ExecuteAsync(user.Id,
+                IdentityUser<Guid> user2 = new("someone");
+                await UserManager.CreateAsync(user2);
+                await DbContext.SaveChangesAsync();
+
+                Result<Artist> result = await _command.ExecuteAsync(user2.Id,
                         "ArtistName", "Some other summary for some other artist.");
 
                 result.IsFailed.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_ShouldThrow_WhenCurrentUserAlreadyHasArtistProfile()
+        {
+                IdentityUser<Guid> user = new("johnSmith");
+                await UserManager.CreateAsync(user);
+                DbContext.Artists.Add(new Artist
+                {
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                });
+                await DbContext.SaveChangesAsync();
+
+                Func<Task> executingSetup = async () => await _command.ExecuteAsync(user.Id,
+                        "someName", "Some other summary for some other artist.");
+
+                await executingSetup.Should().ThrowAsync<InvalidOperationException>();
         }
 
         [Fact]
