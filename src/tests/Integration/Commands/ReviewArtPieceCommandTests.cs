@@ -57,6 +57,35 @@ public class ReviewArtPieceCommandTests : DatabaseTest
         }
 
         [Fact]
+        public async Task Execute_Throws_WhenReviewingTheSameArtPieceMoreThanOnce()
+        {
+                _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
+                        .Returns([MissionType.BoostArt]);
+                IdentityUser<Guid> user = new("johnSmith");
+                await UserManager.CreateAsync(user);
+                DbContext.Reviewers.Add(new Reviewer()
+                {
+                        Name = "SomeUser123",
+                        UserId = user.Id,
+                });
+                DbContext.Artists.Add(new Artist()
+                {
+                        UserId = user.Id,
+                        Name = "ArtistName",
+                        Summary = "A profile summary for an artist.",
+                });
+                await DbContext.SaveChangesAsync();
+                ArtPiece artPiece = await _uploadArtPiece.ExecuteAsync(
+                        GetExampleFile(), "description", user.Id);
+                await _command.ExecuteAsync("Review comment!", 5, artPiece.Id, user.Id);
+
+                Func<Task> executingSecondReview = async () => await _command
+                        .ExecuteAsync("Review comment!", 5, artPiece.Id, user.Id);
+
+                await executingSecondReview.Should().ThrowAsync<InvalidOperationException>();
+        }
+
+        [Fact]
         public async Task Execute_CompletesMission_WhenAReviewMissionIsPresent()
         {
                 _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)

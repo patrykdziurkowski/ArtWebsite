@@ -14,13 +14,19 @@ public class ReviewArtPieceCommand(
         private const int POINTS_PER_REVIEW = 10;
 
         public async Task<Review> ExecuteAsync(string comment,
-                int rating, ArtPieceId artPieceId, Guid userId,
+                int rating, ArtPieceId artPieceId, Guid currentUserId,
                 DateTimeOffset? now = null)
         {
                 now ??= DateTimeOffset.UtcNow;
 
                 Reviewer reviewer = await dbContext.Reviewers
-                        .FirstAsync(r => r.UserId == userId);
+                        .FirstAsync(r => r.UserId == currentUserId);
+
+                if (await dbContext.Reviews.AnyAsync(
+                        r => r.ArtPieceId == artPieceId && r.ReviewerId == reviewer.Id))
+                {
+                        throw new InvalidOperationException("This reviewer has already reviewed this art piece.");
+                }
 
                 Review review = new()
                 {
@@ -49,7 +55,7 @@ public class ReviewArtPieceCommand(
                 await dbContext.AddAsync(review);
                 await dbContext.SaveChangesAsync();
 
-                await missionManager.RecordProgressAsync(MissionType.ReviewArt, userId, now.Value);
+                await missionManager.RecordProgressAsync(MissionType.ReviewArt, currentUserId, now.Value);
 
                 return review;
         }
