@@ -75,7 +75,7 @@ public class ArtPieceRepositoryTests : DatabaseTest
                         if (artPiece.Id == unpopularArtPiece.Id)
                         {
                                 unpopularArtPieceServed = true;
-                                _output.WriteLine($"An unpopular art piece was served instead of the popular one after {i} failed attempts.");
+                                _output.WriteLine($"SUCCESS: An unpopular art piece was served instead of the popular one after {i} failed attempts.");
                                 break;
                         }
                 }
