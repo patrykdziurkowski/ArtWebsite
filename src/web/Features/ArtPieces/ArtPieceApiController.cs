@@ -2,8 +2,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using web.Data;
 using web.Features.Artists;
 using web.Features.ArtPieces.LoadArtPieces;
+using web.Features.Browse;
 using web.Features.Browse.ByTag;
 using web.Features.Browse.Index;
 
@@ -15,21 +18,24 @@ namespace web.Features.ArtPieces;
 public class ArtPieceApiController(
         ArtPieceQuery artPieceQuery,
         ArtPiecesQuery artPiecesQuery,
-        ArtPieceByTagQuery artPiecesByTagQuery) : ControllerBase
+        ArtPieceByTagQuery artPiecesByTagQuery,
+        RegisterArtPieceServedCommand registerArtPieceServedCommand) : ControllerBase
 {
         private const int ART_PIECES_TO_LOAD = 5;
 
         [HttpGet("/api/artpiece")]
         public async Task<IActionResult> GetNextArtPiece([FromQuery] string? tag)
         {
+                Guid currentUserId = GetUserId();
                 ArtPieceDto? artPiece;
                 if (tag is null)
                 {
-                        artPiece = await artPieceQuery.ExecuteAsync(GetUserId());
+                        artPiece = await artPieceQuery.ExecuteAsync(currentUserId);
+                        await registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPiece?.Id);
                 }
                 else
                 {
-                        artPiece = await artPiecesByTagQuery.ExecuteAsync(GetUserId(), tag);
+                        artPiece = await artPiecesByTagQuery.ExecuteAsync(currentUserId, tag);
                 }
 
                 if (artPiece is null)

@@ -2,7 +2,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using web.Data;
 using web.Features.ArtPieces;
+using web.Features.Browse;
 using web.Features.Reviewers;
 using web.Features.Reviews.LoadReviews;
 using web.Features.Reviews.ReviewArtPiece;
@@ -14,7 +17,9 @@ namespace web.Features.Reviews;
 public class ReviewApiController(
         ReviewArtPieceCommand reviewArtPieceCommand,
         ReviewerReviewsQuery reviewsForReviewerQuery,
-        ArtPieceReviewsQuery reviewsForArtPieceQuery) : ControllerBase
+        ArtPieceReviewsQuery reviewsForArtPieceQuery,
+        RegisterArtPieceServedCommand registerArtPieceServedCommand,
+        ApplicationDbContext dbContext) : ControllerBase
 {
         private const int REVIEWS_TO_LOAD_FOR_REVIEWER = 10;
         private const int REVIEWS_TO_LOAD_FOR_ART_PIECE = 10;
@@ -40,9 +45,18 @@ public class ReviewApiController(
         [HttpPost("/api/reviews")]
         public async Task<IActionResult> ReviewArtPiece(ReviewArtPieceModel model)
         {
+                Guid currentUserId = GetUserId();
                 Review review = await reviewArtPieceCommand.ExecuteAsync(
                         model.Comment, model.Rating,
-                        new ArtPieceId { Value = model.ArtPieceId }, GetUserId());
+                        new ArtPieceId { Value = model.ArtPieceId }, currentUserId);
+
+                ArtPieceServed? aps = await dbContext.ArtPiecesServed
+                        .FirstOrDefaultAsync(aps => aps.UserId == currentUserId);
+                if (aps is not null)
+                {
+                        await registerArtPieceServedCommand.ExecuteAsync(currentUserId, null);
+                }
+
                 return Ok(review);
         }
 

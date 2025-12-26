@@ -58,7 +58,6 @@ public class RegisterArtPieceServedCommandTests : DatabaseTest
                 artPieceIdBefore.Should().Be(artPieceId1);
                 servedArtPiece.Id.Should().Be(artPieceServedIdBefore);
                 servedArtPiece.Date.Should().NotBe(dateTimeOffsetBefore);
-
         }
 
         [Fact]

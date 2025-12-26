@@ -2,7 +2,7 @@ using web.Features.Artists;
 
 namespace web.Features.ArtPieces;
 
-public class ArtPieceDto
+public record ArtPieceDto
 {
         public ArtPieceId Id { get; init; } = new ArtPieceId();
         public required string ImagePath { get; init; }

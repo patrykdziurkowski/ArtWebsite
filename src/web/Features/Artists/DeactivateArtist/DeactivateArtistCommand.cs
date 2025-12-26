@@ -26,6 +26,9 @@ public class DeactivateArtistCommand(
                 await dbContext.ArtistPointAwards
                         .Where(award => award.ArtistId == artist.Id)
                         .ExecuteDeleteAsync();
+                await dbContext.ArtPiecesServed
+                        .Where(aps => aps.UserId == artist.UserId)
+                        .ExecuteDeleteAsync();
                 artist.Deactivate();
                 await userManager.RemoveFromRoleAsync(artistOwner, Constants.ARTIST_ROLE);
                 await artistRepository.SaveChangesAsync(artist);

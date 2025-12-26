@@ -6,13 +6,15 @@ namespace web.Features.Browse;
 
 public class RegisterArtPieceServedCommand(ApplicationDbContext dbContext)
 {
-        public async Task ExecuteAsync(Guid currentUserId, ArtPieceId artPieceId, DateTimeOffset? date = null)
+        public async Task ExecuteAsync(Guid currentUserId, ArtPieceId? artPieceId, DateTimeOffset? date = null)
         {
                 date ??= DateTimeOffset.UtcNow;
 
                 ArtPieceServed? artPieceServed = await dbContext.ArtPiecesServed
                         .FirstOrDefaultAsync(aps => aps.UserId == currentUserId);
-                if (artPieceServed is null)
+
+                // doesnt exist but needs to be updated
+                if (artPieceServed is null && artPieceId is not null)
                 {
                         artPieceServed = new()
                         {
@@ -21,7 +23,13 @@ public class RegisterArtPieceServedCommand(ApplicationDbContext dbContext)
                         };
                         await dbContext.AddAsync(artPieceServed);
                 }
-                else
+                // exists but needs to be deleted
+                else if (artPieceServed is not null && artPieceId is null)
+                {
+                        dbContext.Remove(artPieceServed);
+                }
+                // exists and needs to be updated
+                else if (artPieceServed is not null && artPieceId is not null)
                 {
                         artPieceServed.Date = date.Value;
                         artPieceServed.ArtPieceId = artPieceId;

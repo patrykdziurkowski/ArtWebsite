@@ -7,6 +7,11 @@ namespace web.Features.ArtPieces;
 
 public class ArtPieceRepository(ApplicationDbContext dbContext)
 {
+        public async Task<ArtPiece?> GetByIdAsync(ArtPieceId artPieceId)
+        {
+                return await dbContext.ArtPieces.FindAsync(artPieceId);
+        }
+
         public async Task<ArtPiece?> GetByAlgorithmAsync(ReviewerId reviewerId, string? tagName = null)
         {
                 List<ArtPieceId> reviewedArtPieceIds = await dbContext.Reviews

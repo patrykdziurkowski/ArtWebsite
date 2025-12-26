@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
+using web.Features.Browse;
 using web.Features.Browse.Index;
 using web.Features.Reviews;
 
@@ -12,10 +13,13 @@ public class ArtPieceQueryTests : DatabaseTest
 {
         private readonly ArtPieceQuery _query;
 
+        private readonly RegisterArtPieceServedCommand _registerArtPieceServedCommand;
+
         public ArtPieceQueryTests(DatabaseTestContext databaseContext)
                 : base(databaseContext)
         {
                 _query = Scope.ServiceProvider.GetRequiredService<ArtPieceQuery>();
+                _registerArtPieceServedCommand = Scope.ServiceProvider.GetRequiredService<RegisterArtPieceServedCommand>();
         }
 
         [Fact]
@@ -42,6 +46,28 @@ public class ArtPieceQueryTests : DatabaseTest
         }
 
         [Fact]
+        public async Task Execute_ShouldReturnTheSameArtPiece_UntilItsReviewed()
+        {
+                ArtistId artistId = await CreateUserWithArtistProfile();
+                await CreateArtPiecesForArtist(artistId);
+                Guid currentUserId = DbContext.Users.First().Id;
+
+                ArtPieceId artPiece1 = (await _query.ExecuteAsync(currentUserId))!.Id;
+                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPiece1);
+                ArtPieceId artPiece2 = (await _query.ExecuteAsync(currentUserId))!.Id;
+                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPiece2);
+                ArtPieceId artPiece3 = (await _query.ExecuteAsync(currentUserId))!.Id;
+                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPiece3);
+                await ReviewArtPiece(currentUserId, artPiece3);
+                ArtPieceId artPiece4 = (await _query.ExecuteAsync(currentUserId))!.Id;
+                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPiece4);
+
+                artPiece1.Should().Be(artPiece2);
+                artPiece2.Should().Be(artPiece3);
+                artPiece3.Should().NotBe(artPiece4);
+        }
+
+        [Fact]
         public async Task Execute_ShouldReturnNull_WhenOneExistsButWasReviewed()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
@@ -65,6 +91,12 @@ public class ArtPieceQueryTests : DatabaseTest
                 ArtPieceDto? returnedArtPiece = await _query.ExecuteAsync(currentUserId);
 
                 returnedArtPiece.Should().BeNull();
+        }
+
+        private async Task ReviewArtPiece(Guid currentUserId, ArtPieceId artPieceId)
+        {
+                // we dont actually create a review here since we dont need to
+                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, null);
         }
 
 }
