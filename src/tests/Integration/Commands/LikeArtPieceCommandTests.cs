@@ -7,13 +7,14 @@ using web.Features.ArtPieces;
 using web.Features.Missions;
 using web.Features.Reviewers;
 using web.Features.Reviewers.LikeArtPiece;
+using web.Features.Reviews.ReviewArtPiece;
 
 namespace tests.Integration.Commands;
 
 public class LikeArtPieceCommandTests : DatabaseTest
 {
         private readonly LikeArtPieceCommand _command;
-
+        private readonly ReviewArtPieceCommand _reviewArtPiece;
         private readonly IMissionGenerator _mockMissionGenerator;
 
         public LikeArtPieceCommandTests(DatabaseTestContext databaseContext)
@@ -22,7 +23,19 @@ public class LikeArtPieceCommandTests : DatabaseTest
                 ReviewerRepository reviewerRepository = Scope.ServiceProvider.GetRequiredService<ReviewerRepository>();
                 _mockMissionGenerator = Substitute.For<IMissionGenerator>();
                 MissionManager missionManager = new(DbContext, _mockMissionGenerator);
-                _command = new(reviewerRepository, missionManager);
+                _command = new(reviewerRepository, DbContext, missionManager);
+                _reviewArtPiece = new(DbContext, missionManager);
+        }
+
+        [Fact]
+        public async Task Execute_ShouldThrow_WhenGivenArtPieceNotReviewed()
+        {
+                List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
+                Guid currentUserId = DbContext.Users.First().Id;
+
+                Func<Task> executingLikeCommand = async () => await _command.ExecuteAsync(currentUserId, artPieceIds.First());
+
+                await executingLikeCommand.Should().ThrowAsync<InvalidOperationException>();
         }
 
         [Fact]
@@ -30,8 +43,16 @@ public class LikeArtPieceCommandTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = DbContext.Users.First().Id;
-                List<Result<Like>> results = [];
+                for (int i = 0; i < 6; i++)
+                {
+                        await _reviewArtPiece.ExecuteAsync(
+                                "some comment some comment some comment some comment some comment some comment some comment some comment",
+                                3,
+                                artPieceIds[i],
+                                currentUserId);
+                }
 
+                List<Result<Like>> results = [];
                 for (int i = 0; i < 6; ++i)
                 {
                         Result<Like> result = await _command.ExecuteAsync(currentUserId, artPieceIds[i]);
@@ -51,6 +72,11 @@ public class LikeArtPieceCommandTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = DbContext.Users.First().Id;
+                await _reviewArtPiece.ExecuteAsync(
+                        "some comment some comment some comment some comment some comment some comment some comment some comment",
+                        3,
+                        artPieceIds.First(),
+                        currentUserId);
 
                 await _command.ExecuteAsync(currentUserId, artPieceIds.First());
 
@@ -65,13 +91,21 @@ public class LikeArtPieceCommandTests : DatabaseTest
                 int numberOfLikesForMission = MissionType.LikeArt.GetMaxProgressCount();
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = DbContext.Users.First().Id;
+                for (int i = 0; i < numberOfLikesForMission; i++)
+                {
+                        await _reviewArtPiece.ExecuteAsync(
+                                "some comment some comment some comment some comment some comment some comment some comment some comment",
+                                3,
+                                artPieceIds[i],
+                                currentUserId);
+                }
 
                 for (int i = 0; i < numberOfLikesForMission; i++)
                 {
                         await _command.ExecuteAsync(currentUserId, artPieceIds[i]);
                 }
 
-                DbContext.Reviewers.Single(r => r.UserId == currentUserId).Points.Should().Be(25);
+                DbContext.Reviewers.Single(r => r.UserId == currentUserId).Points.Should().Be(25 + numberOfLikesForMission * 10);
                 DbContext.Likes.Should().HaveCount(numberOfLikesForMission);
         }
 }
