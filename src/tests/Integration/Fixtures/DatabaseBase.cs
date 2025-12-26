@@ -33,11 +33,11 @@ public abstract class DatabaseTest : IDisposable
                 DbContext.MissionProgresses.ExecuteDelete();
                 DbContext.ArtistPointAwards.ExecuteDelete();
                 DbContext.ReviewerPointAwards.ExecuteDelete();
-                DbContext.ArtPieceTags.ExecuteDelete();
-                DbContext.Tags.ExecuteDelete();
                 DbContext.Boosts.ExecuteDelete();
                 DbContext.Likes.ExecuteDelete();
                 DbContext.Reviews.ExecuteDelete();
+                DbContext.ArtPieceTags.ExecuteDelete();
+                DbContext.Tags.ExecuteDelete();
                 DbContext.ArtPieces.ExecuteDelete();
                 DbContext.Artists.ExecuteDelete();
                 DbContext.Reviewers.ExecuteDelete();

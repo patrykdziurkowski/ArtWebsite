@@ -50,5 +50,8 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 Driver.Navigate().Refresh();
 
                 Wait.Until(d => d.Url.Contains("/Artist/Setup"));
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artists/artistName");
+                Wait.Until(d => d.PageSource.Contains("404"));
         }
 }

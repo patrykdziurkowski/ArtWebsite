@@ -4,6 +4,7 @@ on:
 jobs:
   run_tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Get the repository
         uses: actions/checkout@v4.2.2
