@@ -1,7 +1,9 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.ArtPieces;
+using web.Features.Reviewers;
 using web.Features.Reviewers.LoadLikes;
 
 namespace tests.Integration.Queries;
@@ -21,7 +23,12 @@ public class LikesQueryTests : DatabaseTest
         {
                 await CreateArtistUserWithArtPieces();
                 Guid currentUserId = DbContext.Users.First().Id;
-                List<ReviewerLikeModel> likes = await _command.ExecuteAsync(currentUserId, 10);
+                ReviewerId reviewerId = await DbContext.Reviewers
+                        .Where(r => r.UserId == currentUserId)
+                        .Select(r => r.Id)
+                        .SingleAsync();
+
+                List<ReviewerLikeModel> likes = await _command.ExecuteAsync(reviewerId, 10);
 
                 likes.Should().BeEmpty();
         }
@@ -31,8 +38,12 @@ public class LikesQueryTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = await CreateReviewerWithLikes(artPieceIds);
+                ReviewerId reviewerId = await DbContext.Reviewers
+                        .Where(r => r.UserId == currentUserId)
+                        .Select(r => r.Id)
+                        .SingleAsync();
 
-                List<ReviewerLikeModel> likes = await _command.ExecuteAsync(currentUserId, 10);
+                List<ReviewerLikeModel> likes = await _command.ExecuteAsync(reviewerId, 10);
 
                 likes.Should().HaveCount(10);
                 likes.First().ImagePath.Should().NotBeNullOrEmpty();
@@ -43,8 +54,12 @@ public class LikesQueryTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = await CreateReviewerWithLikes(artPieceIds);
+                ReviewerId reviewerId = await DbContext.Reviewers
+                        .Where(r => r.UserId == currentUserId)
+                        .Select(r => r.Id)
+                        .SingleAsync();
 
-                List<ReviewerLikeModel> likes = await _command.ExecuteAsync(currentUserId, 10, 17);
+                List<ReviewerLikeModel> likes = await _command.ExecuteAsync(reviewerId, 10, 17);
 
                 likes.Should().HaveCount(3);
         }

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
 using web.Features.ArtPieces;
@@ -102,10 +103,10 @@ public class ReviewerRepositoryTests : DatabaseTest
         public async Task GetLikesAsync_ShouldReturnEmpty_WhenNoLikesForGivenReviewer()
         {
                 await CreateArtistUserWithArtPieces();
-                Guid currentUserId = DbContext.Users.First().Id;
+                ReviewerId reviewerId = DbContext.Reviewers.First().Id;
 
                 List<Like> likes = await _reviewerRepository
-                        .GetLikesAsync(currentUserId, 10);
+                        .GetLikesAsync(reviewerId, 10);
 
                 likes.Should().BeEmpty();
         }
@@ -115,9 +116,13 @@ public class ReviewerRepositoryTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = await CreateReviewerWithLikes(artPieceIds);
+                ReviewerId reviewerId = await DbContext.Reviewers
+                        .Where(r => r.UserId == currentUserId)
+                        .Select(r => r.Id)
+                        .SingleAsync();
 
                 List<Like> likes = await _reviewerRepository
-                        .GetLikesAsync(currentUserId, 10);
+                        .GetLikesAsync(reviewerId, 10);
 
                 likes.Should().HaveCount(10);
         }
@@ -127,9 +132,13 @@ public class ReviewerRepositoryTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = await CreateReviewerWithLikes(artPieceIds);
+                ReviewerId reviewerId = await DbContext.Reviewers
+                        .Where(r => r.UserId == currentUserId)
+                        .Select(r => r.Id)
+                        .SingleAsync();
 
                 List<Like> likes = await _reviewerRepository
-                        .GetLikesAsync(currentUserId, 10, 17);
+                        .GetLikesAsync(reviewerId, 10, 17);
 
                 likes.Should().HaveCount(3);
         }

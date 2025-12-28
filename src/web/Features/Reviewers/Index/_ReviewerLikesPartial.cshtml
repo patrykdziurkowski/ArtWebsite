@@ -11,7 +11,7 @@
         const list = document.querySelector('#likesList');
         const loadMore = document.querySelector('#loadMoreLikes');
 
-        const response = await fetch(`/api/reviewer/likes?offset=${likesOffset}`);
+        const response = await fetch(`/api/reviewer/@Model.Id/likes?offset=${likesOffset}`);
         const data = await response.json();
 
         if (likesOffset == 0) {

@@ -135,6 +135,26 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
                 Logout();
         }
 
+        [Fact, Order(7)]
+        public void Reviewer_DeletingOwnReview_MakesItDisappear()
+        {
+                ResetTestContext();
+                CreateUserWithArtistProfile(name: "ArtistWithArt");
+                UploadArtPiece();
+                ReviewThisArtPieceThenLoadNext();
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Wait.Until(d => d.FindElement(By.ClassName("delete-review-button"))).Click();
+                IAlert alert = Wait.Until(d => d.SwitchTo().Alert());
+                alert.Accept();
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("artPieceDetailsModal")));
+
+                Driver.FindElements(By.ClassName(".art-piece-card")).Should().BeEmpty();
+        }
+
         private void SetupArtPieceWithReviews(int reviewCount)
         {
                 ResetTestContext();

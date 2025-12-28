@@ -57,10 +57,37 @@
             this.artPieceDetailsModal._element.addEventListener('hidden.bs.modal', () => {
                 if (this.onHidden !== null) this.onHidden();
             });
+
+            document.getElementById('artReviewsContainer').addEventListener('click', async (e) => {
+                await this.deleteReview(e);
+            });
         }
 
         get isShown() {
             return this.artPieceDetailsModal._element.classList.contains('show');
+        }
+
+        async deleteReview(event) {
+            if (event.target.closest('.btn-danger')) {
+                const reviewId = event.target.closest('.btn-danger').dataset.reviewId;
+
+                if (confirm('Are you sure you want to delete this review?')) {
+                    const response = await fetch(`/api/reviews/${reviewId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        event.target.closest('div.d-flex.mb-3').remove();
+                        document.querySelector(`.art-piece-card[data-art-piece-id="${this.artPieceId}"]`).remove();
+                        this.hide();
+                    } else {
+                        alert('Failed to delete the review.');
+                    }
+                }
+            }
         }
 
         async loadReviews(append = true) {
@@ -83,7 +110,17 @@
                     `<div><strong>${r.reviewerName}</strong>${badge} -  <span class="review-points">${r.points} points</span> - <small>${new Date(r.date).toLocaleDateString()}</small></div>` +
                     `<div><span class="review-rating">${r.rating.value}★</span> ${r.comment}</div>` +
                     `</div>`;
+
+                if (r.isCurrentUser || r.isAdmin) {
+                    const deleteButton = document.createElement('button');
+                    deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
+                    deleteButton.className = 'btn delete-review-button btn-danger btn-sm ms-2';
+                    deleteButton.dataset.reviewId = r.reviewId;
+                    reviewEl.appendChild(deleteButton);
+                }
+
                 if (r.isCurrentUser) reviewEl.classList.add('py-4');
+
                 container.appendChild(reviewEl);
             });
 

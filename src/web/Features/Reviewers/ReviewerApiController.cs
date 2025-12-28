@@ -19,11 +19,13 @@ public class ReviewerApiController(
 {
         private const int LIKES_TO_LOAD = 10;
 
-        [HttpGet("/api/reviewer/likes")]
-        public async Task<IActionResult> LoadLikes([Range(0, int.MaxValue)] int offset = 0)
+        [HttpGet("/api/reviewer/{reviewerId}/likes")]
+        public async Task<IActionResult> LoadLikes(Guid reviewerId, [Range(0, int.MaxValue)] int offset = 0)
         {
-                List<ReviewerLikeModel> likes = await likesQuery.ExecuteAsync(GetUserId(),
-                        LIKES_TO_LOAD, offset);
+                List<ReviewerLikeModel> likes = await likesQuery.ExecuteAsync(
+                        new ReviewerId() { Value = reviewerId },
+                        LIKES_TO_LOAD,
+                        offset);
                 return Ok(likes);
         }
 

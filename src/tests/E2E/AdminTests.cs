@@ -54,4 +54,30 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artists/artistName");
                 Wait.Until(d => d.PageSource.Contains("404"));
         }
+
+        [Fact, Order(2)]
+        public void Deleting_SomeoneElsesReview_DeletesIt()
+        {
+                ResetTestContext();
+                CreateUserWithArtistProfile(name: "ArtistWithArt");
+                UploadArtPiece();
+                ReviewThisArtPieceThenLoadNext();
+                Logout();
+
+                Login(
+                        Environment.GetEnvironmentVariable("ROOT_EMAIL")!,
+                        Environment.GetEnvironmentVariable("ROOT_PASSWORD")!
+                );
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/SomeUser123");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Wait.Until(d => d.FindElement(By.ClassName("delete-review-button"))).Click();
+                IAlert alert = Wait.Until(d => d.SwitchTo().Alert());
+                alert.Accept();
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("artPieceDetailsModal")));
+
+                Driver.FindElements(By.ClassName(".art-piece-card")).Should().BeEmpty();
+        }
 }

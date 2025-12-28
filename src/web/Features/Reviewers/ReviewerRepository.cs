@@ -57,11 +57,9 @@ public class ReviewerRepository(ApplicationDbContext dbContext)
                 return reviewer;
         }
 
-        public async Task<List<Like>> GetLikesAsync(Guid currentUserId,
+        public async Task<List<Like>> GetLikesAsync(ReviewerId reviewerId,
                 int count, int offset = 0)
         {
-                ReviewerId reviewerId = dbContext.Reviewers
-                                       .First(reviewer => reviewer.UserId == currentUserId).Id;
                 return await dbContext.Likes
                         .Where(like => like.ReviewerId == reviewerId)
                         .OrderByDescending(like => like.Date)

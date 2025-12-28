@@ -7,6 +7,7 @@ using web.Data;
 using web.Features.ArtPieces;
 using web.Features.Browse;
 using web.Features.Reviewers;
+using web.Features.Reviews.DeleteReview;
 using web.Features.Reviews.LoadReviews;
 using web.Features.Reviews.ReviewArtPiece;
 
@@ -19,6 +20,7 @@ public class ReviewApiController(
         ReviewerReviewsQuery reviewsForReviewerQuery,
         ArtPieceReviewsQuery reviewsForArtPieceQuery,
         RegisterArtPieceServedCommand registerArtPieceServedCommand,
+        DeleteReviewCommand deleteReviewCommand,
         IConfiguration configuration,
         ApplicationDbContext dbContext) : ControllerBase
 {
@@ -64,6 +66,13 @@ public class ReviewApiController(
                 }
 
                 return Ok(review);
+        }
+
+        [HttpDelete("/api/reviews/{reviewId}")]
+        public async Task<IActionResult> DeleteArtPiece(Guid reviewId)
+        {
+                await deleteReviewCommand.ExecuteAsync(GetUserId(), new ReviewId() { Value = reviewId });
+                return NoContent();
         }
 
         private Guid GetUserId()
