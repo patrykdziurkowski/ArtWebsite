@@ -15,7 +15,6 @@ public class WebDriverInitializer : IDisposable
                 // Headless if variable is not set or set to true. The Selenium browser window opens otherwise.
                 DotEnv.Load("../../../../../.env"); // Load variables from .env file
                 string? headlessVariable = Environment.GetEnvironmentVariable("SELENIUM_HEADLESS");
-                Environment.SetEnvironmentVariable("REVIEW_COOLDOWN_SECONDS", "0");
                 bool isParsed = bool.TryParse(headlessVariable, out bool isHeadless);
                 if (headlessVariable is null || isParsed == false || isHeadless)
                 {

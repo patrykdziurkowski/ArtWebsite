@@ -1,6 +1,10 @@
 ﻿@using web.Features.Reviews.ReviewArtPiece
 @model ReviewArtPieceModel
 
+@{
+    string reviewCooldown = Environment.GetEnvironmentVariable("REVIEW_COOLDOWN_SECONDS")!;
+}
+
 <div class="container">
     <div id="selectedTag"></div>
     <div id="artContainer" class="m-auto text-center">
@@ -9,7 +13,7 @@
 
     <div id="artPieceControls">
         <partial name="../Tags/_TagsPartial" />
-        <button id="reviewArt" class="btn btn-light m-3">Review</button>
+        <button id="reviewArt" class="btn btn-light m-3" disabled><i class="bi bi-justify-left"></i></button>
     </div>
 </div>
 
@@ -101,7 +105,6 @@
             }
 
             function artPieceReviewed() {
-                console.log("Art piece reviewed", reviewModal, reviewModal._element);
                 reviewModal.hide();
                 postReviewModal.show();
 
@@ -120,6 +123,16 @@
                         await loadArtPiece();
                     }
                 });
+            }
+
+            function disableReviewingUntilReady() {
+                const button = document.getElementById('reviewArt');
+
+                button.setAttribute('disabled', 'disabled');
+
+                setTimeout(() => {
+                    button.removeAttribute('disabled');
+                }, Number(@reviewCooldown) * 1000);
             }
 
             async function loadArtPiece() {
@@ -143,6 +156,7 @@
                 artContainer.innerHTML = `<img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded"><div class="p-2"><p>${data.description}</p></div>`;
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
                 artPieceId = data.id.value;
+                disableReviewingUntilReady();
                 return data;
             }
 
@@ -205,7 +219,6 @@
                     return;
                 }
 
-                console.log("Review done!");
                 artPieceReviewed();
             }
 
@@ -224,6 +237,8 @@
 
             document.querySelector('#nextArtPiece').addEventListener('click', nextArtPiece);
             document.querySelector('#viewArtPiece').addEventListener('click', showDetails);
+
+            document.documentElement.style.setProperty('--review-cooldown', '@reviewCooldown' + 's');
         });
     </script>
 }

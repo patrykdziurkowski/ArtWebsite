@@ -62,6 +62,8 @@ public class WebServer : IDisposable
                         .ServiceName("artwebsite-development")
                         .FromFile(dockerComposePath, dockerComposeOverridePath)
                         .WithEnvironment($"MSSQL_SA_PASSWORD={DB_TEST_PASSWORD}")
+                        // for the sake of testing speed, removed a cooldown from reviewing
+                        .WithEnvironment($"REVIEW_COOLDOWN_SECONDS=0")
                         .RemoveOrphans()
                         .ForceBuild()
                         .ForceRecreate()

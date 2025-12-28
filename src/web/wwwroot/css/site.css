@@ -1,3 +1,7 @@
+:root {
+        --review-cooldown: 10s;
+}
+
 .btn:focus,
 .btn:active:focus,
 .btn-link.nav-link:focus,
@@ -91,6 +95,53 @@ p {
         background: linear-gradient(270deg, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0));
         background-size: 400% 100%;
         animation: gradient-animation 1.5s ease infinite;
+}
+
+#reviewArt {
+        border-radius: 50%;
+        position: relative;
+        overflow: hidden;
+        font-size: 1.5em;
+}
+
+#reviewArt::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #BBB;
+        height: 100%;
+}
+
+#reviewArt>i {
+        position: relative;
+        z-index: 5;
+}
+
+#reviewArt.disabled::before {
+        animation-name: review-loading-animation;
+        animation-duration: var(--review-cooldown);
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+        animation-iteration-count: 1;
+}
+
+#reviewArt:not(.disabled)::before {
+        opacity: 0;
+}
+
+@keyframes review-loading-animation {
+        from {
+                transform: scaleY(1);
+                transform-origin: bottom;
+        }
+
+        to {
+                transform: scaleY(0);
+                transform-origin: bottom;
+        }
 }
 
 @keyframes gradient-animation {
