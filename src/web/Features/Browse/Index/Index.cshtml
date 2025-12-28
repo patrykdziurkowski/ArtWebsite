@@ -79,6 +79,7 @@
     <script>
         let artPieceId;
         let currentTag = null;
+        let selectTag;
 
         document.addEventListener('DOMContentLoaded', async () => {
             let artPieceDetails = null;
@@ -222,7 +223,7 @@
                 artPieceReviewed();
             }
 
-            async function selectTag(tag) {
+            async function filterByTag(tag) {
                 currentTag = tag;
                 document.querySelector('#selectedTag').innerText = tag;
 
@@ -239,6 +240,8 @@
             document.querySelector('#viewArtPiece').addEventListener('click', showDetails);
 
             document.documentElement.style.setProperty('--review-cooldown', '@reviewCooldown' + 's');
+
+            selectTag = filterByTag;
         });
     </script>
 }

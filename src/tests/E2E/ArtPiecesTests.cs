@@ -48,4 +48,14 @@ public class ArtPiecesTests(WebDriverInitializer initializer, SharedPerTestClass
                 Wait.Timeout = previousTimeout;
         }
 
+        [Fact, Order(3)]
+        public void Tags_WhenClicked_ShowsArtPiecesThatHaveThisTag()
+        {
+                var tag = Driver.FindElement(By.ClassName("tag"));
+                string tagName = tag.Text;
+                tag.Click();
+
+                Wait.Until(d => d.FindElement(By.Id("selectedTag")).Text == tagName);
+        }
+
 }

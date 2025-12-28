@@ -5,56 +5,58 @@
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
-    async function loadTags() {
-        if (!artPieceId) {
-            throw new Error("artPieceId is not defined. Could not join the SignalR group.");
+    document.addEventListener('DOMContentLoaded', async () => {
+        async function loadTags() {
+            if (!artPieceId) {
+                throw new Error("artPieceId is not defined. Could not join the SignalR group.");
+            }
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/tagshub")
+                .withAutomaticReconnect()
+                .build();
+            connection.on("TagsReady", tags => renderTags(tags));
+
+            await connection.start();
+            await connection.invoke("JoinArtGroup", artPieceId);
+
+            const res = await fetch(`/api/artpieces/${artPieceId}/tags`);
+            if (!res.ok) {
+                throw new Error(`HTTP error! Status: ${res.status}`);
+            }
+
+            const tags = await res.json();
+            if (tags.length === 0) {
+                return;
+            }
+
+            renderTags(tags);
         }
 
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/tagshub")
-            .withAutomaticReconnect()
-            .build();
-        connection.on("TagsReady", tags => renderTags(tags));
-
-        await connection.start();
-        await connection.invoke("JoinArtGroup", artPieceId);
-
-        const res = await fetch(`/api/artpieces/${artPieceId}/tags`);
-        if (!res.ok) {
-            throw new Error(`HTTP error! Status: ${res.status}`);
+        function renderTags(tags) {
+            const container = document.getElementById('tags');
+            container.innerHTML = "";
+            tags.forEach(tag => {
+                const span = document.createElement("span");
+                span.classList.add("tag");
+                span.textContent = tag;
+                span.style.marginRight = "5px";
+                span.style.background = "#f0f2f5";
+                span.style.borderRadius = "12px";
+                span.style.padding = "4px 10px";
+                span.onclick = () => selectTag(tag);
+                container.appendChild(span);
+            });
         }
 
-        const tags = await res.json();
-        if (tags.length === 0) {
-            return;
+        async function waitForArtPieceId() {
+            while (typeof artPieceId === 'undefined' || !artPieceId) {
+                await new Promise(r => setTimeout(r, 200));
+            }
+
+            loadTags();
         }
 
-        renderTags(tags);
-    }
-
-    function renderTags(tags) {
-        const container = document.getElementById('tags');
-        container.innerHTML = "";
-        tags.forEach(tag => {
-            const span = document.createElement("span");
-            span.classList.add("tag");
-            span.textContent = tag;
-            span.style.marginRight = "5px";
-            span.style.background = "#f0f2f5";
-            span.style.borderRadius = "12px";
-            span.style.padding = "4px 10px";
-            span.onclick = () => selectTag(tag);
-            container.appendChild(span);
-        });
-    }
-
-    async function waitForArtPieceId() {
-        while (typeof artPieceId === 'undefined' || !artPieceId) {
-            await new Promise(r => setTimeout(r, 200));
-        }
-
-        loadTags();
-    }
-
-    document.addEventListener('DOMContentLoaded', waitForArtPieceId);
+        waitForArtPieceId();
+    });
 </script>
