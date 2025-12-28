@@ -7,3 +7,5 @@ public class Tag : AggregateRoot
         public TagId Id { get; init; } = new();
         public required string Name { get; init; }
 }
+
+public class TagId : DomainId;

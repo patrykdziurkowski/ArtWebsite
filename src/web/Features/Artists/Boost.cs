@@ -1,4 +1,5 @@
 using web.Features.ArtPieces;
+using web.Features.Shared.domain;
 
 namespace web.Features.Artists;
 
@@ -11,3 +12,5 @@ public class Boost
         public required ArtistId ArtistId { get; init; }
         public bool IsActive => ExpirationDate >= DateTimeOffset.UtcNow;
 }
+
+public class BoostId : DomainId;

@@ -1,4 +1,5 @@
 using web.Features.Artists;
+using web.Features.Shared.domain;
 
 namespace web.Features.Leaderboard.Artist;
 
@@ -9,3 +10,5 @@ public class ArtistPointAward
         public required ArtistId ArtistId { get; init; }
         public required int PointValue { get; init; }
 }
+
+public class ArtistPointAwardId : DomainId;

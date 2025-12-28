@@ -1,4 +1,5 @@
 using web.Features.Reviewers;
+using web.Features.Shared.domain;
 
 namespace web.Features.Leaderboard.Reviewer;
 
@@ -9,3 +10,5 @@ public class ReviewerPointAward
         public required ReviewerId ReviewerId { get; init; }
         public required int PointValue { get; init; }
 }
+
+public class ReviewerPointAwardId : DomainId;

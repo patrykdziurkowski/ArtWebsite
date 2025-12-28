@@ -13,3 +13,5 @@ public class Review : AggregateRoot
         public required ArtPieceId ArtPieceId { get; init; }
         public required ReviewerId ReviewerId { get; init; }
 }
+
+public class ReviewId : DomainId;

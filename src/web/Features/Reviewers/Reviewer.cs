@@ -67,3 +67,5 @@ public class Reviewer : AggregateRoot
                 return Result.Ok();
         }
 }
+
+public class ReviewerId : DomainId;

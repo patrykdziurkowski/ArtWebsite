@@ -46,3 +46,5 @@ public class Artist : AggregateRoot
                 RaiseDomainEvent(new ArtistDeactivatedEvent());
         }
 }
+
+public class ArtistId : DomainId;

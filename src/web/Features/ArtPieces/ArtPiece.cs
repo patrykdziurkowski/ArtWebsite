@@ -13,3 +13,5 @@ public class ArtPiece : AggregateRoot
         public DateTimeOffset UploadDate { get; init; } = DateTimeOffset.UtcNow;
         public required ArtistId ArtistId { get; init; }
 }
+
+public class ArtPieceId : DomainId;
