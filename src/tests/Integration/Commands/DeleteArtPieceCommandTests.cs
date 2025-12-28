@@ -7,16 +7,19 @@ using tests.Integration.Fixtures;
 using web;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.DeleteArtPiece;
+using web.Features.ArtPieces.UploadArtPiece;
 
 namespace tests.Integration.Commands;
 
 public class DeleteArtPieceCommandTests : DatabaseTest
 {
         private readonly DeleteArtPieceCommand _command;
+        private readonly UploadArtPieceCommand _uploadArtPieceCommand;
 
         public DeleteArtPieceCommandTests(DatabaseTestContext databaseContext) : base(databaseContext)
         {
                 _command = Scope.ServiceProvider.GetRequiredService<DeleteArtPieceCommand>();
+                _uploadArtPieceCommand = Scope.ServiceProvider.GetRequiredService<UploadArtPieceCommand>();
         }
 
         [Fact]
@@ -45,15 +48,22 @@ public class DeleteArtPieceCommandTests : DatabaseTest
         [Fact]
         public async Task ExecuteAsync_DeletesArtPiece_WhenCurrentUserIsArtPieceOwner()
         {
-                ArtPieceId someArtPieceId = (await CreateArtistUserWithArtPieces()).First();
-                Guid userId = (await DbContext.Users.SingleAsync()).Id;
+                await CreateUserWithArtistProfile();
+                Guid currentUserId = (await DbContext.Users.SingleAsync()).Id;
+                await _uploadArtPieceCommand.ExecuteAsync(GetExampleFile(), "Description", currentUserId);
+                ArtPieceId someArtPieceId = (await DbContext.ArtPieces.SingleAsync()).Id;
                 int countBeforeDeletion = await DbContext.ArtPieces.CountAsync();
+                string imagePath = "." + (await DbContext.ArtPieces.FindAsync(someArtPieceId))!.ImagePath;
+                bool fileExistsBefore = File.Exists(imagePath);
 
-                await _command.ExecuteAsync(userId, someArtPieceId);
+                await _command.ExecuteAsync(currentUserId, someArtPieceId);
 
+                bool fileExistsAfter = File.Exists(imagePath);
                 int countAfterDeletion = await DbContext.ArtPieces.CountAsync();
                 countAfterDeletion.Should().Be(countBeforeDeletion - 1);
                 (await DbContext.ArtPieces.AnyAsync(ap => ap.Id == someArtPieceId)).Should().BeFalse();
+                fileExistsBefore.Should().BeTrue();
+                fileExistsAfter.Should().BeFalse();
         }
 
         [Fact]

@@ -21,5 +21,6 @@ public class DeleteArtPieceCommand(
 
                 dbContext.ArtPieces.Remove(artPiece);
                 await dbContext.SaveChangesAsync();
+                File.Delete("." + artPiece.ImagePath);
         }
 }
