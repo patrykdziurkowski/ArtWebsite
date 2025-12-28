@@ -35,6 +35,11 @@ IServiceCollection services = builder.Services;
 
 string connectionString = builder.Configuration["CONNECTION_STRING"]
         ?? throw new InvalidOperationException("Connection string not found.");
+if (builder.Configuration["REVIEW_COOLDOWN_SECONDS"] is null
+        || !int.TryParse(builder.Configuration["REVIEW_COOLDOWN_SECONDS"], out _))
+{
+        throw new InvalidOperationException("Review cooldown duration (in seconds) is not configured or not configured properly.");
+}
 string rootUserName = builder.Configuration["ROOT_USERNAME"]
         ?? throw new InvalidOperationException("Root user does not have a username set.");
 string rootEmail = builder.Configuration["ROOT_EMAIL"]
@@ -201,4 +206,5 @@ static async Task CreateRootUserIfNotPresentAsync(string rootUserName, string ro
         }
 }
 
+// for access from integration tests
 public partial class Program { }

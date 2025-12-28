@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using tests.Integration.Fixtures;
 using web.Features.ArtPieces;
+using web.Features.Browse;
 using web.Features.Missions;
 using web.Features.Reviewers;
 using web.Features.Reviewers.LikeArtPiece;
@@ -15,12 +16,14 @@ public class LikeArtPieceCommandTests : DatabaseTest
 {
         private readonly LikeArtPieceCommand _command;
         private readonly ReviewArtPieceCommand _reviewArtPiece;
+        private readonly RegisterArtPieceServedCommand _registerArtPieceServedCommand;
         private readonly IMissionGenerator _mockMissionGenerator;
 
         public LikeArtPieceCommandTests(DatabaseTestContext databaseContext)
                 : base(databaseContext)
         {
                 ReviewerRepository reviewerRepository = Scope.ServiceProvider.GetRequiredService<ReviewerRepository>();
+                _registerArtPieceServedCommand = Scope.ServiceProvider.GetRequiredService<RegisterArtPieceServedCommand>();
                 _mockMissionGenerator = Substitute.For<IMissionGenerator>();
                 MissionManager missionManager = new(DbContext, _mockMissionGenerator);
                 _command = new(reviewerRepository, DbContext, missionManager);
@@ -43,11 +46,13 @@ public class LikeArtPieceCommandTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = DbContext.Users.First().Id;
+                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieceIds.First());
                 await _reviewArtPiece.ExecuteAsync(
                         "some comment some comment some comment some comment some comment some comment some comment some comment",
                         3,
                         artPieceIds.First(),
-                        currentUserId);
+                        currentUserId,
+                        reviewCooldown: TimeSpan.Zero);
                 await _command.ExecuteAsync(currentUserId, artPieceIds.First());
 
                 Func<Task> executingLikeCommand = async () => await _command.ExecuteAsync(currentUserId, artPieceIds.First());
@@ -62,11 +67,13 @@ public class LikeArtPieceCommandTests : DatabaseTest
                 Guid currentUserId = DbContext.Users.First().Id;
                 for (int i = 0; i < 6; i++)
                 {
+                        await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieceIds[i]);
                         await _reviewArtPiece.ExecuteAsync(
                                 "some comment some comment some comment some comment some comment some comment some comment some comment",
                                 3,
                                 artPieceIds[i],
-                                currentUserId);
+                                currentUserId,
+                                reviewCooldown: TimeSpan.Zero);
                 }
 
                 List<Result<Like>> results = [];
@@ -89,11 +96,13 @@ public class LikeArtPieceCommandTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 Guid currentUserId = DbContext.Users.First().Id;
+                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieceIds.First());
                 await _reviewArtPiece.ExecuteAsync(
                         "some comment some comment some comment some comment some comment some comment some comment some comment",
                         3,
                         artPieceIds.First(),
-                        currentUserId);
+                        currentUserId,
+                        reviewCooldown: TimeSpan.Zero);
 
                 await _command.ExecuteAsync(currentUserId, artPieceIds.First());
 
@@ -110,11 +119,13 @@ public class LikeArtPieceCommandTests : DatabaseTest
                 Guid currentUserId = DbContext.Users.First().Id;
                 for (int i = 0; i < numberOfLikesForMission; i++)
                 {
+                        await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieceIds[i]);
                         await _reviewArtPiece.ExecuteAsync(
                                 "some comment some comment some comment some comment some comment some comment some comment some comment",
                                 3,
                                 artPieceIds[i],
-                                currentUserId);
+                                currentUserId,
+                                reviewCooldown: TimeSpan.Zero);
                 }
 
                 for (int i = 0; i < numberOfLikesForMission; i++)

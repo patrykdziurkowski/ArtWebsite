@@ -16,6 +16,7 @@ public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDispo
         private const string ROOT_USERNAME = "RootUser";
         private const string ROOT_PASSWORD = "RootP@ss123";
         private const string ROOT_EMAIL = "root@email.com";
+        private const string REVIEW_COOLDOWN_SECONDS = "10";
         private const string TEST_CONNECTION_STRING = $"Data Source=localhost,14332;User ID=SA;Password={DB_TEST_PASSWORD};Encrypt=False";
         private readonly IContainerImageService _databaseImage;
         public IContainerService Database { get; }
@@ -83,6 +84,9 @@ public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDispo
                                 new KeyValuePair<string, string?>(
                                         "ROOT_PASSWORD",
                                         ROOT_PASSWORD),
+                                new KeyValuePair<string, string?>(
+                                        "REVIEW_COOLDOWN_SECONDS",
+                                        REVIEW_COOLDOWN_SECONDS),
                         ]);
                 });
 

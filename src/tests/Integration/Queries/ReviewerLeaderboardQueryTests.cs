@@ -6,6 +6,7 @@ using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Browse;
 using web.Features.Leaderboard;
 using web.Features.Leaderboard.Reviewer;
 using web.Features.Missions;
@@ -20,6 +21,7 @@ public class ReviewerLeaderboardQueryTests : DatabaseTest
         private readonly ReviewerLeaderboardQuery _query;
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;
         private readonly ReviewArtPieceCommand _reviewArtPieceCommand;
+        private readonly RegisterArtPieceServedCommand _registerArtPieceServedCommand;
         private readonly IMissionGenerator _mockMissionGenerator;
 
         public ReviewerLeaderboardQueryTests(DatabaseTestContext databaseContext) : base(databaseContext)
@@ -32,6 +34,7 @@ public class ReviewerLeaderboardQueryTests : DatabaseTest
                 MissionManager missionManager = new(DbContext, _mockMissionGenerator);
                 _uploadArtPieceCommand = new(DbContext, artistRepository, imageTaggingQueue, missionManager, serviceScopeFactory);
                 _reviewArtPieceCommand = new(DbContext, missionManager);
+                _registerArtPieceServedCommand = Scope.ServiceProvider.GetRequiredService<RegisterArtPieceServedCommand>();
 
                 _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
                         .Returns([MissionType.BoostArt]);
@@ -55,7 +58,13 @@ public class ReviewerLeaderboardQueryTests : DatabaseTest
 
                         for (int j = 0; j < i; j++)
                         {
-                                await _reviewArtPieceCommand.ExecuteAsync("Some comment.", rating: 3, artPieces[j].Id, currentUserId);
+                                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieces[j].Id);
+                                await _reviewArtPieceCommand.ExecuteAsync(
+                                        "Some comment.",
+                                        rating: 3,
+                                        artPieces[j].Id,
+                                        currentUserId,
+                                        reviewCooldown: TimeSpan.Zero);
                         }
                 }
 
@@ -87,7 +96,13 @@ public class ReviewerLeaderboardQueryTests : DatabaseTest
 
                         for (int j = 0; j < i; j++)
                         {
-                                await _reviewArtPieceCommand.ExecuteAsync("Some comment.", rating: 3, artPieces[j].Id, currentUserId);
+                                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieces[j].Id);
+                                await _reviewArtPieceCommand.ExecuteAsync(
+                                        "Some comment.",
+                                        rating: 3,
+                                        artPieces[j].Id,
+                                        currentUserId,
+                                        reviewCooldown: TimeSpan.Zero);
                         }
                 }
 
@@ -116,7 +131,13 @@ public class ReviewerLeaderboardQueryTests : DatabaseTest
 
                 for (int i = 0; i < 5; i++)
                 {
-                        await _reviewArtPieceCommand.ExecuteAsync("Some comment.", rating: 3, artPieces[i].Id, currentUserId);
+                        await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieces[i].Id);
+                        await _reviewArtPieceCommand.ExecuteAsync(
+                                "Some comment.",
+                                rating: 3,
+                                artPieces[i].Id,
+                                currentUserId,
+                                reviewCooldown: TimeSpan.Zero);
                 }
 
                 var awards = await DbContext.ReviewerPointAwards.OrderByDescending(award => award.DateAwarded).ToListAsync();
@@ -148,7 +169,13 @@ public class ReviewerLeaderboardQueryTests : DatabaseTest
 
                 for (int i = 0; i < 5; i++)
                 {
-                        await _reviewArtPieceCommand.ExecuteAsync("Some comment.", rating: 3, artPieces[i].Id, currentUserId);
+                        await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieces[i].Id);
+                        await _reviewArtPieceCommand.ExecuteAsync(
+                                "Some comment.",
+                                rating: 3,
+                                artPieces[i].Id,
+                                currentUserId,
+                                reviewCooldown: TimeSpan.Zero);
                 }
 
                 var awards = await DbContext.ReviewerPointAwards.OrderByDescending(award => award.DateAwarded).ToListAsync();

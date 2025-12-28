@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.ArtPieces;
+using web.Features.Browse;
 using web.Features.Leaderboard.Reviewer;
 using web.Features.Missions;
 using web.Features.Reviewers;
@@ -15,7 +16,7 @@ public class ReviewArtPieceCommand(
 
         public async Task<Review> ExecuteAsync(string comment,
                 int rating, ArtPieceId artPieceId, Guid currentUserId,
-                DateTimeOffset? now = null)
+                TimeSpan reviewCooldown, DateTimeOffset? now = null)
         {
                 now ??= DateTimeOffset.UtcNow;
 
@@ -26,6 +27,15 @@ public class ReviewArtPieceCommand(
                         r => r.ArtPieceId == artPieceId && r.ReviewerId == reviewer.Id))
                 {
                         throw new InvalidOperationException("This reviewer has already reviewed this art piece.");
+                }
+
+                ArtPieceServed artPieceServed = await dbContext.ArtPiecesServed
+                        .FirstOrDefaultAsync(aps => aps.UserId == currentUserId)
+                                ?? throw new InvalidOperationException("Attempted to review an art piece that wasn't served.");
+
+                if (now.Value.Subtract(artPieceServed.Date) < reviewCooldown)
+                {
+                        throw new InvalidOperationException("Attempted to review an art piece too early!");
                 }
 
                 Review review = new()

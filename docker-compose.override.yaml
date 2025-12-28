@@ -4,7 +4,7 @@ services:
       context: src/web
       dockerfile: development.Dockerfile
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
       - "8080:8080" # Used for test startup wait
     volumes:
@@ -12,3 +12,4 @@ services:
       - /tmp/user-images:/web/user-images:Z # Prevent saving user-images on host machine when ran locally
       - /web/bin # Override host's build artifacts to prevent issues
       - /web/obj # Override host's build artifacts to prevent issues
+  

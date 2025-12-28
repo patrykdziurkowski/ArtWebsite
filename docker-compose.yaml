@@ -26,6 +26,7 @@ services:
       - ROOT_USERNAME=${ROOT_USERNAME}
       - ROOT_EMAIL=${ROOT_EMAIL}
       - ROOT_PASSWORD=${ROOT_PASSWORD}
+      - REVIEW_COOLDOWN_SECONDS=${REVIEW_COOLDOWN_SECONDS:-10}
     depends_on:
       db:
         condition: service_healthy

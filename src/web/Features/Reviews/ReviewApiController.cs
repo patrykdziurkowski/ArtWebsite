@@ -19,6 +19,7 @@ public class ReviewApiController(
         ReviewerReviewsQuery reviewsForReviewerQuery,
         ArtPieceReviewsQuery reviewsForArtPieceQuery,
         RegisterArtPieceServedCommand registerArtPieceServedCommand,
+        IConfiguration configuration,
         ApplicationDbContext dbContext) : ControllerBase
 {
         private const int REVIEWS_TO_LOAD_FOR_REVIEWER = 10;
@@ -46,9 +47,14 @@ public class ReviewApiController(
         public async Task<IActionResult> ReviewArtPiece(ReviewArtPieceModel model)
         {
                 Guid currentUserId = GetUserId();
+                TimeSpan reviewCooldown = TimeSpan.FromSeconds(
+                        int.Parse(configuration["REVIEW_COOLDOWN_SECONDS"]!));
                 Review review = await reviewArtPieceCommand.ExecuteAsync(
-                        model.Comment, model.Rating,
-                        new ArtPieceId { Value = model.ArtPieceId }, currentUserId);
+                        model.Comment,
+                        model.Rating,
+                        new ArtPieceId { Value = model.ArtPieceId },
+                        currentUserId,
+                        reviewCooldown);
 
                 ArtPieceServed? aps = await dbContext.ArtPiecesServed
                         .FirstOrDefaultAsync(aps => aps.UserId == currentUserId);
