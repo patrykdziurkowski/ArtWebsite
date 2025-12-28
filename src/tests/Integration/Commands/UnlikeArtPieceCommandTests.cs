@@ -22,7 +22,7 @@ public class UnlikeArtPieceCommandTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 ArtPieceId artPieceToLike = artPieceIds.First();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
                 DbContext.Likes.Add(new()
                 {
                         ArtPieceId = artPieceToLike,
@@ -42,7 +42,7 @@ public class UnlikeArtPieceCommandTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 ArtPieceId artPieceToLike = artPieceIds.First();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
 
                 Result result = await _command.ExecuteAsync(reviewer.UserId, artPieceToLike);
 
@@ -55,7 +55,7 @@ public class UnlikeArtPieceCommandTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 ArtPieceId artPieceToLike = artPieceIds.First();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
                 DbContext.Likes.Add(new()
                 {
                         ArtPieceId = artPieceToLike,

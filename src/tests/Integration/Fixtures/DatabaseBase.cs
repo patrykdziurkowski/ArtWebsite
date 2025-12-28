@@ -136,7 +136,7 @@ public abstract class DatabaseTest : IDisposable
                 return artPieceIds;
         }
 
-        public async Task<Reviewer> CreateReviewerWith20Reviews(
+        public async Task<Reviewer> CreateReviewerWithReviewsForArtPieces(
                 List<ArtPieceId> artPiecesToReview,
                 string reviewerName = "SomeUser123")
         {

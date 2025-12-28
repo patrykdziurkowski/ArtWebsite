@@ -29,7 +29,7 @@ public class ReviewerReviewsQueryTests : DatabaseTest
         public async Task Execute_ShouldReturnReviews_WhenTheyExist()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
 
                 List<ReviewerReviewDto> reviews = await _query.ExecuteAsync(reviewer.Id, 10);
 
@@ -40,7 +40,7 @@ public class ReviewerReviewsQueryTests : DatabaseTest
         public async Task Execute_ShouldReturnSomeReviews_WhenOffset()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
 
                 List<ReviewerReviewDto> reviews = await _query.ExecuteAsync(reviewer.Id, 10, 17);
 
@@ -51,7 +51,7 @@ public class ReviewerReviewsQueryTests : DatabaseTest
         public async Task Execute_ShouldReturnEmpty_WhenReviewsExistButForADifferentUser()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                await CreateReviewerWith20Reviews(artPieceIds);
+                await CreateReviewerWithReviewsForArtPieces(artPieceIds);
 
                 List<ReviewerReviewDto> reviews = await _query.ExecuteAsync(new ReviewerId(), 10, 0);
 

@@ -23,7 +23,7 @@ public class ReviewerRepositoryTests : DatabaseTest
         public async Task GetByIdAsync_ReturnsReviewer_WhenGivenGuid()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
                 await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
 
                 Reviewer? queriedReviewer = await _reviewerRepository.GetByIdAsync(reviewer.UserId);
@@ -36,7 +36,7 @@ public class ReviewerRepositoryTests : DatabaseTest
         public async Task GetByIdAsync_ReturnsReviewer_WhenGivenReviewerId()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
                 await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
 
                 Reviewer? queriedReviewer = await _reviewerRepository.GetByIdAsync(reviewer.Id);
@@ -49,7 +49,7 @@ public class ReviewerRepositoryTests : DatabaseTest
         public async Task GetByIdAsync_ReturnsNull_WhenGivenNonExistantId()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
                 await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
 
                 Reviewer? queriedReviewer = await _reviewerRepository.GetByIdAsync(new ReviewerId());
@@ -61,7 +61,7 @@ public class ReviewerRepositoryTests : DatabaseTest
         public async Task GetByNameAsync_ReturnsReviewer_WhenGivenExistingReviewerName()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(
                         artPieceIds, "otherUser123");
                 await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
 
@@ -76,7 +76,7 @@ public class ReviewerRepositoryTests : DatabaseTest
         public async Task GetByNameAsync_ReturnsNull_WhenGivenNonExistantReviewerName()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
                 await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
 
                 Reviewer? queriedReviewer = await _reviewerRepository.GetByNameAsync("nonExistantReviewer");
@@ -88,7 +88,7 @@ public class ReviewerRepositoryTests : DatabaseTest
         public async Task SaveAsync_SavesChanges_WhenCalled()
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
-                Reviewer reviewer = await CreateReviewerWith20Reviews(artPieceIds);
+                Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
                 await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
 
                 reviewer.LikeArtPiece(artPieceIds.Last());
