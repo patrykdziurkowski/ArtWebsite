@@ -10,7 +10,7 @@ public class Reviewer : AggregateRoot
         private const int DAILY_LIKE_LIMIT = 5;
 
         public ReviewerId Id { get; init; } = new ReviewerId();
-        public required string Name { get; init; }
+        public required string Name { get; set; }
         public DateTimeOffset JoinDate { get; init; } = DateTimeOffset.UtcNow;
         public int ReviewCount { get; set; } = 0;
         public int Points { get; set; } = 0;

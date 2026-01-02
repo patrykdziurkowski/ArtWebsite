@@ -191,7 +191,9 @@ public abstract class DatabaseTest : IDisposable
                 }
         }
 
-        public async Task<ReviewerId> CreateReviewer(string userName = "johnSmith2")
+        public async Task<ReviewerId> CreateReviewer(
+                string userName = "johnSmith2",
+                string reviewerName = "SomeUser123")
         {
                 IdentityUser<Guid> user = new(userName);
                 await UserManager.CreateAsync(user);
@@ -199,7 +201,7 @@ public abstract class DatabaseTest : IDisposable
                 DbContext.Reviewers.Add(new Reviewer()
                 {
                         Id = reviewerId,
-                        Name = "SomeUser123",
+                        Name = reviewerName,
                         UserId = user.Id,
                 });
                 await DbContext.SaveChangesAsync();
