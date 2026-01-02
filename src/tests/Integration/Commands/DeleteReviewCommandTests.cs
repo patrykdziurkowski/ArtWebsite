@@ -1,10 +1,14 @@
 using FluentAssertions;
+using FluentResults;
+using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.Utilities;
 using tests.Integration.Fixtures;
 using web;
+using web.Features.Reviewers;
+using web.Features.Reviewers.LikeArtPiece;
 using web.Features.Reviews;
 using web.Features.Reviews.DeleteReview;
 
@@ -13,10 +17,12 @@ namespace tests.Integration.Commands;
 public class DeleteReviewCommandTests : DatabaseTest
 {
         private readonly DeleteReviewCommand _command;
+        private readonly LikeArtPieceCommand _likeArtPieceCommand;
 
         public DeleteReviewCommandTests(DatabaseTestContext databaseContext) : base(databaseContext)
         {
                 _command = Scope.ServiceProvider.GetRequiredService<DeleteReviewCommand>();
+                _likeArtPieceCommand = Scope.ServiceProvider.GetRequiredService<LikeArtPieceCommand>();
         }
 
         [Fact]
@@ -62,6 +68,31 @@ public class DeleteReviewCommandTests : DatabaseTest
 
                 await _command.ExecuteAsync(currentUserId, reviewId);
 
+                (await DbContext.Reviews.AnyAsync(r => r.Id == reviewId)).Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_DeletesReviewAndLike_WhenReviewOwner()
+        {
+                var artPieceIds = await CreateArtistUserWithArtPieces();
+                await CreateReviewerWithReviewsForArtPieces(artPieceIds);
+                ReviewId reviewId = await DbContext.Reviews
+                        .Where(r => r.ArtPieceId == artPieceIds.First())
+                        .Select(r => r.Id)
+                        .FirstAsync();
+                Guid currentUserId = await DbContext.Reviewers
+                        .OrderByDescending(r => r.JoinDate)
+                        .Select(u => u.UserId)
+                        .FirstAsync();
+                Result<Like> likeResult = await _likeArtPieceCommand.ExecuteAsync(currentUserId, artPieceIds.First());
+                bool likeExistsBefore = await DbContext.Likes.AnyAsync();
+
+                await _command.ExecuteAsync(currentUserId, reviewId);
+
+                bool likeExistsAfter = await DbContext.Likes.AnyAsync();
+                likeResult.IsFailed.Should().BeFalse();
+                likeExistsBefore.Should().BeTrue();
+                likeExistsAfter.Should().BeFalse();
                 (await DbContext.Reviews.AnyAsync(r => r.Id == reviewId)).Should().BeFalse();
         }
 }

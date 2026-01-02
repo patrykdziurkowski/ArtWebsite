@@ -21,6 +21,15 @@ public class DeleteReviewCommand(
                         throw new InvalidOperationException("Attempted to delete a review that this user does not own.");
                 }
 
+                var test = dbContext.Likes.ToList();
+                Like? reviewsLike = await dbContext.Likes.FirstOrDefaultAsync(l => l.ReviewerId == reviewOwner.Id
+                        && l.ArtPieceId == review.ArtPieceId);
+
+                if (reviewsLike is not null)
+                {
+                        dbContext.Remove(reviewsLike);
+                }
+
                 dbContext.Remove(review);
                 await dbContext.SaveChangesAsync();
         }
