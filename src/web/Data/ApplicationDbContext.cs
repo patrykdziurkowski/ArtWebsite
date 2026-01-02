@@ -122,7 +122,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 artist.HasMany<Boost>()
                         .WithOne()
                         .HasForeignKey(b => b.ArtistId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var boost = builder.Entity<Boost>();
                 boost.HasKey(b => b.Id);
@@ -135,7 +135,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 boost.HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(b => b.ArtPieceId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var artPiece = builder.Entity<ArtPiece>();
                 artPiece.HasKey(a => a.Id);
@@ -144,11 +144,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 artPiece.HasOne<Artist>()
                         .WithMany()
                         .HasForeignKey(a => a.ArtistId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
                 artPiece.HasMany<ArtPieceTag>()
                         .WithOne()
                         .HasForeignKey(a => a.ArtPieceId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
                 artPiece.Property(a => a.ImagePath)
                         .IsRequired();
                 artPiece.Property(a => a.UploadDate)
@@ -167,11 +167,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 review.HasOne<Reviewer>()
                         .WithMany()
                         .HasForeignKey(r => r.ReviewerId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
                 review.HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(r => r.ArtPieceId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var reviewer = builder.Entity<Reviewer>();
                 reviewer.HasKey(r => r.Id);
@@ -185,11 +185,11 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 reviewer.HasOne<IdentityUser<Guid>>()
                         .WithOne()
                         .HasForeignKey<Reviewer>(r => r.UserId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
                 reviewer.HasMany(l => l.ActiveLikes)
                         .WithOne()
                         .HasForeignKey(l => l.ReviewerId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var like = builder.Entity<Like>();
                 like.HasKey(l => l.Id);
@@ -202,7 +202,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 like.HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(l => l.ArtPieceId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var tag = builder.Entity<Tag>();
                 tag.HasKey(t => t.Id);
@@ -213,7 +213,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 tag.HasMany<ArtPieceTag>()
                         .WithOne()
                         .HasForeignKey(apt => apt.TagId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var artPieceTag = builder.Entity<ArtPieceTag>();
                 artPieceTag.HasKey(apt => apt.Id);
@@ -229,7 +229,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 reviewerPointAward.HasOne<Reviewer>()
                         .WithMany()
                         .HasForeignKey(pa => pa.ReviewerId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var artistPointAward = builder.Entity<ArtistPointAward>();
                 artistPointAward.HasKey(pa => pa.Id);
@@ -240,7 +240,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 artistPointAward.HasOne<Artist>()
                         .WithMany()
                         .HasForeignKey(pa => pa.ArtistId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var missionProgress = builder.Entity<MissionProgress>();
                 missionProgress.HasKey(mp => mp.Id);
@@ -258,7 +258,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 missionProgress.HasOne<IdentityUser<Guid>>()
                         .WithOne()
                         .HasForeignKey<MissionProgress>(mp => mp.UserId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var artPieceServed = builder.Entity<ArtPieceServed>();
                 artPieceServed.HasKey(aps => aps.Id);
@@ -269,6 +269,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 artPieceServed.HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(aps => aps.ArtPieceId)
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict);
         }
 }
