@@ -203,6 +203,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .WithMany()
                         .HasForeignKey(l => l.ArtPieceId)
                         .OnDelete(DeleteBehavior.Restrict);
+                like.HasOne<Review>()
+                        .WithOne()
+                        .HasForeignKey<Like>("ReviewId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var tag = builder.Entity<Tag>();
                 tag.HasKey(t => t.Id);
