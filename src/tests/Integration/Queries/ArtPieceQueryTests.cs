@@ -6,6 +6,7 @@ using web.Features.ArtPieces;
 using web.Features.Browse;
 using web.Features.Browse.Index;
 using web.Features.Reviews;
+using web.Features.Reviews.ReviewArtPiece;
 
 namespace tests.Integration.Queries;
 
@@ -14,12 +15,14 @@ public class ArtPieceQueryTests : DatabaseTest
         private readonly ArtPieceQuery _query;
 
         private readonly RegisterArtPieceServedCommand _registerArtPieceServedCommand;
+        private readonly ReviewArtPieceCommand _reviewArtPieceCommand;
 
         public ArtPieceQueryTests(DatabaseTestContext databaseContext)
                 : base(databaseContext)
         {
                 _query = Scope.ServiceProvider.GetRequiredService<ArtPieceQuery>();
                 _registerArtPieceServedCommand = Scope.ServiceProvider.GetRequiredService<RegisterArtPieceServedCommand>();
+                _reviewArtPieceCommand = Scope.ServiceProvider.GetRequiredService<ReviewArtPieceCommand>();
         }
 
         [Fact]
@@ -95,7 +98,12 @@ public class ArtPieceQueryTests : DatabaseTest
 
         private async Task ReviewArtPiece(Guid currentUserId, ArtPieceId artPieceId)
         {
-                // we dont actually create a review here since we dont need to
+                await _reviewArtPieceCommand.ExecuteAsync(
+                        "Some comment. Some comment. Some comment. Some comment. Some comment. Some comment. Some comment. Some comment. Some comment. Some comment. Some comment. Some comment. Some comment. ",
+                        1,
+                        artPieceId,
+                        currentUserId,
+                        reviewCooldown: TimeSpan.Zero);
                 await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, null);
         }
 
