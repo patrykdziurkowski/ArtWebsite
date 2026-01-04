@@ -42,6 +42,7 @@
             `;
             reviewItem.dataset.artPieceId = review.artPieceId.value;
             reviewItem.dataset.artPieceImagePath = review.imagePath;
+            reviewItem.dataset.reviewId = review.reviewId.value;
             list.appendChild(reviewItem);
         });
         reviewsOffset += reviewsPerPage;

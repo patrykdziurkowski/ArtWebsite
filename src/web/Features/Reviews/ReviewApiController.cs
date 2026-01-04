@@ -8,6 +8,7 @@ using web.Features.ArtPieces;
 using web.Features.Browse;
 using web.Features.Reviewers;
 using web.Features.Reviews.DeleteReview;
+using web.Features.Reviews.EditReview;
 using web.Features.Reviews.LoadReviews;
 using web.Features.Reviews.ReviewArtPiece;
 
@@ -21,6 +22,7 @@ public class ReviewApiController(
         ArtPieceReviewsQuery reviewsForArtPieceQuery,
         RegisterArtPieceServedCommand registerArtPieceServedCommand,
         DeleteReviewCommand deleteReviewCommand,
+        EditReviewCommand editReviewCommand,
         IConfiguration configuration,
         ApplicationDbContext dbContext) : ControllerBase
 {
@@ -73,6 +75,17 @@ public class ReviewApiController(
         {
                 await deleteReviewCommand.ExecuteAsync(GetUserId(), new ReviewId() { Value = reviewId });
                 return NoContent();
+        }
+
+        [HttpPut("/api/reviews/{reviewId}")]
+        public async Task<IActionResult> EditReview(Guid reviewId, EditReviewModel model)
+        {
+                await editReviewCommand.ExecuteAsync(
+                        GetUserId(),
+                        new ReviewId() { Value = reviewId },
+                        new Rating(model.Rating),
+                        model.Comment);
+                return Ok();
         }
 
         private Guid GetUserId()

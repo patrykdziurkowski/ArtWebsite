@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace web.Features.Reviewers.EditReviewerProfile;
 
-public class EditReviewerProfileModel
+public record EditReviewerProfileModel
 {
         [Required]
         [StringLength(12, MinimumLength = 3)]

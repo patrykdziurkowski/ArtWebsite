@@ -173,6 +173,34 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
                 Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "myNewName");
         }
 
+        [Fact, Order(9)]
+        public void UpdatingOwnReview_UpdatesIt()
+        {
+                const string NEW_COMMENT = "This is a new review comment that was edited by an owner. This is a new review comment that was edited by an owner. This is a new review comment that was edited by an owner.";
+
+                ResetTestContext();
+                CreateUserWithArtistProfile();
+                UploadArtPiece();
+                ReviewThisArtPieceThenLoadNext();
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/SomeUser123");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Wait.Until(d => d.FindElement(By.ClassName("edit-review-button"))).Click();
+                Wait.Until(d => d.FindElement(By.CssSelector("label[for=\"star1\"]"))).Click();
+                var commentEdit = Wait.Until(d => d.FindElement(By.Id("editComment")));
+                commentEdit.Clear();
+                commentEdit.SendKeys(NEW_COMMENT);
+                Driver.FindElement(By.Id("submitEdit")).Click();
+                Wait.Until(d => d.FindElement(By.ClassName("review-comment")).Text == NEW_COMMENT);
+                Driver.FindElement(By.ClassName("review-rating")).Text.Should().Be("1");
+
+                Driver.Navigate().Refresh();
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card")).Text.Contains(NEW_COMMENT));
+                Driver.FindElements(By.ClassName("checked-star")).Should().HaveCount(1);
+        }
+
         private void SetupArtPieceWithReviews(int reviewCount)
         {
                 ResetTestContext();

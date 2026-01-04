@@ -59,7 +59,7 @@
                         <small class="text-muted">${new Date(artPiece.uploadDate).toLocaleDateString()}</small>
                         @if (Model.IsOwner && Model.BoostExpirationDate is null)
                         {
-                            <button class="boost-btn" onclick="boostArtPiece('${artPiece.id.value}')">Boost</button>
+                                <button class="boost-btn" onclick="boostArtPiece('${artPiece.id.value}')">Boost</button>
                         }
                     </div>
                 </div>`;
