@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="Features/ArtPieces/DeleteArtPiece/" />
+    <Folder Include="Features/ArtPieces/EditArtPiece/" />
     <Folder Include="Features/Reviewers/EditReviewerProfile/" />
     <Folder Include="Features/Reviews/DeleteReview/" />
     <Folder Include="Features/Reviews/EditReview/" />
