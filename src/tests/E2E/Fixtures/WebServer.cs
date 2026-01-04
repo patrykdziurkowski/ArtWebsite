@@ -6,6 +6,10 @@ namespace tests.E2E.Fixtures;
 
 public class WebServer : IDisposable
 {
+        public const string ROOT_TEST_EMAIL = "some@email.com";
+        public const string ROOT_TEST_USERNAME = "rootAdmin";
+        public const string ROOT_TEST_PASSWORD = "ex@mpl3!Pwd";
+
         private const string DB_TEST_PASSWORD = "exampleP@ssword123";
         private const string TRUNCATE_DATA_QUERY = @"
                 SET QUOTED_IDENTIFIER ON;
@@ -62,6 +66,9 @@ public class WebServer : IDisposable
                         .ServiceName("artwebsite-development")
                         .FromFile(dockerComposePath, dockerComposeOverridePath)
                         .WithEnvironment($"MSSQL_SA_PASSWORD={DB_TEST_PASSWORD}")
+                        .WithEnvironment($"ROOT_EMAIL={ROOT_TEST_EMAIL}")
+                        .WithEnvironment($"ROOT_USERNAME={ROOT_TEST_USERNAME}")
+                        .WithEnvironment($"ROOT_PASSWORD={ROOT_TEST_PASSWORD}")
                         // for the sake of testing speed, removed a cooldown from reviewing
                         .WithEnvironment($"REVIEW_COOLDOWN_SECONDS=0")
                         .RemoveOrphans()

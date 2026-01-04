@@ -17,10 +17,7 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                         name: "artistName"
                 );
                 Logout();
-                Login(
-                        Environment.GetEnvironmentVariable("ROOT_EMAIL")!,
-                        Environment.GetEnvironmentVariable("ROOT_PASSWORD")!
-                );
+                Login(WebServer.ROOT_TEST_EMAIL, WebServer.ROOT_TEST_PASSWORD);
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artists/artistName");
 
@@ -64,10 +61,7 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 ReviewThisArtPieceThenLoadNext();
                 Logout();
 
-                Login(
-                        Environment.GetEnvironmentVariable("ROOT_EMAIL")!,
-                        Environment.GetEnvironmentVariable("ROOT_PASSWORD")!
-                );
+                Login(WebServer.ROOT_TEST_EMAIL, WebServer.ROOT_TEST_PASSWORD);
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/SomeUser123");
                 Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
@@ -109,10 +103,7 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 UploadArtPiece();
                 ReviewThisArtPieceThenLoadNext();
                 Logout();
-                Login(
-                        Environment.GetEnvironmentVariable("ROOT_EMAIL")!,
-                        Environment.GetEnvironmentVariable("ROOT_PASSWORD")!
-                );
+                Login(WebServer.ROOT_TEST_EMAIL, WebServer.ROOT_TEST_PASSWORD);
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/SomeUser123");
                 Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
