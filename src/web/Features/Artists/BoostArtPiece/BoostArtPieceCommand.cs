@@ -13,8 +13,6 @@ public class BoostArtPieceCommand(
         IMapper mapper,
         MissionManager missionManager)
 {
-        private readonly ArtistRepository artistRepository = artistRepository;
-
         public async Task<Result<BoostDto>> ExecuteAsync(
                 Guid currentUserId,
                 ArtPieceId artPieceId,
@@ -26,7 +24,7 @@ public class BoostArtPieceCommand(
                         ?? throw new InvalidOperationException("No artist profile exists for the given user!");
                 ArtPiece artPiece = await dbContext.ArtPieces
                         .SingleOrDefaultAsync(a => a.Id == artPieceId)
-                        ?? throw new InvalidOperationException("Such art piece doesn't exist!");
+                                ?? throw new InvalidOperationException("Such art piece doesn't exist!");
 
                 Result result = currentArtist.BoostArtPiece(artPieceId, artPiece.ArtistId);
                 if (result.IsFailed)

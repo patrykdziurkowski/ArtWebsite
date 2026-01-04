@@ -15,7 +15,7 @@ public class ReviewerController(
 {
         public async Task<ActionResult> Index()
         {
-                Reviewer? reviewer = await userReviewerQuery.ExecuteAsync(GetUserId())
+                ReviewerProfileDto? reviewer = await userReviewerQuery.ExecuteAsync(GetUserId())
                         ?? throw new InvalidOperationException("The current user has no reviewer profile.");
                 return View(reviewer);
         }
@@ -23,7 +23,8 @@ public class ReviewerController(
         [HttpGet("/Reviewers/{reviewerName}")]
         public async Task<ActionResult> GetReviewerProfile(string reviewerName)
         {
-                Reviewer? reviewer = await reviewerQuery.ExecuteAsync(reviewerName);
+                Guid currentUserId = GetUserId();
+                ReviewerProfileDto? reviewer = await reviewerQuery.ExecuteAsync(currentUserId, reviewerName);
                 if (reviewer is null)
                 {
                         return View("Error", new ErrorViewModel(404,
@@ -32,7 +33,7 @@ public class ReviewerController(
 
                 await missionManager.RecordProgressAsync(
                         MissionType.VisitReviewersProfiles,
-                        GetUserId(),
+                        currentUserId,
                         DateTimeOffset.UtcNow);
 
                 return View("Index", reviewer);

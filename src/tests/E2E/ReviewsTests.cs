@@ -155,6 +155,24 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
                 Driver.FindElements(By.ClassName(".art-piece-card")).Should().BeEmpty();
         }
 
+        [Fact, Order(8)]
+        public void UpdatingOwnReviewerName_Works()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
+                Wait.Until(d => d.FindElement(By.Id("editProfile"))).Click();
+
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("editProfileModal")));
+                var nameInput = Driver.FindElement(By.Name("name"));
+                nameInput.Clear();
+                nameInput.SendKeys("myNewName");
+                Driver.FindElement(By.Id("editReviewerProfile")).Click();
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("editProfileModal")));
+                Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "myNewName");
+
+                Driver.Navigate().Refresh();
+                Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "myNewName");
+        }
+
         private void SetupArtPieceWithReviews(int reviewCount)
         {
                 ResetTestContext();

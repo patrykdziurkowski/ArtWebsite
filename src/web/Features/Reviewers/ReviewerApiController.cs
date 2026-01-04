@@ -4,9 +4,11 @@ using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Features.ArtPieces;
+using web.Features.Reviewers.EditReviewerProfile;
 using web.Features.Reviewers.LikeArtPiece;
 using web.Features.Reviewers.LoadLikes;
 using web.Features.Reviewers.UnlikeArtPiece;
+using web.Features.Reviews;
 
 namespace web.Features.Reviewers;
 
@@ -15,6 +17,7 @@ namespace web.Features.Reviewers;
 public class ReviewerApiController(
         LikeArtPieceCommand likeArtPieceCommand,
         UnlikeArtPieceCommand unlikeArtPieceCommand,
+        EditReviewerProfileCommand editReviewerProfileCommand,
         LikesQuery likesQuery) : ControllerBase
 {
         private const int LIKES_TO_LOAD = 10;
@@ -50,6 +53,21 @@ public class ReviewerApiController(
                 if (result.IsFailed)
                 {
                         return BadRequest(result.Errors);
+                }
+
+                return Ok();
+        }
+
+        [HttpPut("/api/reviewers/{reviewerId}")]
+        public async Task<IActionResult> EditReviewerProfile(Guid reviewerId, EditReviewerProfileModel model)
+        {
+                Result result = await editReviewerProfileCommand.ExecuteAsync(
+                        GetUserId(),
+                        new ReviewerId() { Value = reviewerId },
+                        model.Name);
+                if (result.IsFailed)
+                {
+                        return Conflict(result);
                 }
 
                 return Ok();

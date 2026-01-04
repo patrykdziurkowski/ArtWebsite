@@ -80,4 +80,22 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
 
                 Driver.FindElements(By.ClassName(".art-piece-card")).Should().BeEmpty();
         }
+
+        [Fact, Order(3)]
+        public void Updating_SomeoneElsesReviewerName_Works()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/SomeUser123");
+                Wait.Until(d => d.FindElement(By.Id("editProfile"))).Click();
+
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("editProfileModal")));
+                var nameInput = Driver.FindElement(By.Name("name"));
+                nameInput.Clear();
+                nameInput.SendKeys("newName");
+                Driver.FindElement(By.Id("editReviewerProfile")).Click();
+                Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("editProfileModal")));
+                Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "newName");
+
+                Driver.Navigate().Refresh();
+                Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "newName");
+        }
 }

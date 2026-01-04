@@ -86,28 +86,28 @@
                     summary: form.get('Summary'),
                 };
 
-                await fetch('/api/artist', {
+                const response = await fetch('/api/artist', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(data)
-                })
-                    .then(async response => {
-                        if (response.status !== 200) {
-                            const data = await response.json();
-                            throw data;
-                        }
-                        document.querySelector('#artistName').innerText = data.name;
-                        document.querySelector('#artistSummary').innerText = data.summary;
-                        document.querySelector('#editProfileModal .btn-close').click();
-                    })
-                    .catch(error => {
-                        const validationErrorsText = document.querySelector('#editForm *[name="name"] + span');
-                        validationErrorsText.innerText = error.errors.Name;
-                        const validationErrorsText2 = document.querySelector('#editForm *[name="summary"] + span');
-                        validationErrorsText2.innerText = error.errors.Summary;
-                    });
+                });
+
+                if (response.status !== 200) {
+                    const data = await response.json();
+
+                    const validationErrorsText = document.querySelector('#editForm *[name="name"] + span');
+                    validationErrorsText.innerText = data.errors.Name;
+                    const validationErrorsText2 = document.querySelector('#editForm *[name="summary"] + span');
+                    validationErrorsText2.innerText = data.errors.Summary;
+
+                    return;
+                }
+
+                document.querySelector('#artistName').innerText = data.name;
+                document.querySelector('#artistSummary').innerText = data.summary;
+                document.querySelector('#editProfileModal .btn-close').click();
             });
         });
     </script>

@@ -1,8 +1,15 @@
 ﻿@using web.Features.Reviewers
-@model Reviewer
+@using web.Features.Reviewers.Index
+@model ReviewerProfileDto
 
 <div class="container mt-5">
     <h2><span id="reviewerName">@Model.Name</span>'s profile</h2>
+    @if (@Model.CurrentUserOwnsThisProfile || @Model.IsCurrentUserAdmin)
+    {
+        <button id="editProfileModalButton" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+            <i id="editProfile" class="bi bi-pencil-square"></i>
+        </button>
+    }
     <p>Joined: <span id="reviewerJoinDate">@Html.Raw(Model.JoinDate.ToString("o"))</span> | @Model.ReviewCount total
         reviews</p>
 
@@ -25,10 +32,66 @@
 
 <partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
 
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit your reviewer profile!</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="form-group">
+                        <input type="text" value="@Model.Name" name="name" placeholder="Your reviewer name">
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" value="@Model.Id" name="ReviewerId">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button id="editReviewerProfile" type="submit" class="btn btn-danger">Submit</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts
 {
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            document.querySelector('#editReviewerProfile').addEventListener('click', async (e) => {
+                const shouldRedirectToNewPage = window.location.pathName !== "/reviewer"
+                    && window.location.pathName !== "/reviewer/";
+                const form = new FormData(document.querySelector('#editForm'));
+                const reviewerId = form.get('ReviewerId');
+                const formData = {
+                    reviewerId: reviewerId,
+                    name: form.get('name'),
+                };
+
+                const response = await fetch(`/api/reviewers/${reviewerId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.status !== 200) {
+                    const data = await response.json();
+
+                    const validationErrorsText = document.querySelector('#editForm *[name="name"] + span');
+                    validationErrorsText.innerText = data.errors.Name;
+
+                    return;
+                }
+
+                document.querySelector('#reviewerName').innerText = formData.name;
+                document.querySelector('#editProfileModal .btn-close').click();
+                if (shouldRedirectToNewPage) window.location.href = `/reviewers/${formData.name}`;
+            });
+
             document.querySelector('#reviewerJoinDate').innerText = new Date(
                 '@Html.Raw(Model.JoinDate.ToString("o"))').toLocaleString();
 
