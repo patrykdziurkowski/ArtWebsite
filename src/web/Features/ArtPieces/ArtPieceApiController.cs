@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Artists;
+using web.Features.ArtPieces.EditArtPiece;
 using web.Features.ArtPieces.LoadArtPieces;
 using web.Features.Browse;
 using web.Features.Browse.ByTag;
@@ -19,6 +20,8 @@ public class ArtPieceApiController(
         ArtPieceQuery artPieceQuery,
         ArtPiecesQuery artPiecesQuery,
         ArtPieceByTagQuery artPiecesByTagQuery,
+        EditArtPieceCommand editArtPieceCommand,
+        ApplicationDbContext dbContext,
         RegisterArtPieceServedCommand registerArtPieceServedCommand) : ControllerBase
 {
         private const int ART_PIECES_TO_LOAD = 5;
@@ -46,6 +49,12 @@ public class ArtPieceApiController(
                 return Ok(artPiece);
         }
 
+        [HttpGet("/api/artpieces/{artPieceId}")]
+        public async Task<IActionResult> GetArtPiece(Guid artPieceId)
+        {
+                return Ok(await dbContext.ArtPieces.FirstAsync(ap => ap.Id == new ArtPieceId() { Value = artPieceId }));
+        }
+
         [HttpGet("/api/artists/{artistId}/artpieces/")]
         public async Task<IActionResult> LoadArtPiecesForArtist(Guid artistId,
                 [Range(0, int.MaxValue)] int offset = 0)
@@ -54,6 +63,16 @@ public class ArtPieceApiController(
                         .ExecuteAsync(new ArtistId { Value = artistId }, ART_PIECES_TO_LOAD,
                                 offset);
                 return Ok(artPieces);
+        }
+
+        [HttpPut("/api/artpieces/{artPieceId}")]
+        public async Task<IActionResult> EditArtPiece(Guid artPieceId, EditArtPieceModel model)
+        {
+                await editArtPieceCommand.ExecuteAsync(
+                        GetUserId(),
+                        new ArtPieceId() { Value = artPieceId },
+                        model.Description);
+                return Ok();
         }
 
         private Guid GetUserId()

@@ -103,12 +103,11 @@
                     if (!artPieceElement) return;
 
                     const artPieceId = artPieceElement.dataset.artPieceId;
-                    const artPieceImagePath = artPieceElement.dataset.artPieceImagePath;
                     if (!artPieceId) {
                         throw new Error('Expected art piece id not to be null for clicked review/like element.');
                     }
 
-                    const artPieceDetails = new ArtPieceDetails(artPieceId, artPieceImagePath);
+                    const artPieceDetails = new ArtPieceDetails(artPieceId);
                     artPieceDetails.show();
                 });
             }

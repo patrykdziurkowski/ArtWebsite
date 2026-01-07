@@ -109,7 +109,7 @@
                 reviewModal.hide();
                 postReviewModal.show();
 
-                artPieceDetails = new ArtPieceDetails(artPieceId, artPiece.imagePath);
+                artPieceDetails = new ArtPieceDetails(artPieceId);
                 artPieceDetails.onBack = () => {
                     postReviewModal.show();
                 };

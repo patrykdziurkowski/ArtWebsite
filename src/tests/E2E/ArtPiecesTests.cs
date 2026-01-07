@@ -1,5 +1,6 @@
 using FluentAssertions;
 using OpenQA.Selenium;
+using SeleniumExtras.WaitHelpers;
 using tests.E2E.Fixtures;
 using Xunit.Extensions.Ordering;
 
@@ -56,6 +57,27 @@ public class ArtPiecesTests(WebDriverInitializer initializer, SharedPerTestClass
                 tag.Click();
 
                 Wait.Until(d => d.FindElement(By.Id("selectedTag")).Text == tagName);
+        }
+
+        [Fact, Order(4)]
+        public void Updating_OwnArtPiece_ChangesIt()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Wait.Until(d => d.FindElement(By.Id("edit-art-piece-button"))).Click();
+                var textArea = Wait.Until(d => d.FindElement(By.Id("edit-art-piece-description")));
+                textArea.Clear();
+                textArea.SendKeys("This is a brand new art piece description");
+                Driver.FindElement(By.Id("edit-art-piece-save")).Click();
+
+                Wait.Until(d => d.FindElement(By.Id("detailsDescription")).Text == "This is a brand new art piece description");
+
+                Driver.Navigate().Refresh();
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+                Wait.Until(d => d.FindElement(By.Id("detailsDescription")).Text == "This is a brand new art piece description");
         }
 
 }

@@ -122,4 +122,25 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card")).Text.Contains(NEW_COMMENT));
                 Driver.FindElements(By.ClassName("checked-star")).Should().HaveCount(1);
         }
+
+        [Fact, Order(5)]
+        public void Updating_SomeoneElsesArtPiece_ChangesIt()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artists/SomeArtist");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Wait.Until(d => d.FindElement(By.Id("edit-art-piece-button"))).Click();
+                var textArea = Wait.Until(d => d.FindElement(By.Id("edit-art-piece-description")));
+                textArea.Clear();
+                textArea.SendKeys("This is a brand new art piece description");
+                Driver.FindElement(By.Id("edit-art-piece-save")).Click();
+
+                Wait.Until(d => d.FindElement(By.Id("detailsDescription")).Text == "This is a brand new art piece description");
+
+                Driver.Navigate().Refresh();
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+                Wait.Until(d => d.FindElement(By.Id("detailsDescription")).Text == "This is a brand new art piece description");
+        }
 }
