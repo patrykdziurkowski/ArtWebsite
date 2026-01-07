@@ -25,6 +25,7 @@ public class WebServer : IDisposable
                 DELETE FROM [dbo].[Reviewers];
                 DELETE FROM [dbo].[ArtPieces];
                 DELETE FROM [dbo].[Artists];
+                DELETE FROM [dbo].[Suspensions];
                 DELETE FROM [dbo].[AspNetUserClaims];
                 DELETE FROM [dbo].[AspNetUserLogins];
                 DELETE FROM [dbo].[AspNetUserTokens];

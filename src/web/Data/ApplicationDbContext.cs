@@ -14,6 +14,7 @@ using web.Features.Missions;
 using web.Features.Reviewers;
 using web.Features.Reviews;
 using web.Features.Shared.domain;
+using web.Features.Suspensions;
 using web.Features.Tags;
 
 namespace web.Data;
@@ -21,6 +22,7 @@ namespace web.Data;
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : IdentityDbContext<IdentityUser<Guid>, IdentityRole<Guid>, Guid>(options)
 {
+        public DbSet<Suspension> Suspensions { get; set; }
         public DbSet<Artist> Artists { get; set; }
         public DbSet<ArtPiece> ArtPieces { get; set; }
         public DbSet<Review> Reviews { get; set; }
@@ -111,6 +113,22 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
                 builder.Ignore<AggregateRoot>();
                 builder.Ignore<ValueObject>();
+
+                var suspension = builder.Entity<Suspension>();
+                suspension.HasKey(s => s.Id);
+                suspension.Property(s => s.Id)
+                        .HasConversion(id => id.Value, guid => new SuspensionId { Value = guid });
+                suspension.HasOne<IdentityUser<Guid>>()
+                        .WithMany()
+                        .HasForeignKey(s => s.UserId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                suspension.HasOne<IdentityUser<Guid>>()
+                        .WithMany()
+                        .HasForeignKey(s => s.IssuingUserId)
+                        .OnDelete(DeleteBehavior.Restrict);
+                suspension.Property(s => s.Duration)
+                        .HasConversion(timeSpan => (int)timeSpan.TotalMinutes, totalMinutes => TimeSpan.FromMinutes(totalMinutes))
+                        .HasColumnName("DurationMinutes");
 
                 var artist = builder.Entity<Artist>();
                 artist.HasKey(a => a.Id);

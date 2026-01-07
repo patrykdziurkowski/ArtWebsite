@@ -46,6 +46,7 @@ public abstract class DatabaseTest : IDisposable
                 DbContext.UserLogins.ExecuteDelete();
                 DbContext.UserTokens.ExecuteDelete();
                 DbContext.UserClaims.ExecuteDelete();
+                DbContext.Suspensions.ExecuteDelete();
                 DbContext.Users.ExecuteDelete();
         }
 

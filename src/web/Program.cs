@@ -32,6 +32,7 @@ using web.Features.Reviews.EditReview;
 using web.Features.Reviews.LoadReviews;
 using web.Features.Reviews.ReviewArtPiece;
 using web.Features.Shared;
+using web.Features.Suspensions;
 using web.Features.Tags;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -99,6 +100,7 @@ services.AddTransient<EditReviewerProfileCommand>();
 services.AddTransient<DeleteReviewCommand>();
 services.AddTransient<BoostArtPieceCommand>();
 services.AddTransient<ArtPieceQuery>();
+services.AddTransient<SuspendUserCommand>();
 services.AddTransient<ArtPieceByTagQuery>();
 services.AddTransient<ArtPiecesQuery>();
 services.AddTransient<ReviewerReviewsQuery>();
