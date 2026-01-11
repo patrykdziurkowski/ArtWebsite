@@ -108,6 +108,7 @@ services.AddTransient<ArtistLeaderboardQuery>();
 services.AddTransient<EditReviewCommand>();
 services.AddTransient<EditArtPieceCommand>();
 services.AddTransient<ReviewerLeaderboardQuery>();
+services.AddTransient<ArtPieceDetailsQuery>();
 services.AddTransient<TodaysMissionQuery>();
 services.AddTransient<ArtPieceReviewsQuery>();
 services.AddTransient<UserReviewerQuery>();

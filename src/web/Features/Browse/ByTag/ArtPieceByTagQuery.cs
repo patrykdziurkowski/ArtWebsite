@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
+using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.Reviewers;
 
@@ -8,8 +9,8 @@ namespace web.Features.Browse.ByTag;
 
 public class ArtPieceByTagQuery(
         ArtPieceRepository artPieceRepository,
-        ApplicationDbContext dbContext,
-        IMapper mapper)
+        ArtistRepository artistRepository,
+        ApplicationDbContext dbContext)
 {
 
         public async Task<ArtPieceDto?> ExecuteAsync(Guid currentUserId, string? tagName = null)
@@ -25,7 +26,19 @@ public class ArtPieceByTagQuery(
                         return null;
                 }
 
-                return mapper.Map<ArtPieceDto>(artPiece);
+                Artist artistOwner = (await artistRepository.GetByIdAsync(artPiece.ArtistId))!;
+
+                return new ArtPieceDto
+                {
+                        Id = artPiece.Id,
+                        ImagePath = artPiece.ImagePath,
+                        Description = artPiece.Description,
+                        AverageRating = artPiece.AverageRating,
+                        UploadDate = artPiece.UploadDate,
+                        ArtistId = artPiece.ArtistId,
+                        ArtistName = artistOwner.Name,
+                        ArtistUserId = artistOwner.UserId,
+                };
         }
 
 }

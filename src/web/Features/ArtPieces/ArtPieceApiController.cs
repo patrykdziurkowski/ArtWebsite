@@ -21,7 +21,7 @@ public class ArtPieceApiController(
         ArtPiecesQuery artPiecesQuery,
         ArtPieceByTagQuery artPiecesByTagQuery,
         EditArtPieceCommand editArtPieceCommand,
-        ApplicationDbContext dbContext,
+        ArtPieceDetailsQuery artPieceDetailsQuery,
         RegisterArtPieceServedCommand registerArtPieceServedCommand) : ControllerBase
 {
         private const int ART_PIECES_TO_LOAD = 5;
@@ -52,7 +52,8 @@ public class ArtPieceApiController(
         [HttpGet("/api/artpieces/{artPieceId}")]
         public async Task<IActionResult> GetArtPiece(Guid artPieceId)
         {
-                return Ok(await dbContext.ArtPieces.FirstAsync(ap => ap.Id == new ArtPieceId() { Value = artPieceId }));
+                ArtPieceDto artPiece = await artPieceDetailsQuery.ExecuteAsync(new ArtPieceId() { Value = artPieceId });
+                return Ok(artPiece);
         }
 
         [HttpGet("/api/artists/{artistId}/artpieces/")]

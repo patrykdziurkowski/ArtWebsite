@@ -4,10 +4,12 @@ namespace web.Features.ArtPieces;
 
 public record ArtPieceDto
 {
-        public ArtPieceId Id { get; init; } = new ArtPieceId();
+        public required ArtPieceId Id { get; init; }
         public required string ImagePath { get; init; }
         public required string Description { get; set; }
-        public int AverageRating { get; set; } = 0;
-        public DateTimeOffset UploadDate { get; init; } = DateTimeOffset.UtcNow;
+        public required int AverageRating { get; set; }
+        public required DateTimeOffset UploadDate { get; init; }
         public required ArtistId ArtistId { get; init; }
+        public required Guid ArtistUserId { get; init; }
+        public required string ArtistName { get; init; }
 }
