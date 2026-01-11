@@ -1,1 +1,21 @@
-Suspensions page (W.I.P.)
+@using web.Features.Suspensions
+@model SuspendedModel
+
+<h1>You have been suspended.</h1>
+@if (string.IsNullOrEmpty(Model.Reason))
+{
+    <p>No reason was given.</p>
+}
+else
+{
+    <p>Reason: <span id="suspension-reason">@Model.Reason</span></p>
+}
+<p>Your suspension expires at <span id="suspension-expiry-date">@Model.ExpiryDate</span></p>
+
+<script>
+    {
+        const dateElement = document.getElementById('suspension-expiry-date');
+        const localDateTime = new Date(dateElement.innerText).toLocaleString();
+        dateElement.innerText = localDateTime;
+    }
+</script>

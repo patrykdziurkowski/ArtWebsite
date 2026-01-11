@@ -36,6 +36,8 @@
             </div>
         </div>
     </div>
+
+    <partial name="../UserDetails/_UserDetailsPartial" />
 </div>
 
 <script>
@@ -52,6 +54,7 @@
                     document.getElementById('artDetailsImage').src = data.imagePath;
                     document.getElementById('detailsDescription').innerText = data.description;
                 });
+            this.userDetailsPanel = new UserDetailsPanel();
 
             this.reviewsOffset = 0;
             this.artPieceId = artPieceId;
@@ -236,7 +239,7 @@
                 reviewEl.className = 'details-review d-flex mb-3';
                 reviewEl.innerHTML =
                     `<div>` +
-                    `<div><strong>${r.reviewerName}</strong>${badge} -  <span class="review-points">${r.points} points</span> - <small>${new Date(r.date).toLocaleDateString()}</small></div>` +
+                    `<div><strong class="review-reviewer-name" data-user-id="${r.userId}">${r.reviewerName}</strong>${badge} -  <span class="review-points">${r.points} points</span> - <small>${new Date(r.date).toLocaleDateString()}</small></div>` +
                     `<div class="review-content"><span class="review-rating">${r.rating.value}</span>★ <span class="review-comment">${r.comment}</span></div>` +
                     `</div>`;
 
@@ -266,6 +269,22 @@
             });
 
             if (reviews.length > 0) this.reviewsOffset += reviews.length;
+
+            document.querySelectorAll('.review-reviewer-name').forEach(el => {
+                el.removeEventListener('click', e => this.#openUserDetails(e, el));
+            });
+            document.querySelectorAll('.review-reviewer-name').forEach(el => {
+                el.addEventListener('click', e => this.#openUserDetails(e, el));
+            });
+        }
+
+        #openUserDetails(e, el) {
+            this.userDetailsPanel.show({
+                userId: el.dataset.userId,
+                username: el.textContent,
+                x: e.pageX,
+                y: e.pageY
+            });
         }
 
         show() {

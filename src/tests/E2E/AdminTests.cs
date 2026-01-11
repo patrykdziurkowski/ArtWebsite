@@ -143,4 +143,28 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
                 Wait.Until(d => d.FindElement(By.Id("detailsDescription")).Text == "This is a brand new art piece description");
         }
+
+        [Fact, Order(6)]
+        public void SuspendingAUser_DoesntLetThemComeBack_UntilSuspensionExpires()
+        {
+                ResetTestContext();
+                CreateUserWithArtistProfile();
+                UploadArtPiece();
+                ReviewThisArtPieceThenLoadNext();
+                Logout();
+                Login(WebServer.ROOT_TEST_EMAIL, WebServer.ROOT_TEST_PASSWORD);
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/SomeUser123");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Wait.Until(d => d.FindElement(By.ClassName("review-reviewer-name"))).Click();
+                Wait.Until(d => d.FindElement(By.Id("user-details-suspend-button"))).Click();
+                Wait.Until(d => d.FindElement(By.Id("user-details-reason"))).SendKeys("Some suspension reason.");
+                Driver.FindElement(By.Id("user-details-suspend-submit")).Click();
+
+                Logout();
+                Login("john@smith.com", "Ex@mpl3");
+                Wait.Until(d => d.FindElement(By.Id("suspension-reason")).Text == "Some suspension reason.");
+        }
 }

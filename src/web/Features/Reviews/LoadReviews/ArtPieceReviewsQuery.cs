@@ -23,6 +23,7 @@ public class ArtPieceReviewsQuery(
                                 reviewer => reviewer.Id,
                                 (review, reviewer) => new ArtPieceReviewDto
                                 {
+                                        UserId = reviewer.UserId,
                                         ReviewId = review.Id.Value,
                                         ReviewerName = reviewer.Name,
                                         Rating = review.Rating,

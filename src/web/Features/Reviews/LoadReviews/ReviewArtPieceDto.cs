@@ -2,6 +2,7 @@ namespace web.Features.Reviews.LoadReviews;
 
 public record ArtPieceReviewDto
 {
+        public required Guid UserId { get; init; }
         public required Guid ReviewId { get; init; }
         public required string ReviewerName { get; init; }
         public required DateTimeOffset Date { get; init; }

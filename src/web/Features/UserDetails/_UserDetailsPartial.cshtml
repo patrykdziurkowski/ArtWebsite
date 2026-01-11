@@ -1,0 +1,100 @@
+<div id="user-details-panel" class="position-absolute d-none card shadow" style="min-width: 260px; z-index: 1050;">
+    <div class="card-body p-2">
+        <div class="fw-semibold mb-2" id="user-details-username"></div>
+
+        <button id="user-details-suspend-button" class="btn btn-sm btn-outline-danger w-100 mb-2">
+            Suspend
+        </button>
+
+        <form id="user-details-suspend-form" class="d-none">
+            <div class="row g-1 mb-2">
+                <div class="col-6">
+                    <input id="user-details-duration-value" type="number" min="1" class="form-control form-control-sm"
+                        value="10" />
+                </div>
+                <div class="col-6">
+                    <select id="user-details-duration-unit" class="form-select form-select-sm">
+                        <option value="minutes">Minutes</option>
+                        <option value="hours">Hours</option>
+                        <option value="days">Days</option>
+                    </select>
+                </div>
+            </div>
+
+            <input id="user-details-reason" class="form-control form-control-sm mb-2" type="text"
+                placeholder="Reason" />
+
+            <button id="user-details-suspend-submit" type="submit" class="btn btn-sm btn-danger w-100">
+                Confirm suspension
+            </button>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    const isAdmin = @Json.Serialize(User.IsInRole("Admin"));
+
+    class UserDetailsPanel {
+        constructor() {
+            this.panel = document.getElementById('user-details-panel');
+            this.usernameElement = this.panel.querySelector('#user-details-username');
+            this.suspendButton = this.panel.querySelector('#user-details-suspend-button');
+            this.suspendForm = this.panel.querySelector('#user-details-suspend-form');
+            this.durationUnitElement = this.panel.querySelector('#user-details-duration-unit');
+            this.durationValueElement = this.panel.querySelector('#user-details-duration-value');
+            this.reasonElement = this.panel.querySelector('#user-details-reason');
+
+            this.userId = null;
+
+            if (isAdmin) {
+                this.suspendButton.onclick = () => this.suspendForm.classList.toggle('d-none');
+                this.suspendForm.onsubmit = e => this.submitSuspension(e);
+            } else {
+                this.suspendButton.classList.add('d-none');
+            }
+
+        }
+
+        show({ userId, username, x, y }) {
+            this.userId = userId;
+            this.usernameElement.textContent = username;
+            this.panel.style.left = `${x}px`;
+            this.panel.style.top = `${y}px`;
+            this.panel.classList.remove('d-none');
+            this.suspendForm.classList.add('d-none');
+        }
+
+        hide() {
+            this.panel.classList.add('d-none');
+            this.userId = null;
+        }
+
+        durationMinutes() {
+            const value = Number(this.durationValueElement.value);
+            const unit = this.durationUnitElement.value;
+            if (unit == 'minutes') return value;
+            if (unit === 'hours') return value * 60;
+            if (unit === 'days') return value * 60 * 24;
+            if (unit === 'months') return value * 60 * 24 * 30;
+            if (unit === 'years') return value * 60 * 24 * 30 * 365;
+
+            console.error(`Unhandled unit when converting the selected user suspension duration: '${unit}'`);
+        }
+
+        async submitSuspension(e) {
+            e.preventDefault();
+
+            await fetch(`/api/users/${this.userId}/suspensions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    durationMinutes: this.durationMinutes(),
+                    reason: this.reasonElement.value
+                })
+            });
+
+            this.hide();
+        }
+    }
+</script>

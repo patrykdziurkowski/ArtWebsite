@@ -32,9 +32,9 @@ public class SuspendUserCommand(
                 {
                         IssuingUserId = currentUserId,
                         UserId = userToSuspendId,
-                        Duration = suspensionDuration,
                         Reason = reason,
                         IssuedAt = now.Value,
+                        ExpiryDate = now.Value.Add(suspensionDuration),
                 };
 
                 await dbContext.AddAsync(suspension);

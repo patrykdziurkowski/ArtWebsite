@@ -126,9 +126,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .WithMany()
                         .HasForeignKey(s => s.IssuingUserId)
                         .OnDelete(DeleteBehavior.Restrict);
-                suspension.Property(s => s.Duration)
-                        .HasConversion(timeSpan => (int)timeSpan.TotalMinutes, totalMinutes => TimeSpan.FromMinutes(totalMinutes))
-                        .HasColumnName("DurationMinutes");
 
                 var artist = builder.Entity<Artist>();
                 artist.HasKey(a => a.Id);

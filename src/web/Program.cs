@@ -165,6 +165,7 @@ app.UseStaticFiles(new StaticFileOptions
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();
+app.UseMiddleware<SuspensionMiddleware>();
 app.UseAuthorization();
 app.MapStaticAssets();
 app.MapControllerRoute(
@@ -194,6 +195,7 @@ static async Task CreateRolesIfNotPresentAsync(IServiceScope scope)
 static async Task CreateRootUserIfNotPresentAsync(string rootUserName, string rootPassword, string rootEmail, IServiceScope scope)
 {
         UserManager<IdentityUser<Guid>> userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
+        ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         if (await userManager.FindByNameAsync(rootUserName) is null)
         {
                 IdentityUser<Guid> root = new(rootUserName)
@@ -207,6 +209,13 @@ static async Task CreateRootUserIfNotPresentAsync(string rootUserName, string ro
                 {
                         throw new InvalidOperationException("Unable to create the root user: " + string.Join(',', result.Errors.Select(e => e.Description)));
                 }
+
+                dbContext.Reviewers.Add(new Reviewer()
+                {
+                        Name = rootUserName,
+                        UserId = root.Id,
+                });
+                await dbContext.SaveChangesAsync();
 
                 IdentityResult roleResult = await userManager.AddToRoleAsync(root, Constants.ADMIN_ROLE);
                 if (!roleResult.Succeeded)
