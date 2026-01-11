@@ -22,7 +22,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">What next?</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"></button>
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">
@@ -39,7 +39,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Review Art</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"></button>
             </div>
             <div class="modal-body">
                 <form asp-controller="Review" asp-action="ReviewArtPiece" method="post" id="reviewForm">
@@ -93,6 +93,15 @@
             const reviewForm = document.querySelector('#reviewForm');
             const reviewModal = new bootstrap.Modal(document.querySelector('#reviewModal'));
             const postReviewModal = new bootstrap.Modal(document.querySelector('#postReviewModal'));
+
+            // note: this is registered here via event listener instead of using boostrap's data tags
+            // because of issues when using both data-bs-dismiss alongside new bootstrap.Modal(...)
+            document.querySelector('#reviewModal .btn-close').addEventListener('click', () => {
+                reviewModal.hide();
+            });
+            document.querySelector('#postReviewModal .btn-close').addEventListener('click', () => {
+                postReviewModal.hide();
+            });
 
             async function nextArtPiece() {
                 postReviewModal.hide();

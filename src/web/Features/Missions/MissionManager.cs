@@ -63,13 +63,17 @@ public class MissionManager(
                 if (missionRecipient == MissionRecipient.Both
                         || missionRecipient == MissionRecipient.Artist)
                 {
-                        Artist artist = await dbContext.Artists.FirstAsync(a => a.UserId == userId);
-                        artist.Points += POINTS_PER_QUEST;
-                        await dbContext.ArtistPointAwards.AddAsync(new()
+                        Artist? artist = await dbContext.Artists.FirstOrDefaultAsync(a => a.UserId == userId);
+                        if (artist is not null)
                         {
-                                PointValue = POINTS_PER_QUEST,
-                                ArtistId = artist.Id,
-                        });
+                                artist.Points += POINTS_PER_QUEST;
+                                await dbContext.ArtistPointAwards.AddAsync(new()
+                                {
+                                        PointValue = POINTS_PER_QUEST,
+                                        ArtistId = artist.Id,
+                                });
+                        }
+
                 }
 
                 if (missionRecipient == MissionRecipient.Both

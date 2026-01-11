@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Art piece details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"></button>
             </div>
             <div class="modal-body d-flex flex-column flex-md-row">
                 <div class="container-fluid">
@@ -64,6 +64,11 @@
             this.artPieceDetailsModal = new bootstrap.Modal(document.querySelector('#artPieceDetailsModal'));
 
             this.#loadReviews(false);
+
+            // note: this is registered here via event listener instead of using boostrap's data tags
+            // because of issues when using both data-bs-dismiss alongside new bootstrap.Modal(...)
+            document.querySelector('#artPieceDetailsModal .btn-close').removeEventListener('click', this.hide);
+            document.querySelector('#artPieceDetailsModal .btn-close').addEventListener('click', this.hide);
 
             document.querySelector('#edit-art-piece-button').addEventListener('click', async (e) => {
                 await this.#showArtPieceEditForm(e);
