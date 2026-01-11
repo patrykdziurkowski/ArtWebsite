@@ -120,7 +120,7 @@ p {
         z-index: 5;
 }
 
-#reviewArt.disabled::before {
+#reviewArt[disabled="disabled"]::before {
         animation-name: review-loading-animation;
         animation-duration: var(--review-cooldown);
         animation-timing-function: linear;
@@ -128,7 +128,7 @@ p {
         animation-iteration-count: 1;
 }
 
-#reviewArt:not(.disabled)::before {
+#reviewArt:not([disabled="disabled"])::before {
         opacity: 0;
 }
 
