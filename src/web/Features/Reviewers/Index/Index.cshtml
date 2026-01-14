@@ -3,7 +3,7 @@
 @model ReviewerProfileDto
 
 <div class="container mt-5">
-    <h2><span id="reviewerName">@Model.Name</span>'s profile</h2>
+    <h2><span id="reviewerName" data-user-id="@Model.ReviewerUserId">@Model.Name</span>'s profile</h2>
     @if (@Model.CurrentUserOwnsThisProfile || @Model.IsCurrentUserAdmin)
     {
         <button id="editProfileModalButton" data-bs-toggle="modal" data-bs-target="#editProfileModal">
@@ -111,6 +111,14 @@
                     artPieceDetails.show();
                 });
             }
+
+            document.getElementById('reviewerName').addEventListener('click', (e) => {
+                const el = e.currentTarget;
+                userDetails.show(
+                    el,
+                    el.dataset.userId,
+                    el.textContent);
+            });
         });
     </script>
 }

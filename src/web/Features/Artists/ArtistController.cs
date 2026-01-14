@@ -36,7 +36,8 @@ public class ArtistController(
                         : null;
                 ArtistProfileModel model = new()
                 {
-                        Id = artist.Id.Value,
+                        Id = artist.Id,
+                        ArtistUserId = artist.UserId,
                         Name = artist.Name,
                         Summary = artist.Summary,
                         IsOwner = true,
@@ -64,7 +65,8 @@ public class ArtistController(
                         : null;
                 ArtistProfileModel model = new()
                 {
-                        Id = artist.Id.Value,
+                        Id = artist.Id,
+                        ArtistUserId = artist.UserId,
                         Name = artist.Name,
                         Summary = artist.Summary,
                         IsOwner = artist.UserId == GetUserId(),

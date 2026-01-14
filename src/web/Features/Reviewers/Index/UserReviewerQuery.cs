@@ -15,6 +15,7 @@ public class UserReviewerQuery(
                 return new ReviewerProfileDto()
                 {
                         Id = reviewer.Id,
+                        ReviewerUserId = reviewer.UserId,
                         Name = reviewer.Name,
                         JoinDate = reviewer.JoinDate,
                         ReviewCount = reviewer.ReviewCount,

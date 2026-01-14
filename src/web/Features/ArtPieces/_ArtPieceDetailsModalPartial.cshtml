@@ -37,8 +37,6 @@
             </div>
         </div>
     </div>
-
-    <partial name="../UserDetails/_UserDetailsPartial" />
 </div>
 
 <script>
@@ -57,7 +55,6 @@
                     document.getElementById('art-piece-details-artist').innerText = data.artistName;
                     document.getElementById('art-piece-details-artist').dataset.userId = data.artistUserId;
                 });
-            this.userDetailsPanel = new UserDetailsPanel();
 
             this.reviewsOffset = 0;
             this.artPieceId = artPieceId;
@@ -67,8 +64,8 @@
 
             // note: this is registered here via event listener instead of using boostrap's data tags
             // because of issues when using both data-bs-dismiss alongside new bootstrap.Modal(...)
-            document.querySelector('#artPieceDetailsModal .btn-close').removeEventListener('click', this.hide);
-            document.querySelector('#artPieceDetailsModal .btn-close').addEventListener('click', this.hide);
+            document.querySelector('#artPieceDetailsModal .btn-close').removeEventListener('click', () => this.hide());
+            document.querySelector('#artPieceDetailsModal .btn-close').addEventListener('click', () => this.hide());
 
             document.querySelector('#edit-art-piece-button').addEventListener('click', async (e) => {
                 await this.#showArtPieceEditForm(e);
@@ -299,12 +296,10 @@
         }
 
         #openUserDetails(e, el) {
-            this.userDetailsPanel.show({
-                userId: el.dataset.userId,
-                username: el.textContent,
-                x: e.pageX,
-                y: e.pageY
-            });
+            userDetails.show(
+                el,
+                el.dataset.userId,
+                el.textContent);
         }
     }
 </script>

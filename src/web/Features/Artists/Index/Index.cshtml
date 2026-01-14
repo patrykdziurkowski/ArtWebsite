@@ -3,7 +3,7 @@
 
 <div class="container mt-4">
     <h2>
-        <span id="artistName">@Model.Name</span>'s Profile
+        <span id="artistName" data-user-id="@Model.ArtistUserId">@Model.Name</span>'s Profile
         @if (@Model.IsOwner || @Model.IsAdmin)
         {
             <button id="editProfileModalButton" data-bs-toggle="modal" data-bs-target="#editProfileModal">
@@ -108,6 +108,14 @@
                 document.querySelector('#artistName').innerText = data.name;
                 document.querySelector('#artistSummary').innerText = data.summary;
                 document.querySelector('#editProfileModal .btn-close').click();
+            });
+
+            document.getElementById('artistName').addEventListener('click', (e) => {
+                const el = e.currentTarget;
+                userDetails.show(
+                    el,
+                    el.dataset.userId,
+                    el.textContent);
             });
         });
     </script>

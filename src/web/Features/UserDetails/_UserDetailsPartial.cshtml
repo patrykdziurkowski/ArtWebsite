@@ -1,4 +1,4 @@
-<div id="user-details-panel" class="position-absolute d-none card shadow" style="min-width: 260px; z-index: 1050;">
+<div id="user-details-panel" class="d-none card shadow" style="position: absolute; min-width: 260px; z-index: 2000;">
     <div class="card-body p-2">
         <div class="fw-semibold mb-2" id="user-details-username"></div>
 
@@ -37,15 +37,32 @@
 
     class UserDetailsPanel {
         constructor() {
-            this.panel = document.getElementById('user-details-panel');
+            this.popover = null;
+        }
+
+        show(triggeringElement, userId, username) {
+            if (this.popover !== null) {
+                this.hide();
+            }
+
+            this.triggeringElement = triggeringElement;
+
+            this.popover = new bootstrap.Popover(triggeringElement, {
+                content: document.getElementById('user-details-panel').innerHTML,
+                html: true,
+                container: triggeringElement.parentElement,
+                trigger: 'manual',
+                sanitize: false,
+            });
+            this.popover.show();
+
+            this.panel = document.querySelector('.popover');
             this.usernameElement = this.panel.querySelector('#user-details-username');
             this.suspendButton = this.panel.querySelector('#user-details-suspend-button');
             this.suspendForm = this.panel.querySelector('#user-details-suspend-form');
             this.durationUnitElement = this.panel.querySelector('#user-details-duration-unit');
             this.durationValueElement = this.panel.querySelector('#user-details-duration-value');
             this.reasonElement = this.panel.querySelector('#user-details-reason');
-
-            this.userId = null;
 
             if (isAdmin) {
                 this.suspendButton.onclick = () => this.suspendForm.classList.toggle('d-none');
@@ -54,23 +71,28 @@
                 this.suspendButton.classList.add('d-none');
             }
 
+            this.usernameElement.textContent = username;
+            this.userId = userId;
+            this.suspendForm.classList.add('d-none');
+
+            this.boundClickHandler = this.#clickHandler.bind(this);
+            document.addEventListener('click', this.boundClickHandler);
         }
 
-        show({ userId, username, x, y }) {
-            this.userId = userId;
-            this.usernameElement.textContent = username;
-            this.panel.style.left = `${x}px`;
-            this.panel.style.top = `${y}px`;
-            this.panel.classList.remove('d-none');
-            this.suspendForm.classList.add('d-none');
+        #clickHandler(e) {
+            console.log("Click handler called");
+            if (!this.panel.contains(e.target) && e.target !== this.triggeringElement) {
+                this.hide();
+            }
         }
 
         hide() {
-            this.panel.classList.add('d-none');
-            this.userId = null;
+            document.removeEventListener('click', this.boundClickHandler);
+            this.popover.dispose();
+            this.popover = null;
         }
 
-        durationMinutes() {
+        #durationMinutes() {
             const value = Number(this.durationValueElement.value);
             const unit = this.durationUnitElement.value;
             if (unit == 'minutes') return value;
@@ -89,7 +111,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    durationMinutes: this.durationMinutes(),
+                    durationMinutes: this.#durationMinutes(),
                     reason: this.reasonElement.value
                 })
             });
@@ -97,4 +119,6 @@
             this.hide();
         }
     }
+
+    const userDetails = new UserDetailsPanel();
 </script>

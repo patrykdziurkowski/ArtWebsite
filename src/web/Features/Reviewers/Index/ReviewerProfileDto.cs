@@ -3,6 +3,7 @@ namespace web.Features.Reviewers.Index;
 public record ReviewerProfileDto
 {
         public required ReviewerId Id { get; init; }
+        public required Guid ReviewerUserId { get; init; }
         public required string Name { get; set; }
         public required DateTimeOffset JoinDate { get; init; }
         public required int ReviewCount { get; init; }

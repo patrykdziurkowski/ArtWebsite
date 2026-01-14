@@ -22,7 +22,11 @@ public class WebServer : IDisposable
                 DELETE FROM [dbo].[Likes];
                 DELETE FROM [dbo].[Boosts];
                 DELETE FROM [dbo].[Reviews];
-                DELETE FROM [dbo].[Reviewers];
+                -- Delete Reviewers for users who are not admins
+                DELETE FROM [dbo].[Reviewers] WHERE UserId NOT IN (
+                        SELECT UserId FROM [dbo].[AspNetUserRoles] ur
+                        JOIN [dbo].[AspNetRoles] r ON ur.RoleId = r.Id
+                        WHERE r.Name = 'Admin');
                 DELETE FROM [dbo].[ArtPieces];
                 DELETE FROM [dbo].[Artists];
                 DELETE FROM [dbo].[Suspensions];
