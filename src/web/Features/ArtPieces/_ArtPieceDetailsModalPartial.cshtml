@@ -92,8 +92,8 @@
             });
 
             const artistName = document.getElementById('art-piece-details-artist');
-            artistName.removeEventListener('click', e => this.#openUserDetails(e, artistName));
-            artistName.addEventListener('click', e => this.#openUserDetails(e, artistName));
+            artistName.removeEventListener('click', e => this.#openUserDetails(e, artistName, true));
+            artistName.addEventListener('click', e => this.#openUserDetails(e, artistName, true));
         }
 
         get isShown() {
@@ -288,18 +288,19 @@
             if (reviews.length > 0) this.reviewsOffset += reviews.length;
 
             document.querySelectorAll('.review-reviewer-name').forEach(el => {
-                el.removeEventListener('click', e => this.#openUserDetails(e, el));
+                el.removeEventListener('click', e => this.#openUserDetails(e, el, false));
             });
             document.querySelectorAll('.review-reviewer-name').forEach(el => {
-                el.addEventListener('click', e => this.#openUserDetails(e, el));
+                el.addEventListener('click', e => this.#openUserDetails(e, el, false));
             });
         }
 
-        #openUserDetails(e, el) {
+        #openUserDetails(e, el, isArtist) {
             userDetails.show(
                 el,
                 el.dataset.userId,
-                el.textContent);
+                el.textContent,
+                isArtist);
         }
     }
 </script>

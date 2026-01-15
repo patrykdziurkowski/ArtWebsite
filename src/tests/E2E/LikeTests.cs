@@ -1,7 +1,6 @@
 using System.Collections.ObjectModel;
 using FluentAssertions;
 using OpenQA.Selenium;
-using SeleniumExtras.WaitHelpers;
 using tests.E2E.Fixtures;
 using Xunit.Extensions.Ordering;
 

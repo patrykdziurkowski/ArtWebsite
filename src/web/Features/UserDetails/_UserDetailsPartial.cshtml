@@ -2,6 +2,10 @@
     <div class="card-body p-2">
         <div class="fw-semibold mb-2" id="user-details-username"></div>
 
+        <button id="user-details-view-profile" class="btn btn-primary">
+            Profile
+        </button>
+
         <button id="user-details-suspend-button" class="btn btn-sm btn-outline-danger w-100 mb-2">
             Suspend
         </button>
@@ -40,7 +44,7 @@
             this.popover = null;
         }
 
-        show(triggeringElement, userId, username) {
+        show(triggeringElement, userId, username, isArtistTooltip) {
             if (this.popover !== null) {
                 this.hide();
             }
@@ -71,6 +75,12 @@
                 this.suspendButton.classList.add('d-none');
             }
 
+            const profileButton = document.getElementById('user-details-view-profile');
+            const profileType = (isArtistTooltip) ? "Artists" : "Reviewers";
+            profileButton.onclick = () => {
+                window.location.href = `/${profileType}/${username}`;
+            };
+
             this.usernameElement.textContent = username;
             this.userId = userId;
             this.suspendForm.classList.add('d-none');
@@ -80,7 +90,6 @@
         }
 
         #clickHandler(e) {
-            console.log("Click handler called");
             if (!this.panel.contains(e.target) && e.target !== this.triggeringElement) {
                 this.hide();
             }
