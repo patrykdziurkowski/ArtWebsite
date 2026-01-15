@@ -191,4 +191,48 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 Login("john@smith.com", "Ex@mpl3");
                 Wait.Until(d => d.FindElement(By.Id("suspension-reason")).Text == "Some suspension reason.");
         }
+
+        [Fact, Order(8)]
+        public void SuspendingAUser_FromTheirArtistProfile_DoesntLetThemComeBack_UntilSuspensionExpires()
+        {
+                ResetTestContext();
+                CreateUserWithArtistProfile();
+                UploadArtPiece();
+                ReviewThisArtPieceThenLoadNext();
+                Logout();
+                Login(WebServer.ROOT_TEST_EMAIL, WebServer.ROOT_TEST_PASSWORD);
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artists/SomeArtist");
+
+                Wait.Until(d => d.FindElement(By.Id("artistName"))).Click();
+                Wait.Until(d => d.FindElement(By.Id("user-details-suspend-button"))).Click();
+                Wait.Until(d => d.FindElement(By.Id("user-details-reason"))).SendKeys("Some suspension reason.");
+                Driver.FindElement(By.Id("user-details-suspend-submit")).Click();
+
+                Logout();
+                Login("john@smith.com", "Ex@mpl3");
+                Wait.Until(d => d.FindElement(By.Id("suspension-reason")).Text == "Some suspension reason.");
+        }
+
+        [Fact, Order(9)]
+        public void SuspendingAUser_FromTheirReviewerProfile_DoesntLetThemComeBack_UntilSuspensionExpires()
+        {
+                ResetTestContext();
+                CreateUserWithArtistProfile();
+                UploadArtPiece();
+                ReviewThisArtPieceThenLoadNext();
+                Logout();
+                Login(WebServer.ROOT_TEST_EMAIL, WebServer.ROOT_TEST_PASSWORD);
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/SomeUser123");
+
+                Wait.Until(d => d.FindElement(By.Id("reviewerName"))).Click();
+                Wait.Until(d => d.FindElement(By.Id("user-details-suspend-button"))).Click();
+                Wait.Until(d => d.FindElement(By.Id("user-details-reason"))).SendKeys("Some suspension reason.");
+                Driver.FindElement(By.Id("user-details-suspend-submit")).Click();
+
+                Logout();
+                Login("john@smith.com", "Ex@mpl3");
+                Wait.Until(d => d.FindElement(By.Id("suspension-reason")).Text == "Some suspension reason.");
+        }
 }
