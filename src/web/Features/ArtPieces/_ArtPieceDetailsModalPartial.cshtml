@@ -13,6 +13,7 @@
                             <div id="art-piece-about">
                                 <h3 id="art-piece-details-artist"></h3>
                                 <p id="detailsDescription" class="mt-3"></p>
+                                <p id="art-piece-details-like-count"></p>
                             </div>
                             <button id="edit-art-piece-button" class="btn btn-secondary btn-sm ms-2">
                                 <i class="bi bi-pencil-square"></i>'
@@ -54,6 +55,10 @@
                     document.getElementById('detailsDescription').innerText = data.description;
                     document.getElementById('art-piece-details-artist').innerText = data.artistName;
                     document.getElementById('art-piece-details-artist').dataset.userId = data.artistUserId;
+                    const likeHtml = data.likeCount === 1
+                        ? `<span id="art-piece-details-like-number">${data.likeCount}</span> like`
+                        : `<span id="art-piece-details-like-number">${data.likeCount}</span> likes`;
+                    document.getElementById('art-piece-details-like-count').innerHTML = likeHtml;
                 });
 
             this.reviewsOffset = 0;
@@ -118,6 +123,7 @@
                         <button id="edit-art-piece-cancel" type="button" class="btn btn-secondary">Cancel</button>
                     </div>
                 </div>`
+            const previousHtml = aboutContainer.innerHTML;
             aboutContainer.innerHTML = formHtml;
             aboutContainer.querySelector('#edit-art-piece-cancel').addEventListener('click', () => {
                 aboutContainer.innerHTML = `<p id="detailsDescription" class="mt-3">${this.description}</p>`;
@@ -139,7 +145,7 @@
                     return;
                 }
 
-                aboutContainer.innerHTML = `<p id="detailsDescription" class="mt-3">${newDescription}</p>`;
+                aboutContainer.innerHTML = previousHtml;
                 this.description = newDescription;
             });
 

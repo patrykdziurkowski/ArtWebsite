@@ -42,6 +42,9 @@ public class LikeArtPieceCommand(
                         return likeResult;
                 }
 
+                ArtPiece likedArtPiece = await dbContext.ArtPieces.FirstAsync(ap => ap.Id == artPieceId);
+                likedArtPiece.LikeCount++;
+
                 await reviewerRepository.SaveAsync(reviewer);
 
                 await missionManager.RecordProgressAsync(MissionType.LikeArt, currentUserId, now.Value);

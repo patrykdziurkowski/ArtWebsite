@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using FluentAssertions;
 using OpenQA.Selenium;
+using SeleniumExtras.WaitHelpers;
 using tests.E2E.Fixtures;
 using Xunit.Extensions.Ordering;
 
@@ -55,5 +56,14 @@ public class LikeTests(WebDriverInitializer initializer, SharedPerTestClass shar
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
                 var foundLikedArtPieces = Wait.Until(d => d.FindElements(By.CssSelector("#likesList > div")));
                 foundLikedArtPieces.Should().HaveCount(PREVIOUS_LIKES_COUNT);
+        }
+
+        [Fact, Order(3)]
+        public void LikedArtPiece_HasOneMoreLike_Now()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer/");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+                Wait.Until(d => d.FindElement(By.Id("art-piece-details-like-number")).Text == "1");
         }
 }

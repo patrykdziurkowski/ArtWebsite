@@ -107,6 +107,7 @@ public class LikeArtPieceCommandTests : DatabaseTest
                 await _command.ExecuteAsync(currentUserId, artPieceIds.First());
 
                 DbContext.Likes.Should().HaveCount(1);
+                DbContext.ArtPieces.Single(ap => ap.Id == artPieceIds.First()).LikeCount.Should().Be(1);
         }
 
         [Fact]
