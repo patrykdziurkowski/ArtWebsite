@@ -79,7 +79,9 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Browse");
                 ReviewThisArtPieceThenLoadNext();
 
-                Wait.IgnoreExceptionTypes(typeof(StaleElementReferenceException));
+                Wait.IgnoreExceptionTypes(
+                        typeof(StaleElementReferenceException),
+                        typeof(NoSuchElementException));
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
                 Wait.Until(d =>

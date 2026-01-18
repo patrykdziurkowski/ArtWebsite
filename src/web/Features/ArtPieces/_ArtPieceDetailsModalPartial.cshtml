@@ -125,9 +125,11 @@
                 </div>`
             const previousHtml = aboutContainer.innerHTML;
             aboutContainer.innerHTML = formHtml;
+
             aboutContainer.querySelector('#edit-art-piece-cancel').addEventListener('click', () => {
                 aboutContainer.innerHTML = `<p id="detailsDescription" class="mt-3">${this.description}</p>`;
             });
+
             aboutContainer.querySelector('#edit-art-piece-save').addEventListener('click', async () => {
                 const newDescription = document.querySelector('#edit-art-piece-description').value;
                 const response = await fetch(`/api/artpieces/${this.artPieceId}`, {
@@ -147,6 +149,7 @@
 
                 aboutContainer.innerHTML = previousHtml;
                 this.description = newDescription;
+                document.querySelector('#detailsDescription').innerText = newDescription;
             });
 
         }
