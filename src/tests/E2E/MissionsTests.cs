@@ -112,7 +112,9 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                                 .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
                                 .Select(p => int.Parse(p))
                                 .ToList();
-                        if (reviewerPoints.Count != 6)
+
+                        // includes 1 existing admin
+                        if (reviewerPoints.Count != 7)
                         {
                                 return false;
                         }

@@ -20,10 +20,11 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 artistName.Should().Be("SomeArtist");
 
                 Driver.FindElement(By.Id("btn-reviewers")).Click();
-                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 1)
+                // includes existing admin
+                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 2)
                         .Should().BeTrue();
-                Wait.Until(d => d.FindElement(By.CssSelector("#leaderboard-body > tr > td:nth-child(2)")).Text == "SomeUser123")
-                        .Should().BeTrue();
+                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr > td:nth-child(2)"))
+                        .Any(e => e.Text == "SomeUser123")).Should().BeTrue();
         }
 
         [Fact, Order(1)]
@@ -55,7 +56,8 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 20)
                         .Should().BeTrue();
                 Driver.FindElement(By.Id("load-more-leaderboard")).Click();
-                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 21)
+                // 21 users + 1 existing admin 
+                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 22)
                         .Should().BeTrue();
         }
 
@@ -97,12 +99,14 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 {
                         var reviewerRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
                         var reviewerNames = reviewerRows.Select(r => r.FindElement(By.CssSelector("td:nth-child(2)")).Text).ToList();
-                        if (reviewerNames.Count != 2)
+                        // includes 1 existing admin
+                        if (reviewerNames.Count != 3)
                         {
                                 return false;
                         }
 
-                        return reviewerNames[0] == "ManyPointsReviewer" && reviewerNames[1] == "FewPointsReviewer";
+                        return reviewerNames.Any(name => name == "ManyPointsReviewer")
+                                && reviewerNames.Any(name => name == "FewPointsReviewer");
                 }).Should().BeTrue();
         }
 
@@ -128,22 +132,22 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 ");
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
-                int artistPointsAllTime = GetLeaderboardPointsForSingleUser("artists", "null");
+                int artistPointsAllTime = GetLeaderboardPointsForNonAdminUser("artists", "null");
 
                 Driver.FindElement(By.CssSelector(".time-btn[data-days=\"365\"]")).Click();
-                int artistPointsThisYear = GetLeaderboardPointsForSingleUser("artists", "365");
+                int artistPointsThisYear = GetLeaderboardPointsForNonAdminUser("artists", "365");
 
                 Driver.FindElement(By.Id("btn-reviewers")).Click();
-                int reviewerPointsAllTime = GetLeaderboardPointsForSingleUser("reviewers", "null");
+                int reviewerPointsAllTime = GetLeaderboardPointsForNonAdminUser("reviewers", "null");
 
                 Driver.FindElement(By.CssSelector(".time-btn[data-days=\"365\"]")).Click();
-                int reviewerPointsThisYear = GetLeaderboardPointsForSingleUser("reviewers", "365");
+                int reviewerPointsThisYear = GetLeaderboardPointsForNonAdminUser("reviewers", "365");
 
                 (artistPointsAllTime - artistPointsThisYear).Should().Be(10);
                 (reviewerPointsAllTime - reviewerPointsThisYear).Should().Be(10);
         }
 
-        private int GetLeaderboardPointsForSingleUser(string mode, string days)
+        private int GetLeaderboardPointsForNonAdminUser(string mode, string days)
         {
                 Wait.Until(d => d.FindElement(By.Id("leaderboard")).GetDomAttribute("data-mode") == mode);
                 Wait.Until(d => d.FindElement(By.Id("leaderboard")).GetDomAttribute("data-days") == days);
@@ -153,10 +157,11 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 {
                         var rows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
                         List<int?> points = [.. rows
+                                .Where(r => r.FindElement(By.CssSelector("td:nth-child(2)")).Text != WebServer.ROOT_TEST_USERNAME)
                                 .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
                                 .Select(r => int.Parse(r))];
 
-                        pointsValue = points.FirstOrDefault();
+                        pointsValue = points.SingleOrDefault();
                         return points.Count == 1;
                 });
 
