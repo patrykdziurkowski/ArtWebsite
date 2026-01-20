@@ -43,7 +43,7 @@ public class LikeArtPieceCommand(
                 }
 
                 ArtPiece likedArtPiece = await dbContext.ArtPieces.FirstAsync(ap => ap.Id == artPieceId);
-                likedArtPiece.LikeCount++;
+                likedArtPiece.LikeCount = await dbContext.Likes.CountAsync(l => l.ArtPieceId == artPieceId) + 1;
 
                 await reviewerRepository.SaveAsync(reviewer);
 

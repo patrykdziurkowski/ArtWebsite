@@ -14,6 +14,7 @@
                                 <h3 id="art-piece-details-artist"></h3>
                                 <p id="detailsDescription" class="mt-3"></p>
                                 <p id="art-piece-details-like-count"></p>
+                                <p id="art-piece-details-review-count"></p>
                             </div>
                             <button id="edit-art-piece-button" class="btn btn-secondary btn-sm ms-2">
                                 <i class="bi bi-pencil-square"></i>'
@@ -59,6 +60,10 @@
                         ? `<span id="art-piece-details-like-number">${data.likeCount}</span> like`
                         : `<span id="art-piece-details-like-number">${data.likeCount}</span> likes`;
                     document.getElementById('art-piece-details-like-count').innerHTML = likeHtml;
+                    const reviewHtml = data.reviewCount === 1
+                        ? `<span id="art-piece-details-review-number">${data.reviewCount}</span> review`
+                        : `<span id="art-piece-details-review-number">${data.reviewCount}</span> reviews`;
+                    document.getElementById('art-piece-details-review-count').innerHTML = reviewHtml;
                 });
 
             this.reviewsOffset = 0;

@@ -201,6 +201,16 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
                 Driver.FindElements(By.ClassName("checked-star")).Should().HaveCount(1);
         }
 
+        [Fact, Order(10)]
+        public void ReviewedArtPiece_HasIncrementedReviewCount()
+        {
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/SomeUser123");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Wait.Until(d => d.FindElement(By.Id("art-piece-details-review-number")).Text == "1");
+        }
+
         private void SetupArtPieceWithReviews(int reviewCount)
         {
                 ResetTestContext();

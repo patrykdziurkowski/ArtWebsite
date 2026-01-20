@@ -21,6 +21,7 @@ public class ArtPieceDetailsQuery(
                         UploadDate = artPiece.UploadDate,
                         ArtistId = artPiece.ArtistId,
                         LikeCount = artPiece.LikeCount,
+                        ReviewCount = artPiece.ReviewCount,
                         ArtistName = artist.Name,
                         ArtistUserId = artist.UserId,
                 };

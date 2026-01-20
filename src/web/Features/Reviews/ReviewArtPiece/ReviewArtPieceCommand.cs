@@ -61,6 +61,7 @@ public class ReviewArtPieceCommand(
                 int sumOfRatingValues = (await reviewsQuery.SumAsync(r => r.Rating)) + review.Rating;
 
                 artPieceToReview.AverageRating = new Rating((double)sumOfRatingValues / sumOfRatingValues);
+                artPieceToReview.ReviewCount = await dbContext.Reviews.CountAsync(r => r.ArtPieceId == artPieceToReview.Id) + 1;
 
                 await dbContext.AddAsync(review);
                 await dbContext.SaveChangesAsync();

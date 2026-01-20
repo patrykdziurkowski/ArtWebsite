@@ -10,6 +10,7 @@ public record ArtPieceDto
         public required int AverageRating { get; init; }
         public required DateTimeOffset UploadDate { get; init; }
         public required int LikeCount { get; init; }
+        public required int ReviewCount { get; init; }
         public required ArtistId ArtistId { get; init; }
         public required Guid ArtistUserId { get; init; }
         public required string ArtistName { get; init; }

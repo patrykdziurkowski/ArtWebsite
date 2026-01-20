@@ -37,6 +37,7 @@ public class ArtPieceByTagQuery(
                         UploadDate = artPiece.UploadDate,
                         ArtistId = artPiece.ArtistId,
                         LikeCount = artPiece.LikeCount,
+                        ReviewCount = artPiece.ReviewCount,
                         ArtistName = artistOwner.Name,
                         ArtistUserId = artistOwner.UserId,
                 };
