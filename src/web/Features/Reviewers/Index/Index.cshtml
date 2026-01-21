@@ -3,6 +3,7 @@
 @model ReviewerProfileDto
 
 <div class="container mt-5">
+    <img id="reviewer-profile-picture" src="@Model.ProfilePicturePath" alt="This reviewer's profile picture." />
     <h2><span id="reviewerName" data-user-id="@Model.ReviewerUserId">@Model.Name</span>'s profile</h2>
     @if (@Model.CurrentUserOwnsThisProfile || @Model.IsCurrentUserAdmin)
     {
@@ -42,8 +43,13 @@
             <div class="modal-body">
                 <form id="editForm">
                     <div class="form-group">
-                        <input type="text" value="@Model.Name" name="name" placeholder="Your reviewer name">
+                        <input type="text" value="@Model.Name" name="Name" placeholder="Your reviewer name">
                         <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="Image">Choose an image</label>
+                        <input type="file" class="form-control" id="image-input" name="Image" accept="image/*" />
+                        <small class="form-text text-muted">Optional</small>
                     </div>
                     <input type="hidden" value="@Model.Id" name="ReviewerId">
                 </form>
@@ -64,18 +70,10 @@
                 const shouldRedirectToNewPage = window.location.pathName !== "/reviewer"
                     && window.location.pathName !== "/reviewer/";
                 const form = new FormData(document.querySelector('#editForm'));
-                const reviewerId = form.get('ReviewerId');
-                const formData = {
-                    reviewerId: reviewerId,
-                    name: form.get('name'),
-                };
 
-                const response = await fetch(`/api/reviewers/${reviewerId}`, {
+                const response = await fetch(`/api/reviewers/${form.get('ReviewerId')}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                    body: form,
                 });
 
                 if (response.status !== 200) {
@@ -87,9 +85,9 @@
                     return;
                 }
 
-                document.querySelector('#reviewerName').innerText = formData.name;
+                document.querySelector('#reviewerName').innerText = form.get('Name');
                 document.querySelector('#editProfileModal .btn-close').click();
-                if (shouldRedirectToNewPage) window.location.href = `/reviewers/${formData.name}`;
+                if (shouldRedirectToNewPage) window.location.href = `/reviewers/${form.get('Name')}`;
             });
 
             document.querySelector('#reviewerJoinDate').innerText = new Date(

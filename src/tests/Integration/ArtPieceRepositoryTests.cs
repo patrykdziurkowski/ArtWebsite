@@ -8,6 +8,7 @@ using web.Features.Artists;
 using web.Features.Artists.BoostArtPiece;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Images;
 using web.Features.Missions;
 using web.Features.Reviewers;
 using web.Features.Reviews;
@@ -37,7 +38,7 @@ public class ArtPieceRepositoryTests : DatabaseTest
                 IMapper mapper = Scope.ServiceProvider.GetRequiredService<IMapper>();
                 _mockMissionGenerator = Substitute.For<IMissionGenerator>();
                 MissionManager missionManager = new(DbContext, _mockMissionGenerator);
-                _uploadArtPieceCommand = new UploadArtPieceCommand(DbContext, artistRepository, imageTaggingQueue, missionManager, serviceScopeFactory);
+                _uploadArtPieceCommand = new UploadArtPieceCommand(DbContext, artistRepository, imageTaggingQueue, missionManager, Scope.ServiceProvider.GetRequiredService<ImageManager>(), serviceScopeFactory);
                 _boostArtPieceCommand = new BoostArtPieceCommand(artistRepository, DbContext, mapper, missionManager);
         }
 

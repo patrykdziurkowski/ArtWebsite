@@ -23,6 +23,7 @@ public class ReviewerQuery(
                         Name = reviewer.Name,
                         JoinDate = reviewer.JoinDate,
                         ReviewCount = reviewer.ReviewCount,
+                        ProfilePicturePath = reviewer.ProfilePicturePath,
                         Points = reviewer.Points,
                         IsCurrentUserAdmin = await userManager.IsInRoleAsync(currentUser, Constants.ADMIN_ROLE),
                         CurrentUserOwnsThisProfile = reviewer.UserId == currentUserId

@@ -14,6 +14,7 @@ public class Reviewer : AggregateRoot
         public DateTimeOffset JoinDate { get; init; } = DateTimeOffset.UtcNow;
         public int ReviewCount { get; set; } = 0;
         public int Points { get; set; } = 0;
+        public string ProfilePicturePath { get; set; } = Constants.DEFAULT_PROFILE_PICTURE_PATH;
         public required Guid UserId { get; init; }
         private List<Like> _activeLikes = [];
         public IEnumerable<Like> ActiveLikes

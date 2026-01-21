@@ -7,6 +7,7 @@ using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Browse;
+using web.Features.Images;
 using web.Features.Leaderboard;
 using web.Features.Leaderboard.Reviewer;
 using web.Features.Missions;
@@ -32,7 +33,7 @@ public class ReviewerLeaderboardQueryTests : DatabaseTest
                 ImageTaggingQueue imageTaggingQueue = Scope.ServiceProvider.GetRequiredService<ImageTaggingQueue>();
                 _mockMissionGenerator = Substitute.For<IMissionGenerator>();
                 MissionManager missionManager = new(DbContext, _mockMissionGenerator);
-                _uploadArtPieceCommand = new(DbContext, artistRepository, imageTaggingQueue, missionManager, serviceScopeFactory);
+                _uploadArtPieceCommand = new(DbContext, artistRepository, imageTaggingQueue, missionManager, Scope.ServiceProvider.GetRequiredService<ImageManager>(), serviceScopeFactory);
                 _reviewArtPieceCommand = new(DbContext, missionManager);
                 _registerArtPieceServedCommand = Scope.ServiceProvider.GetRequiredService<RegisterArtPieceServedCommand>();
 

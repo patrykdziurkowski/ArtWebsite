@@ -5,6 +5,7 @@ using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Images;
 using web.Features.Missions;
 using web.Features.Tags;
 
@@ -27,6 +28,7 @@ public class ArtPieceTagsQueryTests : DatabaseTest
                         Scope.ServiceProvider.GetRequiredService<ArtistRepository>(),
                         _imageTaggingQueue,
                         Scope.ServiceProvider.GetRequiredService<MissionManager>(),
+                        Scope.ServiceProvider.GetRequiredService<ImageManager>(),
                         Scope.ServiceProvider.GetRequiredService<IServiceScopeFactory>());
         }
 

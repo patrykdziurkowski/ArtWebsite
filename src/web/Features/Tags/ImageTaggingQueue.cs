@@ -9,6 +9,11 @@ public class ImageTaggingQueue
 
         public void Add(ArtPieceId artPieceId, string fullImagePath, Func<List<string>, Task> callBack)
         {
+                if (!File.Exists(fullImagePath))
+                {
+                        throw new InvalidOperationException("Unable to queue an image to be tagged! The file doesn't exist.");
+                }
+
                 QueuedImages.Enqueue(new()
                 {
                         ArtPieceId = artPieceId,

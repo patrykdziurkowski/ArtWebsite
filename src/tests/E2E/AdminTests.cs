@@ -82,7 +82,7 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 Wait.Until(d => d.FindElement(By.Id("editProfile"))).Click();
 
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("editProfileModal")));
-                var nameInput = Driver.FindElement(By.Name("name"));
+                var nameInput = Driver.FindElement(By.Name("Name"));
                 nameInput.Clear();
                 nameInput.SendKeys("newName");
                 Driver.FindElement(By.Id("editReviewerProfile")).Click();

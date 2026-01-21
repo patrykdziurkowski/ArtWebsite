@@ -64,7 +64,8 @@ public class ReviewerApiController(
                 Result result = await editReviewerProfileCommand.ExecuteAsync(
                         GetUserId(),
                         new ReviewerId() { Value = reviewerId },
-                        model.Name);
+                        model.Name,
+                        model.Image);
                 if (result.IsFailed)
                 {
                         return Conflict(result);

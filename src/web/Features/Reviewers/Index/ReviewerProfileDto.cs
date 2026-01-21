@@ -6,6 +6,7 @@ public record ReviewerProfileDto
         public required Guid ReviewerUserId { get; init; }
         public required string Name { get; set; }
         public required DateTimeOffset JoinDate { get; init; }
+        public required string ProfilePicturePath { get; init; }
         public required int ReviewCount { get; init; }
         public required int Points { get; init; }
         public required bool CurrentUserOwnsThisProfile { get; init; }

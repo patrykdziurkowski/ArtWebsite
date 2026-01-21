@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Artists;
+using web.Features.Images;
 using web.Features.Leaderboard.Artist;
 using web.Features.Missions;
 using web.Features.Tags;
@@ -12,6 +13,7 @@ public class UploadArtPieceCommand(
         ArtistRepository artistRepository,
         ImageTaggingQueue imageTaggingQueue,
         MissionManager missionManager,
+        ImageManager imageManager,
         IServiceScopeFactory scopeFactory)
 {
         private const int POINTS_PER_UPLOAD = 10;
@@ -24,23 +26,15 @@ public class UploadArtPieceCommand(
                 Artist artist = await artistRepository.GetByUserIdAsync(userId)
                         ?? throw new InvalidOperationException("Cannot upload an art piece due to user not having an artist profile.");
 
-                string directoryPath = $"user-images/art-pieces/{artist.Id}/";
-                Directory.CreateDirectory(directoryPath);
-
                 ArtPieceId artPieceId = new();
-                string fileExtension = Path.GetExtension(image.FileName);
-                string imagePath = Path.Combine(directoryPath, $"{artPieceId}{fileExtension}");
-                using (FileStream stream = new(imagePath, FileMode.Create, FileAccess.Write))
-                {
-                        await image.CopyToAsync(stream);
-                }
+                string absoluteFileWebPath = await imageManager.SaveOrUpdateImageAsync(
+                        image, Path.Combine("art-pieces", artist.Id.ToString()), artPieceId.ToString());
 
                 ArtPiece artPiece = new()
                 {
                         Id = artPieceId,
                         Description = description,
-                        // the slash here at the start is important to avoid relative image urls
-                        ImagePath = '/' + imagePath,
+                        ImagePath = absoluteFileWebPath,
                         ArtistId = artist.Id,
                 };
 
@@ -56,7 +50,10 @@ public class UploadArtPieceCommand(
 
                 await missionManager.RecordProgressAsync(MissionType.UploadArt, userId, now.Value);
 
-                imageTaggingQueue.Add(artPieceId, imagePath, async (tags) => await AssignTagsAsync(artPiece.Id, tags));
+                imageTaggingQueue.Add(
+                        artPieceId,
+                        Path.GetFullPath(absoluteFileWebPath.TrimStart(Path.DirectorySeparatorChar)),
+                        async (tags) => await AssignTagsAsync(artPiece.Id, tags));
 
                 return artPiece;
         }

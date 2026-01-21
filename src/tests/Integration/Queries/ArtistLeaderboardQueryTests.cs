@@ -5,6 +5,7 @@ using NSubstitute;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Images;
 using web.Features.Leaderboard;
 using web.Features.Leaderboard.Artist;
 using web.Features.Missions;
@@ -26,7 +27,7 @@ public class ArtistLeaderboardQueryTests : DatabaseTest
                 ImageTaggingQueue imageTaggingQueue = Scope.ServiceProvider.GetRequiredService<ImageTaggingQueue>();
                 _mockMissionGenerator = Substitute.For<IMissionGenerator>();
                 MissionManager missionManager = new(DbContext, _mockMissionGenerator);
-                _uploadArtPieceCommand = new UploadArtPieceCommand(DbContext, artistRepository, imageTaggingQueue, missionManager, serviceScopeFactory);
+                _uploadArtPieceCommand = new UploadArtPieceCommand(DbContext, artistRepository, imageTaggingQueue, missionManager, Scope.ServiceProvider.GetRequiredService<ImageManager>(), serviceScopeFactory);
 
                 _mockMissionGenerator.GetMissions(Arg.Any<Guid>(), Arg.Any<DateTimeOffset>(), 1)
                         .Returns([MissionType.BoostArt]);

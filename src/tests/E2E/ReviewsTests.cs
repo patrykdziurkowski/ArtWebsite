@@ -2,6 +2,7 @@ using FluentAssertions;
 using OpenQA.Selenium;
 using SeleniumExtras.WaitHelpers;
 using tests.E2E.Fixtures;
+using web;
 using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
@@ -156,21 +157,29 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
         }
 
         [Fact, Order(8)]
-        public void UpdatingOwnReviewerName_Works()
+        public void UpdatingOwnReviewerProfile_Works()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
-                Wait.Until(d => d.FindElement(By.Id("editProfile"))).Click();
+                Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "SomeUser123");
+                Driver.FindElement(By.Id("reviewer-profile-picture")).GetAttribute("src")
+                        .Should().Contain(Constants.DEFAULT_PROFILE_PICTURE_PATH);
+
+                Driver.FindElement(By.Id("editProfile")).Click();
 
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("editProfileModal")));
-                var nameInput = Driver.FindElement(By.Name("name"));
+                var nameInput = Driver.FindElement(By.Name("Name"));
                 nameInput.Clear();
                 nameInput.SendKeys("myNewName");
+                string path = Path.GetFullPath("../../../resources/exampleImage.png");
+                Driver.FindElement(By.Name("Image")).SendKeys(path);
                 Driver.FindElement(By.Id("editReviewerProfile")).Click();
                 Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("editProfileModal")));
                 Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "myNewName");
 
                 Driver.Navigate().Refresh();
                 Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "myNewName");
+                Driver.FindElement(By.Id("reviewer-profile-picture")).GetAttribute("src")
+                        .Should().NotContain(Constants.DEFAULT_PROFILE_PICTURE_PATH);
         }
 
         [Fact, Order(9)]
