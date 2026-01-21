@@ -30,6 +30,7 @@ public class ArtPieceReviewsQuery(
                                         Date = review.Date,
                                         Comment = review.Comment,
                                         Points = reviewer.Points,
+                                        ProfilePicturePath = reviewer.ProfilePicturePath,
                                         IsCurrentUser = reviewer.UserId == currentUserId,
                                         IsAdmin = isAdmin,
                                 })

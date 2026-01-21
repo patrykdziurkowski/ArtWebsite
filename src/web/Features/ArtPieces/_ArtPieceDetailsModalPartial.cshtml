@@ -270,6 +270,7 @@
                 reviewEl.className = 'details-review d-flex mb-3';
                 reviewEl.innerHTML =
                     `<div>` +
+                    `<img style="width:100px;height:100px;" src="${r.profilePicturePath}" alt="This reviewer's profile picture."/>` +
                     `<div><strong class="review-reviewer-name" data-user-id="${r.userId}">${r.reviewerName}</strong>${badge} -  <span class="review-points">${r.points} points</span> - <small>${new Date(r.date).toLocaleDateString()}</small></div>` +
                     `<div class="review-content"><span class="review-rating">${r.rating.value}</span>★ <span class="review-comment">${r.comment}</span></div>` +
                     `</div>`;

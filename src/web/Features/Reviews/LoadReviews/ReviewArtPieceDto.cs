@@ -9,6 +9,7 @@ public record ArtPieceReviewDto
         public required string Comment { get; init; }
         public required Rating Rating { get; init; }
         public required int Points { get; init; }
+        public required string ProfilePicturePath { get; init; }
         public required bool IsCurrentUser { get; init; }
         public required bool IsAdmin { get; init; }
 }
