@@ -123,6 +123,16 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 ReviewThisArtPieceThenLoadNext();
                 ReviewThisArtPieceThenLoadNext();
 
+                // delete quest point rewards if completed for consistency's sake
+                WebServer.ExecuteSql(@"
+                        DELETE FROM [dbo].[ArtistPointAwards]
+                        WHERE PointValue = 25
+                ");
+                WebServer.ExecuteSql(@"
+                        DELETE FROM [dbo].[ReviewerPointAwards]
+                        WHERE PointValue = 25
+                ");
+
                 WebServer.ExecuteSql(@"
                         UPDATE TOP (1) [dbo].[ArtistPointAwards]
                         SET DateAwarded = '1970-01-01'
