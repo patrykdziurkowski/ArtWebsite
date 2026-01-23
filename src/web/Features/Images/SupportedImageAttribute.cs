@@ -9,13 +9,17 @@ public class SupportedImageAttribute : ValidationAttribute
 
         public override bool IsValid(object? value)
         {
-                if (value is not IFormFile)
+                if (value is null)
+                {
+                        return true;
+                }
+
+                if (value is not IFormFile formFile)
                 {
                         ErrorMessage = "Given value is not a file.";
                         return false;
                 }
 
-                IFormFile formFile = (IFormFile)value;
                 if (formFile.FileName.IsNullOrEmpty())
                 {
                         ErrorMessage = "Given file's name should not be empty.";
@@ -34,6 +38,7 @@ public class SupportedImageAttribute : ValidationAttribute
                         ErrorMessage = $"Given file is not of supported type: {string.Join(" ", SupportedImageExtensions)}";
                         return false;
                 }
+
                 return true;
         }
 }

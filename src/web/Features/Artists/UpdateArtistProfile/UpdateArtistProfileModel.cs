@@ -7,15 +7,16 @@ public class UpdateArtistProfileModel
 {
         [Required]
         public required Guid ArtistId { get; init; }
+
         [Required]
         [StringLength(12, MinimumLength = 3)]
         [RegularExpression(@"^[a-zA-Z0-9]*$", ErrorMessage = "Only alphanumeric characters are allowed.")]
         public required string Name { get; init; }
+
         [Required]
         public required string Summary { get; init; }
 
         [DataType(DataType.Upload)]
         [SupportedImage]
-        [Required]
         public IFormFile? Image { get; set; } = null;
 }

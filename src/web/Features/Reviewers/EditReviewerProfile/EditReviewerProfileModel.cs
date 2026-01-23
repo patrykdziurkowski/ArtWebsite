@@ -12,6 +12,5 @@ public record EditReviewerProfileModel
 
         [DataType(DataType.Upload)]
         [SupportedImage]
-        [Required]
         public IFormFile? Image { get; set; } = null;
 }
