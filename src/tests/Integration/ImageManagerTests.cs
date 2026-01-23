@@ -26,10 +26,7 @@ public class ImageManagerTests : DatabaseTest
                 string absoluteWebPath = await _imageManager.SaveArtPieceImageAsync(
                         GetExampleFile(), artistId, artPieceId);
 
-                absoluteWebPath.Should().StartWith("/user-images/");
-                absoluteWebPath.Should().Contain(artistId.ToString());
-                absoluteWebPath.Should().Contain(artPieceId.ToString());
-                Path.GetExtension(absoluteWebPath).Should().NotBeNullOrEmpty();
+                absoluteWebPath.Should().Be($"/user-images/art-pieces/{artistId}/{artPieceId}.png");
                 File.Exists('.' + absoluteWebPath).Should().BeTrue();
         }
 
@@ -41,9 +38,20 @@ public class ImageManagerTests : DatabaseTest
                 string absoluteWebPath = await _imageManager.UpdateReviewerProfilePictureAsync(
                         GetExampleFile(), reviewerId);
 
-                absoluteWebPath.Should().StartWith("/user-images/");
-                absoluteWebPath.Should().Contain(reviewerId.ToString());
-                Path.GetExtension(absoluteWebPath).Should().NotBeNullOrEmpty();
+                absoluteWebPath.Should().Be($"/user-images/profile-pictures/reviewers/{reviewerId}.png");
+                File.Exists('.' + absoluteWebPath).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task UpdateArtistProfilePictureAsync_CreatesAFile()
+        {
+                ArtistId artistId = new();
+
+                string absoluteWebPath = await _imageManager.UpdateArtistProfilePictureAsync(
+                        GetExampleFile(), artistId);
+
+                absoluteWebPath.Should().Be($"/user-images/profile-pictures/artists/{artistId}.png");
                 File.Exists('.' + absoluteWebPath).Should().BeTrue();
         }
 }
+

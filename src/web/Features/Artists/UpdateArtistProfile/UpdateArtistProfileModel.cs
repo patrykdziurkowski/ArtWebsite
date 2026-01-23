@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using web.Features.ArtPieces;
 
 namespace web.Features.Artists.UpdateArtistProfile;
 
@@ -12,4 +13,9 @@ public class UpdateArtistProfileModel
         public required string Name { get; init; }
         [Required]
         public required string Summary { get; init; }
+
+        [DataType(DataType.Upload)]
+        [SupportedImage]
+        [Required]
+        public IFormFile? Image { get; set; } = null;
 }

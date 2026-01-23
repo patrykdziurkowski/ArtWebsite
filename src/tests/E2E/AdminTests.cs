@@ -2,6 +2,7 @@ using FluentAssertions;
 using OpenQA.Selenium;
 using SeleniumExtras.WaitHelpers;
 using tests.E2E.Fixtures;
+using web;
 using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
@@ -30,10 +31,18 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 IWebElement summaryInput = Driver.FindElement(By.CssSelector("#editForm input[name=\"Summary\"]"));
                 summaryInput.Clear();
                 summaryInput.SendKeys("New summary text!");
+                string path = Path.GetFullPath("../../../resources/exampleImage.png");
+                Driver.FindElement(By.Name("Image")).SendKeys(path);
                 submitButton.Click();
 
                 Wait.Until(d => d.FindElement(By.Id("artistName")).Text == "NewName").Should().BeTrue();
                 Wait.Until(d => d.FindElement(By.Id("artistSummary")).Text == "New summary text!").Should().BeTrue();
+
+                Driver.Navigate().Refresh();
+                Wait.Until(d => d.FindElement(By.Id("artistName")).Text == "NewName").Should().BeTrue();
+                Wait.Until(d => d.FindElement(By.Id("artistSummary")).Text == "New summary text!").Should().BeTrue();
+                Driver.FindElement(By.Id("artist-profile-picture")).GetAttribute("src")
+                        .Should().NotContain(Constants.DEFAULT_PROFILE_PICTURE_PATH);
         }
 
         [Fact, Order(1)]
@@ -76,7 +85,7 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
         }
 
         [Fact, Order(3)]
-        public void Updating_SomeoneElsesReviewerName_Works()
+        public void Updating_SomeoneElsesReviewerProfile_Works()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewers/SomeUser123");
                 Wait.Until(d => d.FindElement(By.Id("editProfile"))).Click();
@@ -85,12 +94,16 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 var nameInput = Driver.FindElement(By.Name("Name"));
                 nameInput.Clear();
                 nameInput.SendKeys("newName");
+                string path = Path.GetFullPath("../../../resources/exampleImage.png");
+                Driver.FindElement(By.Name("Image")).SendKeys(path);
                 Driver.FindElement(By.Id("editReviewerProfile")).Click();
                 Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("editProfileModal")));
                 Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "newName");
 
                 Driver.Navigate().Refresh();
                 Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "newName");
+                Driver.FindElement(By.Id("reviewer-profile-picture")).GetAttribute("src")
+                        .Should().NotContain(Constants.DEFAULT_PROFILE_PICTURE_PATH);
         }
 
         [Fact, Order(4)]

@@ -1,18 +1,20 @@
 using FluentResults;
 using Microsoft.AspNetCore.Identity;
+using web.Features.Images;
 
 namespace web.Features.Artists.UpdateArtistProfile;
 
 public class UpdateArtistCommand(
         ArtistRepository artistRepository,
-        UserManager<IdentityUser<Guid>> userManager
-)
+        UserManager<IdentityUser<Guid>> userManager,
+        ImageManager imageManager)
 {
         public async Task<Result> ExecuteAsync(
                 Guid currentUserId,
                 ArtistId artistId,
                 string name,
-                string summary)
+                string summary,
+                IFormFile? newProfilePicture = null)
         {
                 Artist? artist = await artistRepository.GetByIdAsync(artistId);
                 if (artist is null)
@@ -32,6 +34,12 @@ public class UpdateArtistCommand(
 
                 artist.Name = name;
                 artist.Summary = summary;
+                if (newProfilePicture is not null)
+                {
+                        artist.ProfilePicturePath = await imageManager.UpdateArtistProfilePictureAsync(
+                                newProfilePicture, artistId);
+                }
+
                 await artistRepository.SaveChangesAsync(artist);
                 return Result.Ok();
         }

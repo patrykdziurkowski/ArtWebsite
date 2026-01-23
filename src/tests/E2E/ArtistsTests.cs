@@ -2,6 +2,7 @@ using FluentAssertions;
 using OpenQA.Selenium;
 using SeleniumExtras.WaitHelpers;
 using tests.E2E.Fixtures;
+using web;
 using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
@@ -86,10 +87,18 @@ public class ArtistsTests(WebDriverInitializer initializer, SharedPerTestClass s
                 IWebElement summaryInput = Driver.FindElement(By.CssSelector("#editForm input[name=\"Summary\"]"));
                 summaryInput.Clear();
                 summaryInput.SendKeys("New summary text!");
+                string path = Path.GetFullPath("../../../resources/exampleImage.png");
+                Driver.FindElement(By.Name("Image")).SendKeys(path);
                 submitButton.Click();
 
                 Wait.Until(d => d.FindElement(By.Id("artistName")).Text == "NewName").Should().BeTrue();
                 Wait.Until(d => d.FindElement(By.Id("artistSummary")).Text == "New summary text!").Should().BeTrue();
+
+                Driver.Navigate().Refresh();
+                Wait.Until(d => d.FindElement(By.Id("artistName")).Text == "NewName").Should().BeTrue();
+                Wait.Until(d => d.FindElement(By.Id("artistSummary")).Text == "New summary text!").Should().BeTrue();
+                Driver.FindElement(By.Id("artist-profile-picture")).GetAttribute("src")
+                        .Should().NotContain(Constants.DEFAULT_PROFILE_PICTURE_PATH);
         }
 
         [Fact, Order(7)]

@@ -3,6 +3,7 @@
 
 <div class="container mt-4">
     <h2>
+        <img id="artist-profile-picture" src="@Model.ProfilePicturePath" alt="This artist's profile picture." />
         <span id="artistName" data-user-id="@Model.ArtistUserId">@Model.Name</span>'s Profile
         @if (@Model.IsOwner || @Model.IsAdmin)
         {
@@ -42,6 +43,11 @@
                         <input type="text" value="@Model.Summary" name="Summary" placeholder="Profile summary">
                         <span asp-validation-for="Summary" class="text-danger"></span>
                     </div>
+                    <div class="form-group">
+                        <label for="Image">Choose an image</label>
+                        <input type="file" class="form-control" id="image-input" name="Image" accept="image/*" />
+                        <small class="form-text text-muted">Optional</small>
+                    </div>
                     <input type="hidden" value="@Model.Id" name="ArtistId">
                 </form>
             </div>
@@ -79,19 +85,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             document.querySelector('#editArtistProfile').addEventListener('click', async (e) => {
+                const shouldRedirectToNewPage = window.location.pathName !== "/artist"
+                    && window.location.pathName !== "/artist/";
                 const form = new FormData(document.querySelector('#editForm'));
-                const data = {
-                    artistId: form.get('ArtistId'),
-                    name: form.get('Name'),
-                    summary: form.get('Summary'),
-                };
-
                 const response = await fetch('/api/artist', {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
+                    body: form
                 });
 
                 if (response.status !== 200) {
@@ -105,9 +104,11 @@
                     return;
                 }
 
-                document.querySelector('#artistName').innerText = data.name;
-                document.querySelector('#artistSummary').innerText = data.summary;
+                document.querySelector('#artistName').innerText = form.get('Name');
+                document.querySelector('#artistSummary').innerText = form.get('Summary');
                 document.querySelector('#editProfileModal .btn-close').click();
+
+                if (shouldRedirectToNewPage) window.location.href = `/artists/${form.get('Name')}`;
             });
 
             document.getElementById('artistName').addEventListener('click', (e) => {

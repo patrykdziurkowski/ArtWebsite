@@ -21,7 +21,11 @@ public class ArtistApiController(
         public async Task<IActionResult> UpdateArtistProfile(UpdateArtistProfileModel model)
         {
                 Result result = await updateArtistCommand.ExecuteAsync(
-                        GetUserId(), new ArtistId() { Value = model.ArtistId }, model.Name, model.Summary);
+                        GetUserId(),
+                        new ArtistId() { Value = model.ArtistId },
+                        model.Name,
+                        model.Summary,
+                        model.Image);
 
                 if (result.IsFailed)
                 {

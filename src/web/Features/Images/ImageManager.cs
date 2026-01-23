@@ -11,6 +11,11 @@ public class ImageManager
                 return SaveOrUpdateImageAsync(file, "profile-pictures/reviewers", reviewerId.ToString());
         }
 
+        public Task<string> UpdateArtistProfilePictureAsync(IFormFile file, ArtistId artistId)
+        {
+                return SaveOrUpdateImageAsync(file, "profile-pictures/artists", artistId.ToString());
+        }
+
         public Task<string> SaveArtPieceImageAsync(IFormFile file, ArtistId artistId, ArtPieceId artPieceId)
         {
                 return SaveOrUpdateImageAsync(file, $"art-pieces/{artistId}", artPieceId.ToString());

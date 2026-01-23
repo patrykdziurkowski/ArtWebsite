@@ -9,6 +9,7 @@ public class Artist : AggregateRoot
         public ArtistId Id { get; init; } = new ArtistId();
         public required string Name { get; set; }
         public required string Summary { get; set; }
+        public string ProfilePicturePath { get; set; } = Constants.DEFAULT_PROFILE_PICTURE_PATH;
         public int Points { get; set; } = 0;
         private Boost? _activeBoost;
         public Boost? ActiveBoost
