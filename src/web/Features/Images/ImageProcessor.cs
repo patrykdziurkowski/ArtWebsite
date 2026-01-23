@@ -1,7 +1,8 @@
 using FluentResults;
 using Microsoft.AspNetCore.SignalR;
+using web.Features.Tags;
 
-namespace web.Features.Tags;
+namespace web.Features.Images;
 
 public class ImageProcessor(
         ImageTaggingQueue queue,

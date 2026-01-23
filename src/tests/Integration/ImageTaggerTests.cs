@@ -1,7 +1,7 @@
 using FluentAssertions;
 using FluentResults;
 using tests.Integration.Fixtures;
-using web.Features.Tags;
+using web.Features.Images;
 
 namespace tests.Integration;
 

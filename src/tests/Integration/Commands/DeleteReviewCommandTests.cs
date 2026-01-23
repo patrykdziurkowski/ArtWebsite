@@ -1,10 +1,8 @@
 using FluentAssertions;
 using FluentResults;
-using Humanizer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 using tests.Integration.Fixtures;
 using web;
 using web.Features.Reviewers;

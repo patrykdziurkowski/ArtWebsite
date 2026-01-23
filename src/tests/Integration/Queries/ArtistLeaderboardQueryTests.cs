@@ -9,7 +9,6 @@ using web.Features.Images;
 using web.Features.Leaderboard;
 using web.Features.Leaderboard.Artist;
 using web.Features.Missions;
-using web.Features.Tags;
 
 namespace tests.Integration.Queries;
 

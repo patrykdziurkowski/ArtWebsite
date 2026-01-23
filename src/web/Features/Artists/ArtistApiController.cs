@@ -1,9 +1,7 @@
 using System.Security.Claims;
 using FluentResults;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using web.Data;
 using web.Features.Artists.BoostArtPiece;
 using web.Features.Artists.UpdateArtistProfile;
 using web.Features.ArtPieces;

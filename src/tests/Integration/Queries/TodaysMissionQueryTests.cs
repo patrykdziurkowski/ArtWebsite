@@ -1,13 +1,11 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using NSubstitute;
 using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Images;
 using web.Features.Missions;
-using web.Features.Tags;
 
 namespace tests.Integration.Queries;
 

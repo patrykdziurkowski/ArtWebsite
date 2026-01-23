@@ -2,8 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using web.Data;
 using web.Features.Artists;
 using web.Features.ArtPieces.EditArtPiece;
 using web.Features.ArtPieces.LoadArtPieces;

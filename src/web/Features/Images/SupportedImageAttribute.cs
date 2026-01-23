@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.IdentityModel.Tokens;
 
-namespace web.Features.ArtPieces;
+namespace web.Features.Images;
 
 public class SupportedImageAttribute : ValidationAttribute
 {

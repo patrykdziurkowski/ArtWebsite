@@ -1,7 +1,7 @@
 using System.Text.Json;
 using FluentResults;
 
-namespace web.Features.Tags;
+namespace web.Features.Images;
 
 public class ImageTagger
 {

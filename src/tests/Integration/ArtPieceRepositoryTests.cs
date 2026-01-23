@@ -12,7 +12,6 @@ using web.Features.Images;
 using web.Features.Missions;
 using web.Features.Reviewers;
 using web.Features.Reviews;
-using web.Features.Tags;
 using Xunit.Abstractions;
 
 namespace tests.Integration;

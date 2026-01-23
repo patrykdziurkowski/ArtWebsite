@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using web.Features.ArtPieces;
+using web.Features.Images;
 
 namespace web.Features.Artists.UpdateArtistProfile;
 

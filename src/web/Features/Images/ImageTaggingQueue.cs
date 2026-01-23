@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using web.Features.ArtPieces;
 
-namespace web.Features.Tags;
+namespace web.Features.Images;
 
 public class ImageTaggingQueue
 {

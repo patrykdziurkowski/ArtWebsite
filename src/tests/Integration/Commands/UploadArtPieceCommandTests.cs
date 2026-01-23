@@ -8,7 +8,6 @@ using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Images;
 using web.Features.Missions;
-using web.Features.Tags;
 
 namespace tests.Integration.Commands;
 

@@ -11,9 +11,7 @@ using web.Features.Images;
 using web.Features.Leaderboard;
 using web.Features.Leaderboard.Reviewer;
 using web.Features.Missions;
-using web.Features.Reviewers;
 using web.Features.Reviews.ReviewArtPiece;
-using web.Features.Tags;
 
 namespace tests.Integration.Queries;
 
