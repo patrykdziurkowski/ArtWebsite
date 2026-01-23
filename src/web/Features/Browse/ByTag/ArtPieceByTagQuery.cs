@@ -35,6 +35,7 @@ public class ArtPieceByTagQuery(
                         AverageRating = artPiece.AverageRating,
                         UploadDate = artPiece.UploadDate,
                         ArtistId = artPiece.ArtistId,
+                        ProfilePicturePath = artistOwner.ProfilePicturePath,
                         LikeCount = artPiece.LikeCount,
                         ReviewCount = artPiece.ReviewCount,
                         ArtistName = artistOwner.Name,

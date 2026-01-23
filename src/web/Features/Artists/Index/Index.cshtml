@@ -96,9 +96,9 @@
                 if (response.status !== 200) {
                     const data = await response.json();
 
-                    const validationErrorsText = document.querySelector('#editForm *[name="name"] + span');
+                    const validationErrorsText = document.querySelector('#editForm *[name="Name"] + span');
                     validationErrorsText.innerText = data.errors.Name;
-                    const validationErrorsText2 = document.querySelector('#editForm *[name="summary"] + span');
+                    const validationErrorsText2 = document.querySelector('#editForm *[name="Summary"] + span');
                     validationErrorsText2.innerText = data.errors.Summary;
 
                     return;

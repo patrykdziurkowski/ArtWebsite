@@ -30,6 +30,7 @@ public class ArtPieceQuery(
                                         AverageRating = lastArtPiece.AverageRating,
                                         UploadDate = lastArtPiece.UploadDate,
                                         LikeCount = lastArtPiece.LikeCount,
+                                        ProfilePicturePath = artist.ProfilePicturePath,
                                         ReviewCount = lastArtPiece.ReviewCount,
                                         ArtistId = lastArtPiece.ArtistId,
                                         ArtistName = artist.Name,
@@ -61,6 +62,7 @@ public class ArtPieceQuery(
                         LikeCount = artPiece.LikeCount,
                         ReviewCount = artPiece.ReviewCount,
                         ArtistId = artPiece.ArtistId,
+                        ProfilePicturePath = artistOwner.ProfilePicturePath,
                         ArtistName = artistOwner.Name,
                         ArtistUserId = artistOwner.UserId,
                 };

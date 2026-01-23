@@ -14,4 +14,5 @@ public record ArtPieceDto
         public required ArtistId ArtistId { get; init; }
         public required Guid ArtistUserId { get; init; }
         public required string ArtistName { get; init; }
+        public required string ProfilePicturePath { get; init; }
 }
