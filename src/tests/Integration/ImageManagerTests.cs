@@ -1,7 +1,10 @@
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
+using web.Features.Artists;
+using web.Features.ArtPieces;
 using web.Features.Images;
+using web.Features.Reviewers;
 
 namespace tests.Integration;
 
@@ -14,24 +17,33 @@ public class ImageManagerTests : DatabaseTest
                 _imageManager = Scope.ServiceProvider.GetRequiredService<ImageManager>();
         }
 
-        [Theory]
-        [InlineData("some-folder")]
-        [InlineData("/some-folder")]
-        [InlineData("some-folder/")]
-        [InlineData("/some-folder/")]
-        [InlineData("some-folder/other")]
-        [InlineData("/some-folder/other")]
-        [InlineData("some-folder/other/")]
-        [InlineData("/some-folder/other/")]
-        public async Task SaveOrUpdateImageAsync_CreatesAFile(string folder)
+        [Fact]
+        public async Task SaveArtPieceImageAsync_CreatesAFile()
         {
-                string absoluteWebPath = await _imageManager.SaveOrUpdateImageAsync(
-                        GetExampleFile(), folder, "someFile");
+                ArtistId artistId = new();
+                ArtPieceId artPieceId = new();
 
-                absoluteWebPath.StartsWith('/').Should().BeTrue();
+                string absoluteWebPath = await _imageManager.SaveArtPieceImageAsync(
+                        GetExampleFile(), artistId, artPieceId);
+
+                absoluteWebPath.Should().StartWith("/user-images/");
+                absoluteWebPath.Should().Contain(artistId.ToString());
+                absoluteWebPath.Should().Contain(artPieceId.ToString());
                 Path.GetExtension(absoluteWebPath).Should().NotBeNullOrEmpty();
-                absoluteWebPath.Should().Be(
-                        Path.Combine("/user-images/", folder.TrimStart(Path.DirectorySeparatorChar), "someFile.png"));
+                File.Exists('.' + absoluteWebPath).Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task UpdateReviewerProfilePictureAsync_CreatesAFile()
+        {
+                ReviewerId reviewerId = new();
+
+                string absoluteWebPath = await _imageManager.UpdateReviewerProfilePictureAsync(
+                        GetExampleFile(), reviewerId);
+
+                absoluteWebPath.Should().StartWith("/user-images/");
+                absoluteWebPath.Should().Contain(reviewerId.ToString());
+                Path.GetExtension(absoluteWebPath).Should().NotBeNullOrEmpty();
                 File.Exists('.' + absoluteWebPath).Should().BeTrue();
         }
 }

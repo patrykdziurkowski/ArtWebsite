@@ -38,10 +38,10 @@ public class EditReviewerProfileCommand(
 
                 if (newProfilePicture is not null)
                 {
-                        string absoluteWebImagePath = await imageManager.SaveOrUpdateImageAsync(
+                        string absoluteWebImagePath = await imageManager.UpdateReviewerProfilePictureAsync(
                                 newProfilePicture,
-                                "profile-pictures",
-                                reviewerId.ToString());
+                                reviewerId
+                        );
                         reviewer.ProfilePicturePath = absoluteWebImagePath;
                 }
 

@@ -27,8 +27,7 @@ public class UploadArtPieceCommand(
                         ?? throw new InvalidOperationException("Cannot upload an art piece due to user not having an artist profile.");
 
                 ArtPieceId artPieceId = new();
-                string absoluteFileWebPath = await imageManager.SaveOrUpdateImageAsync(
-                        image, Path.Combine("art-pieces", artist.Id.ToString()), artPieceId.ToString());
+                string absoluteFileWebPath = await imageManager.SaveArtPieceImageAsync(image, artist.Id, artPieceId);
 
                 ArtPiece artPiece = new()
                 {
