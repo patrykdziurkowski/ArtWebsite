@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Features.ArtPieces;
+using web.Features.Search;
 
 namespace web.Features.Tags;
 
@@ -8,7 +9,7 @@ namespace web.Features.Tags;
 [Authorize]
 public class TagsApiController(
         ArtPieceTagsQuery artPieceTagsQuery,
-        TagsByNameQuery tagsByNameQuery)
+        SearchByNameQuery tagsByNameQuery)
         : ControllerBase
 {
         [HttpGet("/api/artpieces/{artPieceId}/tags")]
@@ -27,7 +28,7 @@ public class TagsApiController(
                 }
 
 
-                List<Tag> tags = await tagsByNameQuery.ExecuteAsync(name);
-                return Ok(tags);
+                SearchDto result = await tagsByNameQuery.ExecuteAsync(name);
+                return Ok(result.Tags);
         }
 }

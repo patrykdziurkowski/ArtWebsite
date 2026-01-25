@@ -2,25 +2,26 @@ using System;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using tests.Integration.Fixtures;
+using web.Features.Search;
 using web.Features.Tags;
 
 namespace tests.Integration.Queries;
 
-public class TagsByNameQueryTests : DatabaseTest
+public class SearchByNameQueryTests : DatabaseTest
 {
-        private readonly TagsByNameQuery _query;
+        private readonly SearchByNameQuery _query;
 
-        public TagsByNameQueryTests(DatabaseTestContext databaseContext) : base(databaseContext)
+        public SearchByNameQueryTests(DatabaseTestContext databaseContext) : base(databaseContext)
         {
-                _query = Scope.ServiceProvider.GetRequiredService<TagsByNameQuery>();
+                _query = Scope.ServiceProvider.GetRequiredService<SearchByNameQuery>();
         }
 
         [Fact]
         public async Task ExecuteAsync_ReturnsEmpty_WhenNoTagsExist()
         {
-                List<Tag> tags = await _query.ExecuteAsync(string.Empty);
+                SearchDto result = await _query.ExecuteAsync(string.Empty);
 
-                tags.Should().BeEmpty();
+                result.Tags.Should().BeEmpty();
         }
 
         [Fact]
@@ -36,9 +37,9 @@ public class TagsByNameQueryTests : DatabaseTest
                 });
                 await DbContext.SaveChangesAsync();
 
-                List<Tag> tags = await _query.ExecuteAsync("someVerySpecificTag123");
+                SearchDto result = await _query.ExecuteAsync("someVerySpecificTag123");
 
-                tags.Should().BeEmpty();
+                result.Tags.Should().BeEmpty();
                 DbContext.Tags.Should().HaveCount(2);
         }
 
@@ -55,9 +56,9 @@ public class TagsByNameQueryTests : DatabaseTest
                 });
                 await DbContext.SaveChangesAsync();
 
-                List<Tag> tags = await _query.ExecuteAsync("Tag");
+                SearchDto result = await _query.ExecuteAsync("Tag");
 
-                tags.Should().HaveCount(2);
+                result.Tags.Should().HaveCount(2);
                 DbContext.Tags.Should().HaveCount(2);
         }
 
@@ -90,9 +91,9 @@ public class TagsByNameQueryTests : DatabaseTest
                 });
                 await DbContext.SaveChangesAsync();
 
-                List<Tag> tags = await _query.ExecuteAsync("Tag");
+                SearchDto result = await _query.ExecuteAsync("Tag");
 
-                tags.Should().HaveCount(5);
+                result.Tags.Should().HaveCount(5);
                 DbContext.Tags.Should().HaveCount(6);
         }
 
@@ -129,13 +130,55 @@ public class TagsByNameQueryTests : DatabaseTest
                 });
                 await DbContext.SaveChangesAsync();
 
-                List<Tag> tags = await _query.ExecuteAsync("tag");
+                SearchDto result = await _query.ExecuteAsync("tag");
 
-                tags.Should().HaveCount(5);
+                result.Tags.Should().HaveCount(5);
                 DbContext.Tags.Should().HaveCount(7);
-                tags[0].Name.Should().Be("Tag");
-                tags[1].Name.Should().Be("Tag different");
-                tags.Should().NotContain(t => t.Name == "nothing");
+                result.Tags[0].Name.Should().Be("Tag");
+                result.Tags[1].Name.Should().Be("Tag different");
+                result.Tags.Should().NotContain(t => t.Name == "nothing");
+        }
+
+        [Fact]
+        public async Task ExecuteAsync_ReturnsManyDifferentResults_WhenTheyExist()
+        {
+                await DbContext.Tags.AddRangeAsync(new Tag()
+                {
+                        Name = "someTag1",
+                },
+                new Tag()
+                {
+                        Name = "other Tag",
+                },
+                new Tag()
+                {
+                        Name = "another Tag",
+                },
+                new Tag()
+                {
+                        Name = "123Tag456",
+                },
+                new Tag()
+                {
+                        Name = "Tag different",
+                },
+                new Tag()
+                {
+                        Name = "Tag",
+                });
+                await DbContext.SaveChangesAsync();
+
+                await CreateReviewer(reviewerName: "tagUser");
+                await CreateArtistUserWithArtPieces(reviewerName: "tagTag123", artistName: "someTagsName");
+
+                SearchDto result = await _query.ExecuteAsync("Tag");
+
+                result.Tags.Should().HaveCount(5);
+                result.Reviewers.Should().HaveCount(2);
+                result.Artists.Should().HaveCount(1);
+                DbContext.Tags.Should().HaveCount(6);
+                DbContext.Reviewers.Should().HaveCount(2);
+                DbContext.Artists.Should().HaveCount(1);
         }
 
 }
