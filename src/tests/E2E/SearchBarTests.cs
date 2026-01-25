@@ -22,13 +22,13 @@ public class SearchBarTests(WebDriverInitializer initializer, SharedPerTestClass
                 var tagsUniqueForArtPiece1 = tags1.Except(tags2);
                 var tagsUniqueForArtPiece2 = tags2.Except(tags1);
 
-                Driver.FindElement(By.Id("tagSearchInput")).SendKeys(tagsUniqueForArtPiece1.First());
-                Wait.Until(d => d.FindElement(By.CssSelector("#tagResults a"))).Click();
+                Driver.FindElement(By.ClassName("tag-search-input")).SendKeys(tagsUniqueForArtPiece1.First());
+                Wait.Until(d => d.FindElement(By.CssSelector(".tag-search-results a"))).Click();
                 Wait.Until(d => !string.IsNullOrEmpty(d.FindElement(By.CssSelector("#artContainer img")).GetAttribute("src")));
                 string imagePath1 = Driver.FindElement(By.CssSelector("#artContainer img")).GetAttribute("src");
 
-                Driver.FindElement(By.Id("tagSearchInput")).SendKeys(tagsUniqueForArtPiece2.First());
-                Wait.Until(d => d.FindElement(By.CssSelector("#tagResults a"))).Click();
+                Driver.FindElement(By.ClassName("tag-search-input")).SendKeys(tagsUniqueForArtPiece2.First());
+                Wait.Until(d => d.FindElement(By.CssSelector(".tag-search-results a"))).Click();
                 Wait.Until(d => !string.IsNullOrEmpty(d.FindElement(By.CssSelector("#artContainer img")).GetAttribute("src")));
                 string imagePath2 = Driver.FindElement(By.CssSelector("#artContainer img")).GetAttribute("src");
 
