@@ -83,9 +83,8 @@ public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDispos
                 CreateArtistProfile(name);
         }
 
-        public void UploadArtPiece()
+        public void UploadArtPiece(string filePath = "../../../resources/exampleImage.png")
         {
-                string filePath = "../../../resources/exampleImage.png";
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
                 Wait.Until(d => d.FindElement(By.Id("image-input"))).SendKeys(Path.GetFullPath(filePath));
                 Driver.FindElement(By.Id("description-input")).SendKeys("Description!");

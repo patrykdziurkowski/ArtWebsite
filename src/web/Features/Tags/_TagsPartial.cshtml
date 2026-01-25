@@ -1,62 +1,90 @@
-<div id="tags">Loading tags...</div>
+<div class="art-piece-tags">
+    <div class="tags-container">Loading tags...</div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js"
     integrity="sha512-kkMt8UThSmWcdXLYFaGZ/U6vyWSNLZMUWQ5SMeF80pGqrEkH5ei9D/3MbVQpB8p7D5C3A4vlX7BpsWTT2BfB6A=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        async function loadTags() {
-            if (!artPieceId) {
-                throw new Error("artPieceId is not defined. Could not join the SignalR group.");
+    document.addEventListener('DOMContentLoaded', () => {
+        class Tags {
+            constructor(artPieceId, containerElement) {
+                this.artPieceId = artPieceId;
+                this.containerElement = containerElement;
+                this.tagsContainer = containerElement.querySelector('.tags-container');
+                this.connection = null;
+                this.init();
             }
 
-            const connection = new signalR.HubConnectionBuilder()
-                .withUrl("/tagshub")
-                .withAutomaticReconnect()
-                .build();
-            connection.on("TagsReady", tags => renderTags(tags));
-
-            await connection.start();
-            await connection.invoke("JoinArtGroup", artPieceId);
-
-            const res = await fetch(`/api/artpieces/${artPieceId}/tags`);
-            if (!res.ok) {
-                throw new Error(`HTTP error! Status: ${res.status}`);
+            async init() {
+                try {
+                    await this.setupSignalR();
+                    await this.loadTags();
+                } catch (error) {
+                    console.error(`Error initializing tags for art piece ${this.artPieceId}:`, error);
+                    this.tagsContainer.innerHTML = '<span class="text-danger">Error loading tags</span>';
+                }
             }
 
-            const tags = await res.json();
-            if (tags.length === 0) {
-                return;
+            async setupSignalR() {
+                this.connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/tagshub")
+                    .withAutomaticReconnect()
+                    .build();
+
+                this.connection.on("TagsReady", (tags) => {
+                    this.renderTags(tags);
+                });
+
+                await this.connection.start();
+                await this.connection.invoke("JoinArtGroup", this.artPieceId);
             }
 
-            renderTags(tags);
+            async loadTags() {
+                const res = await fetch(`/api/artpieces/${this.artPieceId}/tags`);
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+
+                const tags = await res.json();
+                if (tags.length === 0) {
+                    this.tagsContainer.innerHTML = '<span class="text-muted">No tags</span>';
+                    return;
+                }
+
+                await this.destroy();
+                this.renderTags(tags);
+            }
+
+            renderTags(tags) {
+                this.tagsContainer.innerHTML = "";
+                tags.forEach(tag => {
+                    const span = document.createElement("span");
+                    span.classList.add("tag");
+                    span.textContent = tag;
+                    span.style.marginRight = "5px";
+                    span.style.background = "#f0f2f5";
+                    span.style.borderRadius = "12px";
+                    span.style.padding = "4px 10px";
+                    span.style.cursor = "pointer";
+                    span.onclick = () => this.selectTag(tag);
+                    this.tagsContainer.appendChild(span);
+                });
+            }
+
+            selectTag(tag) {
+                window.location.href = `/Browse?tag=${encodeURIComponent(tag)}`;
+            }
+
+            async destroy() {
+                if (this.connection) {
+                    await this.connection.stop();
+                }
+            }
+
         }
 
-        function renderTags(tags) {
-            const container = document.getElementById('tags');
-            container.innerHTML = "";
-            tags.forEach(tag => {
-                const span = document.createElement("span");
-                span.classList.add("tag");
-                span.textContent = tag;
-                span.style.marginRight = "5px";
-                span.style.background = "#f0f2f5";
-                span.style.borderRadius = "12px";
-                span.style.padding = "4px 10px";
-                span.onclick = () => selectTag(tag);
-                container.appendChild(span);
-            });
-        }
-
-        async function waitForArtPieceId() {
-            while (typeof artPieceId === 'undefined' || !artPieceId) {
-                await new Promise(r => setTimeout(r, 200));
-            }
-
-            loadTags();
-        }
-
-        waitForArtPieceId();
+        window.Tags = Tags;
     });
 </script>

@@ -11,7 +11,6 @@ public class UserDetailsTests(WebDriverInitializer initializer, SharedPerTestCla
         [Fact, Order(0)]
         public void ViewProfile_NavigatesToArtistsProfile_WhenClickedOnArtist()
         {
-                ResetTestContext();
                 CreateUserWithArtistProfile();
                 UploadArtPiece();
                 ReviewThisArtPieceThenLoadNext();

@@ -1,0 +1,97 @@
+<div class="tag-search-container">
+    <div class="position-relative">
+        <input type="text" id="tagSearchInput" class="form-control" placeholder="Search..." autocomplete="off">
+        <div id="tagResults" class="list-group position-absolute w-100 shadow-sm"
+            style="z-index: 1000; max-height: 300px; overflow-y: auto; display: none;">
+        </div>
+    </div>
+</div>
+
+<style>
+    .tag-search-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    #tagResults {
+        border-top: none;
+        margin-top: 2px;
+    }
+
+    #tagResults .list-group-item {
+        cursor: pointer;
+        border-left: 1px solid #dee2e6;
+        border-right: 1px solid #dee2e6;
+    }
+
+    #tagResults .list-group-item:first-child {
+        border-top: 1px solid #dee2e6;
+        border-top-left-radius: 0.25rem;
+        border-top-right-radius: 0.25rem;
+    }
+
+    #tagResults .list-group-item:last-child {
+        border-bottom: 1px solid #dee2e6;
+        border-bottom-left-radius: 0.25rem;
+        border-bottom-right-radius: 0.25rem;
+    }
+
+    #tagResults .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('tagSearchInput');
+        const resultsDiv = document.getElementById('tagResults');
+        let debounceTimer;
+
+        searchInput.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            const searchTerm = this.value.trim();
+
+            if (!searchTerm) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            debounceTimer = setTimeout(async () => {
+                try {
+                    const response = await fetch(`/api/tags?name=${encodeURIComponent(searchTerm)}`);
+                    const tags = await response.json();
+
+                    if (tags.length === 0) {
+                        resultsDiv.innerHTML = '<div class="list-group-item text-muted">No tags found</div>';
+                        resultsDiv.style.display = 'block';
+                        return;
+                    }
+
+                    resultsDiv.innerHTML = tags.map(tag => `
+                        <a href="/Browse?tag=${encodeURIComponent(tag.name)}" 
+                           class="list-group-item list-group-item-action">
+                            ${tag.name}
+                        </a>
+                    `).join('');
+
+                    resultsDiv.style.display = 'block';
+                } catch (error) {
+                    console.error('Error fetching tags:', error);
+                    resultsDiv.style.display = 'none';
+                }
+            }, 300);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!searchInput.contains(e.target) && !resultsDiv.contains(e.target)) {
+                resultsDiv.style.display = 'none';
+            }
+        });
+
+        searchInput.addEventListener('focus', function () {
+            if (this.value.trim() && resultsDiv.innerHTML) {
+                resultsDiv.style.display = 'block';
+            }
+        });
+    });
+</script>

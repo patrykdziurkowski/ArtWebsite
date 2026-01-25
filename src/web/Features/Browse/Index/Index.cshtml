@@ -77,14 +77,13 @@
 
 @section Scripts {
     <script>
-        let artPieceId;
-        let currentTag = null;
-        let selectTag;
-
         document.addEventListener('DOMContentLoaded', async () => {
+            let previousTags = null;
+            let artPieceId;
             let artPieceDetails = null;
             let isLiked = false;
             let artPiece = await loadArtPiece();
+
             if (artPiece === null) return;
 
             artPieceId = artPiece.id.value;
@@ -146,7 +145,10 @@
             }
 
             async function loadArtPiece() {
-                const url = (currentTag === null) ? '/api/artpiece' : `/api/artpiece?tag=${currentTag}`;
+                const urlParams = new URLSearchParams(window.location.search);
+                const tagParam = urlParams.get('tag');
+
+                const url = (tagParam === null) ? '/api/artpiece' : `/api/artpiece?tag=${tagParam}`;
                 const response = await fetch(url);
                 const artContainer = document.getElementById('artContainer');
                 if (response.status === 204) {
@@ -166,6 +168,12 @@
                 artContainer.innerHTML = `<img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded"><div class="p-2"><p>${data.description}</p></div>`;
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
                 artPieceId = data.id.value;
+
+                if (previousTags !== null) {
+                    await previousTags.destroy();
+                }
+                previousTags = new Tags(artPieceId, document.querySelector('#artPieceControls .art-piece-tags'));
+
                 disableReviewingUntilReady();
                 return data;
             }
@@ -232,13 +240,6 @@
                 artPieceReviewed();
             }
 
-            async function filterByTag(tag) {
-                currentTag = tag;
-                document.querySelector('#selectedTag').innerText = tag;
-
-                await loadArtPiece();
-            }
-
             likeButton.addEventListener('click', like);
             reviewForm.addEventListener('submit', review);
             document.querySelector('#reviewArt').addEventListener('click', () => {
@@ -249,8 +250,6 @@
             document.querySelector('#viewArtPiece').addEventListener('click', showDetails);
 
             document.documentElement.style.setProperty('--review-cooldown', '@reviewCooldown' + 's');
-
-            selectTag = filterByTag;
         });
     </script>
 }

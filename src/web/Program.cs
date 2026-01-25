@@ -115,6 +115,7 @@ services.AddTransient<ImageManager>();
 services.AddTransient<ArtPieceReviewsQuery>();
 services.AddTransient<UserReviewerQuery>();
 services.AddTransient<ReviewerQuery>();
+services.AddTransient<TagsByNameQuery>();
 services.AddTransient<ArtPieceTagsQuery>();
 services.AddTransient<ReviewArtPieceCommand>();
 services.AddTransient<LikeArtPieceCommand>();
