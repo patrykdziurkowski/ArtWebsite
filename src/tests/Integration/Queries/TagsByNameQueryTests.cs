@@ -95,4 +95,47 @@ public class TagsByNameQueryTests : DatabaseTest
                 tags.Should().HaveCount(5);
                 DbContext.Tags.Should().HaveCount(6);
         }
+
+        [Fact]
+        public async Task ExecuteAsync_IsNotCaseSensitiveAndOrdersTagsCorrectly()
+        {
+                await DbContext.Tags.AddRangeAsync(new Tag()
+                {
+                        Name = "someTag1",
+                },
+                new Tag()
+                {
+                        Name = "other Tag",
+                },
+                new Tag()
+                {
+                        Name = "another Tag",
+                },
+                new Tag()
+                {
+                        Name = "123Tag456",
+                },
+                new Tag()
+                {
+                        Name = "Tag different",
+                },
+                new Tag()
+                {
+                        Name = "Tag",
+                },
+                new Tag()
+                {
+                        Name = "nothing",
+                });
+                await DbContext.SaveChangesAsync();
+
+                List<Tag> tags = await _query.ExecuteAsync("tag");
+
+                tags.Should().HaveCount(5);
+                DbContext.Tags.Should().HaveCount(7);
+                tags[0].Name.Should().Be("Tag");
+                tags[1].Name.Should().Be("Tag different");
+                tags.Should().NotContain(t => t.Name == "nothing");
+        }
+
 }
