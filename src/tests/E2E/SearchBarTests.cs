@@ -12,6 +12,11 @@ public class SearchBarTests(WebDriverInitializer initializer, SharedPerTestClass
         public void TopSearchBar_AllowsSearchingForTags_WithFiltering()
         {
                 CreateUserWithArtistProfile();
+                CreateUserWithArtistProfile(
+                        userName: "userUser",
+                        email: "user@user.com",
+                        name: "artistArtist"
+                );
 
                 UploadArtPiece();
                 UploadArtPiece("../../../resources/exampleImage2.png");
@@ -22,17 +27,46 @@ public class SearchBarTests(WebDriverInitializer initializer, SharedPerTestClass
                 var tagsUniqueForArtPiece1 = tags1.Except(tags2);
                 var tagsUniqueForArtPiece2 = tags2.Except(tags1);
 
-                Driver.FindElement(By.ClassName("tag-search-input")).SendKeys(tagsUniqueForArtPiece1.First());
-                Wait.Until(d => d.FindElement(By.CssSelector(".tag-search-results a"))).Click();
+                Driver.FindElement(By.ClassName("search-input")).SendKeys(tagsUniqueForArtPiece1.First());
+                Wait.Until(d => d.FindElement(By.CssSelector(".search-results a"))).Click();
                 Wait.Until(d => !string.IsNullOrEmpty(d.FindElement(By.CssSelector("#artContainer img")).GetAttribute("src")));
                 string imagePath1 = Driver.FindElement(By.CssSelector("#artContainer img")).GetAttribute("src");
 
-                Driver.FindElement(By.ClassName("tag-search-input")).SendKeys(tagsUniqueForArtPiece2.First());
-                Wait.Until(d => d.FindElement(By.CssSelector(".tag-search-results a"))).Click();
+                Driver.FindElement(By.ClassName("search-input")).SendKeys(tagsUniqueForArtPiece2.First());
+                Wait.Until(d => d.FindElement(By.CssSelector(".search-results a"))).Click();
                 Wait.Until(d => !string.IsNullOrEmpty(d.FindElement(By.CssSelector("#artContainer img")).GetAttribute("src")));
                 string imagePath2 = Driver.FindElement(By.CssSelector("#artContainer img")).GetAttribute("src");
 
                 imagePath1.Should().NotBe(imagePath2);
+        }
+
+        [Fact, Order(1)]
+        public void TopSearchBar_AllowsSearchingForArtists()
+        {
+                Driver.FindElement(By.ClassName("search-input")).SendKeys("r");
+                Wait.Until(d =>
+                {
+                        var links = d.FindElements(By.CssSelector(".search-results a"));
+                        bool allExpectedSearchResultsPresent = links.Any(l => l.Text == "SomeArtist")
+                                && links.Any(l => l.Text == "SomeUser123")
+                                && links.Any(l => l.Text == "artistArtist")
+                                && links.Any(l => l.Text == "userUser");
+                        return allExpectedSearchResultsPresent;
+                });
+
+                Wait.Until(d => d.FindElements(By.CssSelector(".search-results a"))
+                        .SingleOrDefault(l => l.Text == "SomeArtist")).Click();
+                Wait.Until(d => d.FindElement(By.Id("artistName")).Text == "SomeArtist");
+        }
+
+        [Fact, Order(2)]
+        public void TopSearchBar_AllowsSearchingForReviewers()
+        {
+                Driver.FindElement(By.ClassName("search-input")).SendKeys("r");
+
+                Wait.Until(d => d.FindElements(By.CssSelector(".search-results a"))
+                        .SingleOrDefault(l => l.Text == "userUser")).Click();
+                Wait.Until(d => d.FindElement(By.Id("reviewerName")).Text == "userUser");
         }
 
         private List<string> GetTagsForArtPiece(int artPieceIndex)

@@ -1,48 +1,60 @@
-<div class="tag-search-container">
+<div class="search-container">
     <div class="position-relative">
-        <input type="text" class="form-control tag-search-input" placeholder="Search..." autocomplete="off">
-        <div class="tag-search-results list-group position-absolute w-100 shadow-sm"
+        <input type="text" class="form-control search-input" placeholder="Search..." autocomplete="off">
+        <div class="search-results list-group position-absolute w-100 shadow-sm"
             style="z-index: 1000; max-height: 300px; overflow-y: auto; display: none;">
         </div>
     </div>
 </div>
 <style>
-    .tag-search-results {
+    .search-results {
         border-top: none;
         margin-top: 2px;
     }
 
-    .tag-search-results .list-group-item {
+    .search-results .list-group-item {
         cursor: pointer;
         border-left: 1px solid #dee2e6;
         border-right: 1px solid #dee2e6;
     }
 
-    .tag-search-results .list-group-item:first-child {
+    .search-results .list-group-item:first-child {
         border-top: 1px solid #dee2e6;
         border-top-left-radius: 0.25rem;
         border-top-right-radius: 0.25rem;
     }
 
-    .tag-search-results .list-group-item:last-child {
+    .search-results .list-group-item:last-child {
         border-bottom: 1px solid #dee2e6;
         border-bottom-left-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
     }
 
-    .tag-search-results .list-group-item:hover {
+    .search-results .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .search-category-divider {
+        border-top: 1px solid #dee2e6;
+        margin: 0;
+    }
+
+    .search-category-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+        padding: 0.25rem 0.5rem;
         background-color: #f8f9fa;
     }
 </style>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const containers = document.querySelectorAll('.tag-search-container:not([data-initialized])');
-
+        const containers = document.querySelectorAll('.search-container:not([data-initialized])');
         containers.forEach(container => {
             container.setAttribute('data-initialized', 'true');
-
-            const searchInput = container.querySelector('.tag-search-input');
-            const resultsDiv = container.querySelector('.tag-search-results');
+            const searchInput = container.querySelector('.search-input');
+            const resultsDiv = container.querySelector('.search-results');
             let debounceTimer;
 
             searchInput.addEventListener('input', function () {
@@ -54,22 +66,57 @@
                 }
                 debounceTimer = setTimeout(async () => {
                     try {
-                        const response = await fetch(`/api/tags?name=${encodeURIComponent(searchTerm)}`);
-                        const tags = await response.json();
-                        if (tags.length === 0) {
-                            resultsDiv.innerHTML = '<div class="list-group-item text-muted">No tags found</div>';
+                        const response = await fetch(`/api/search?name=${encodeURIComponent(searchTerm)}`);
+                        const searchResults = await response.json();
+
+                        const hasResults = searchResults.tags.length > 0 ||
+                            searchResults.artists.length > 0 ||
+                            searchResults.reviewers.length > 0;
+
+                        if (!hasResults) {
+                            resultsDiv.innerHTML = '<div class="list-group-item text-muted">No results found</div>';
                             resultsDiv.style.display = 'block';
                             return;
                         }
-                        resultsDiv.innerHTML = tags.map(tag => `
-                            <a href="/Browse?tag=${encodeURIComponent(tag.name)}" 
-                               class="list-group-item list-group-item-action">
-                                ${tag.name}
-                            </a>
-                        `).join('');
+
+                        let html = '';
+
+                        if (searchResults.tags.length > 0) {
+                            html += '<div class="search-category-label">Tags</div>';
+                            html += searchResults.tags.map(tag => `
+                                <a href="/Browse?tag=${encodeURIComponent(tag.name)}" 
+                                   class="list-group-item list-group-item-action">
+                                    ${tag.name}
+                                </a>
+                            `).join('');
+                        }
+
+                        if (searchResults.artists.length > 0) {
+                            if (html) html += '<hr class="search-category-divider">';
+                            html += '<div class="search-category-label">Artists</div>';
+                            html += searchResults.artists.map(artist => `
+                                <a href="/Artists/${artist.name}" 
+                                   class="list-group-item list-group-item-action">
+                                    ${artist.name}
+                                </a>
+                            `).join('');
+                        }
+
+                        if (searchResults.reviewers.length > 0) {
+                            if (html) html += '<hr class="search-category-divider">';
+                            html += '<div class="search-category-label">Reviewers</div>';
+                            html += searchResults.reviewers.map(reviewer => `
+                                <a href="/Reviewers/${reviewer.name}" 
+                                   class="list-group-item list-group-item-action">
+                                    ${reviewer.name}
+                                </a>
+                            `).join('');
+                        }
+
+                        resultsDiv.innerHTML = html;
                         resultsDiv.style.display = 'block';
                     } catch (error) {
-                        console.error('Error fetching tags:', error);
+                        console.error('Error fetching search results:', error);
                         resultsDiv.style.display = 'none';
                     }
                 }, 300);
