@@ -74,7 +74,7 @@
             this.artPieceId = artPieceId;
             this.artPieceDetailsModal = new bootstrap.Modal(document.querySelector('#artPieceDetailsModal'));
 
-            this.previousTags = new Tags(artPieceId, document.querySelector('#art-piece-about .art-piece-tags'));
+            this.artPieceTags = new Tags(artPieceId, document.querySelector('#art-piece-about .art-piece-tags'));
 
             this.#loadReviews(false);
 

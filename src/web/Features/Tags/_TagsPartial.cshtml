@@ -53,7 +53,6 @@
                     return;
                 }
 
-                await this.destroy();
                 this.renderTags(tags);
             }
 
@@ -75,12 +74,6 @@
 
             selectTag(tag) {
                 window.location.href = `/Browse?tag=${encodeURIComponent(tag)}`;
-            }
-
-            async destroy() {
-                if (this.connection) {
-                    await this.connection.stop();
-                }
             }
 
         }

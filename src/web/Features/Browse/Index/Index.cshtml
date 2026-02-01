@@ -78,7 +78,11 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            let previousTags = null;
+            const params = new URLSearchParams(window.location.search);
+            const tagParameter = params.get('tag');
+            document.querySelector('#selectedTag').innerText = tagParameter;
+
+            let artPieceTags = null;
             let artPieceId;
             let artPieceDetails = null;
             let isLiked = false;
@@ -169,10 +173,7 @@
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
                 artPieceId = data.id.value;
 
-                if (previousTags !== null) {
-                    await previousTags.destroy();
-                }
-                previousTags = new Tags(artPieceId, document.querySelector('#artPieceControls .art-piece-tags'));
+                artPieceTags = new Tags(artPieceId, document.querySelector('#artPieceControls .art-piece-tags'));
 
                 disableReviewingUntilReady();
                 return data;
