@@ -12,7 +12,10 @@ public class ArtPieceRepository(ApplicationDbContext dbContext)
                 return await dbContext.ArtPieces.FindAsync(artPieceId);
         }
 
-        public async Task<ArtPiece?> GetByAlgorithmAsync(ReviewerId reviewerId, string? tagName = null)
+        public async Task<ArtPiece?> GetByAlgorithmAsync(
+                ReviewerId reviewerId,
+                ArtPieceId? exceptArtPieceId = null,
+                string? tagName = null)
         {
                 List<ArtPieceId> reviewedArtPieceIds = await dbContext.Reviews
                         .Where(r => r.ReviewerId == reviewerId)
@@ -46,6 +49,12 @@ public class ArtPieceRepository(ApplicationDbContext dbContext)
                                 dbContext.ArtPieceTags.Any(at =>
                                         at.ArtPieceId == artPieceAndItsArtist.ap.Id &&
                                         at.TagId == tagToFilterById));
+                }
+
+                if (exceptArtPieceId is not null)
+                {
+                        query = query.Where(artPieceAndItsArtist => 
+                                artPieceAndItsArtist.ap.Id != exceptArtPieceId);
                 }
 
                 return await query

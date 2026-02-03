@@ -71,6 +71,22 @@ public class ArtPieceQueryTests : DatabaseTest
         }
 
         [Fact]
+        public async Task Execute_ShouldNotReturnAnExemptArtPiece()
+        {
+                ArtistId artistId = await CreateUserWithArtistProfile();
+                await CreateArtPiecesForArtist(artistId);
+                Guid currentUserId = DbContext.Users.First().Id;
+
+                ArtPieceId artPiece1 = (await _query.ExecuteAsync(currentUserId))!.Id;
+                for (int i = 0; i < 100; i++)
+                {
+                        ArtPieceId returnedArtPieceId = (await _query
+                                .ExecuteAsync(currentUserId, exceptArtPieceId: artPiece1))!.Id;
+                        returnedArtPieceId.Should().NotBe(artPiece1);
+                }
+        }
+
+        [Fact]
         public async Task Execute_ShouldReturnNull_WhenOneExistsButWasReviewed()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();

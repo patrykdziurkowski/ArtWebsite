@@ -220,6 +220,38 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
                 Wait.Until(d => d.FindElement(By.Id("art-piece-details-review-number")).Text == "1");
         }
 
+        [Fact, Order(11)]
+        public async Task SkippingArtPieces_LoadsADifferentOne()
+        {
+                ResetTestContext();
+                CreateUserWithArtistProfile();
+                UploadArtPiece();
+                UploadArtPiece();
+                UploadArtPiece();
+                UploadArtPiece();
+                ReviewThisArtPieceThenLoadNext();
+
+                Wait.Until(d => !string.IsNullOrEmpty(d.FindElement(By.Id("artPieceImage")).GetAttribute("src")));
+                string src1 = Driver.FindElement(By.Id("artPieceImage")).GetAttribute("src");
+                Wait.Until(d => d.FindElement(By.Id("skip-button-points")).Text == "10");
+                Wait.Until(d => d.FindElement(By.Id("skipButton")).GetAttribute("disabled") is null);
+
+                await Task.Delay(1000);
+
+                Wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("skipButton"))).Click();
+                Wait.Until(d => d.FindElement(By.Id("artPieceImage")).GetAttribute("src") != src1);
+                string src2 = Driver.FindElement(By.Id("artPieceImage")).GetAttribute("src");
+                Wait.Until(d => d.FindElement(By.Id("skip-button-points")).Text == "5");
+                Wait.Until(d => d.FindElement(By.Id("skipButton")).GetAttribute("disabled") is null);
+
+                await Task.Delay(1000);
+
+                Wait.Until(ExpectedConditions.ElementToBeClickable(By.Id("skipButton"))).Click();
+                Wait.Until(d => d.FindElement(By.Id("artPieceImage")).GetAttribute("src") != src2);
+                Wait.Until(d => d.FindElement(By.Id("skip-button-points")).Text == "0");
+                Wait.Until(d => d.FindElement(By.Id("skipButton")).GetAttribute("disabled") is not null);
+        }
+
         private void SetupArtPieceWithReviews(int reviewCount)
         {
                 ResetTestContext();

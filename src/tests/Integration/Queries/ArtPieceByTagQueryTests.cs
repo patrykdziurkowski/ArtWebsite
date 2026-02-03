@@ -48,6 +48,25 @@ public class ArtPieceByTagQueryTests : DatabaseTest
         }
 
         [Fact]
+        public async Task Execute_ShouldNotReturnAnExemptArtPiece()
+        {
+                ArtistId artistId = await CreateUserWithArtistProfile();
+                Guid currentUserId = DbContext.Users.First().Id;
+                await _uploadArtPieceCommand.ExecuteAsync(GetExampleFile(), "description", currentUserId);
+                await WaitWhileNoTagsInDatabaseAsync();
+                string tagName = DbContext.Tags.First().Name;
+                await CreateArtPiecesForArtist(artistId);
+
+                ArtPieceId artPiece1 = (await _query.ExecuteAsync(currentUserId, tagName))!.Id;
+                for (int i = 0; i < 100; i++)
+                {
+                        ArtPieceId? returnedArtPieceId = (await _query
+                                .ExecuteAsync(currentUserId, tagName, exceptArtPieceId: artPiece1))?.Id;
+                        returnedArtPieceId.Should().NotBe(artPiece1);
+                }
+        }
+
+        [Fact]
         public async Task ExecuteAsync_ShouldReturnArtPiece_WhenArtPieceHasTheGivenTag()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();

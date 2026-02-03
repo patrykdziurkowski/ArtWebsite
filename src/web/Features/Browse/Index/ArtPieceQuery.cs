@@ -11,7 +11,7 @@ public class ArtPieceQuery(
         ArtistRepository artistRepository,
         ApplicationDbContext dbContext)
 {
-        public async Task<ArtPieceDto?> ExecuteAsync(Guid currentUserId)
+        public async Task<ArtPieceDto?> ExecuteAsync(Guid currentUserId, ArtPieceId? exceptArtPieceId = null)
         {
                 ArtPieceServed? artPieceServed = await dbContext.ArtPiecesServed
                         .FirstOrDefaultAsync(aps => aps.UserId == currentUserId);
@@ -44,7 +44,7 @@ public class ArtPieceQuery(
                         .Select(r => r.Id)
                         .FirstAsync();
 
-                ArtPiece? artPiece = await artPieceRepository.GetByAlgorithmAsync(reviewerId);
+                ArtPiece? artPiece = await artPieceRepository.GetByAlgorithmAsync(reviewerId, exceptArtPieceId: exceptArtPieceId);
                 if (artPiece is null)
                 {
                         return null;

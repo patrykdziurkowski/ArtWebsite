@@ -12,14 +12,14 @@ public class ArtPieceByTagQuery(
         ApplicationDbContext dbContext)
 {
 
-        public async Task<ArtPieceDto?> ExecuteAsync(Guid currentUserId, string? tagName = null)
+        public async Task<ArtPieceDto?> ExecuteAsync(Guid currentUserId, string tagName, ArtPieceId? exceptArtPieceId = null)
         {
                 ReviewerId reviewerId = await dbContext.Reviewers
                         .Where(r => r.UserId == currentUserId)
                         .Select(r => r.Id)
                         .FirstAsync();
 
-                ArtPiece? artPiece = await artPieceRepository.GetByAlgorithmAsync(reviewerId, tagName);
+                ArtPiece? artPiece = await artPieceRepository.GetByAlgorithmAsync(reviewerId, exceptArtPieceId, tagName);
                 if (artPiece is null)
                 {
                         return null;
