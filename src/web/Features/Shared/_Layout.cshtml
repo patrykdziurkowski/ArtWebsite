@@ -33,9 +33,12 @@
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <partial name="../Authentication/_LoginPartial" />
                     </div>
-                    <div class="container my-4">
-                        <partial name="../Search/_SearchBarPartial" />
-                    </div>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <div class="container my-4">
+                            <partial name="../Search/_SearchBarPartial" />
+                        </div>
+                    }
                 </div>
             </div>
         </header>
@@ -76,7 +79,7 @@
     </div>
 
     <partial name="../UserDetails/_UserDetailsPartial" />
-
+    
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const originalFetch = window.fetch;
