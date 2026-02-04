@@ -98,7 +98,6 @@ public class ArtistController(
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Setup(SetupModel model)
         {
                 if (await IsArtistAsync())
@@ -117,7 +116,6 @@ public class ArtistController(
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Deactivate(Guid artistId)
         {
                 if (await IsArtistAsync() == false)

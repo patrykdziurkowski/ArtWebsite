@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    string? csrfToken = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -70,6 +76,21 @@
     </div>
 
     <partial name="../UserDetails/_UserDetailsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const originalFetch = window.fetch;
+            window.fetch = (url, options = {}) => {
+                return originalFetch(url, {
+                    ...options,
+                    headers: {
+                        ...options.headers,
+                        'X-CSRF-TOKEN': '@csrfToken'
+                    }
+                });
+            };
+        });
+    </script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

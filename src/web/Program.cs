@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -63,8 +64,25 @@ services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
 // Make Razor look for Identity Pages in the right place
 services.AddRazorPages(o => o.RootDirectory = "/Features/Authentication");
 services.ConfigureApplicationCookie(o => o.LoginPath = "/Login");
-// Globally require a valid ModelState with a default error view
-services.AddControllersWithViews(o => o.Filters.Add<ValidateModelFilter>());
+
+services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+    options.Cookie.Name = "X-CSRF-TOKEN";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
+        ? CookieSecurePolicy.None
+        : CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
+services.AddControllersWithViews(o => {
+        // Globally require a valid ModelState with a default error view
+        o.Filters.Add<ValidateModelFilter>();
+
+        // validate CSRF tokens globally
+        o.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
 services.Configure<RazorViewEngineOptions>(o =>
 {
         // {1} - controller name
@@ -87,7 +105,6 @@ services.Configure<RazorViewEngineOptions>(o =>
         o.PageViewLocationFormats.Add("/Features/Authentication/{0}.cshtml");
         o.PageViewLocationFormats.Add("/Features/Shared/{0}.cshtml");
 });
-
 
 services.AddSignalR();
 
