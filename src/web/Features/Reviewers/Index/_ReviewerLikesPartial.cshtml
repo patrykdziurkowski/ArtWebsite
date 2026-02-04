@@ -32,10 +32,15 @@
             const likeItem = document.createElement('div');
             likeItem.classList.add('list-group-item');
             likeItem.classList.add('art-piece-card');
-            likeItem.innerHTML = `
-                <strong>${new Date(like.date).toLocaleString()}</strong>
-                <img src="${like.imagePath}">
-            `;
+            
+            const dateStrong = document.createElement('strong');
+            dateStrong.textContent = new Date(like.date).toLocaleString();
+            likeItem.appendChild(dateStrong);
+            
+            const img = document.createElement('img');
+            img.src = like.imagePath;
+            likeItem.appendChild(img);
+            
             likeItem.dataset.artPieceId = like.artPieceId.value;
             list.appendChild(likeItem);
         });

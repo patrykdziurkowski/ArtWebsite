@@ -56,18 +56,30 @@
                     this.imagePath = data.imagePath;
                     this.description = data.description;
                     document.getElementById('artDetailsImage').src = data.imagePath;
-                    document.getElementById('detailsDescription').innerText = data.description;
+                    document.getElementById('detailsDescription').textContent = data.description;
                     document.getElementById('art-piece-details-artist-profile-picture').setAttribute("src", data.profilePicturePath);
-                    document.getElementById('art-piece-details-artist').innerText = data.artistName;
+                    document.getElementById('art-piece-details-artist').textContent = data.artistName;
                     document.getElementById('art-piece-details-artist').dataset.userId = data.artistUserId;
-                    const likeHtml = data.likeCount === 1
-                        ? `<span id="art-piece-details-like-number">${data.likeCount}</span> like`
-                        : `<span id="art-piece-details-like-number">${data.likeCount}</span> likes`;
-                    document.getElementById('art-piece-details-like-count').innerHTML = likeHtml;
-                    const reviewHtml = data.reviewCount === 1
-                        ? `<span id="art-piece-details-review-number">${data.reviewCount}</span> review`
-                        : `<span id="art-piece-details-review-number">${data.reviewCount}</span> reviews`;
-                    document.getElementById('art-piece-details-review-count').innerHTML = reviewHtml;
+                    
+                    const likeCountEl = document.getElementById('art-piece-details-like-count');
+                    likeCountEl.textContent = '';
+                    
+                    const likeNumberSpan = document.createElement('span');
+                    likeNumberSpan.id = 'art-piece-details-like-number';
+                    likeNumberSpan.textContent = data.likeCount;
+                    likeCountEl.appendChild(likeNumberSpan);
+                    
+                    likeCountEl.appendChild(document.createTextNode(data.likeCount === 1 ? ' like' : ' likes'));
+                    
+                    const reviewCountEl = document.getElementById('art-piece-details-review-count');
+                    reviewCountEl.textContent = '';
+                    
+                    const reviewNumberSpan = document.createElement('span');
+                    reviewNumberSpan.id = 'art-piece-details-review-number';
+                    reviewNumberSpan.textContent = data.reviewCount;
+                    reviewCountEl.appendChild(reviewNumberSpan);
+                    
+                    reviewCountEl.appendChild(document.createTextNode(data.reviewCount === 1 ? ' review' : ' reviews'));
                 });
 
             this.reviewsOffset = 0;
@@ -126,22 +138,48 @@
 
         async #showArtPieceEditForm(e) {
             const aboutContainer = document.querySelector('#art-piece-about');
-            const formHtml =
-                `<div>
-                    <textarea id="edit-art-piece-description" name="description">${this.description}</textarea>
-                    <div>
-                        <button id="edit-art-piece-save" type="submit" class="btn btn-primary">Save</button>
-                        <button id="edit-art-piece-cancel" type="button" class="btn btn-secondary">Cancel</button>
-                    </div>
-                </div>`
-            const previousHtml = aboutContainer.innerHTML;
-            aboutContainer.innerHTML = formHtml;
-
-            aboutContainer.querySelector('#edit-art-piece-cancel').addEventListener('click', () => {
-                aboutContainer.innerHTML = `<p id="detailsDescription" class="mt-3">${this.description}</p>`;
+            
+            const previousDescription = this.description;
+            
+            aboutContainer.textContent = '';
+            
+            const formDiv = document.createElement('div');
+            
+            const textarea = document.createElement('textarea');
+            textarea.id = 'edit-art-piece-description';
+            textarea.name = 'description';
+            textarea.value = this.description;
+            formDiv.appendChild(textarea);
+            
+            const buttonDiv = document.createElement('div');
+            
+            const saveButton = document.createElement('button');
+            saveButton.id = 'edit-art-piece-save';
+            saveButton.type = 'submit';
+            saveButton.className = 'btn btn-primary';
+            saveButton.textContent = 'Save';
+            buttonDiv.appendChild(saveButton);
+            
+            const cancelButton = document.createElement('button');
+            cancelButton.id = 'edit-art-piece-cancel';
+            cancelButton.type = 'button';
+            cancelButton.className = 'btn btn-secondary';
+            cancelButton.textContent = 'Cancel';
+            buttonDiv.appendChild(cancelButton);
+            
+            formDiv.appendChild(buttonDiv);
+            aboutContainer.appendChild(formDiv);
+            
+            cancelButton.addEventListener('click', () => {
+                aboutContainer.textContent = '';
+                const p = document.createElement('p');
+                p.id = 'detailsDescription';
+                p.className = 'mt-3';
+                p.textContent = this.description;
+                aboutContainer.appendChild(p);
             });
-
-            aboutContainer.querySelector('#edit-art-piece-save').addEventListener('click', async () => {
+            
+            saveButton.addEventListener('click', async () => {
                 const newDescription = document.querySelector('#edit-art-piece-description').value;
                 const response = await fetch(`/api/artpieces/${this.artPieceId}`, {
                     method: 'PUT',
@@ -152,17 +190,20 @@
                         description: newDescription
                     })
                 });
-
                 if (response.status !== 200) {
                     console.error('Unable to edit art piece: ', response, await response.json());
                     return;
                 }
-
-                aboutContainer.innerHTML = previousHtml;
+                
+                aboutContainer.textContent = '';
+                const p = document.createElement('p');
+                p.id = 'detailsDescription';
+                p.className = 'mt-3';
+                p.textContent = newDescription;
+                aboutContainer.appendChild(p);
+                
                 this.description = newDescription;
-                document.querySelector('#detailsDescription').innerText = newDescription;
             });
-
         }
 
         async #deleteReview(event) {
@@ -187,31 +228,60 @@
         }
 
         async #editReview(e, review) {
-            const reviewEditFormHtml =
-                `<div class="form-group">
-                    <textarea class="form-control" id="editComment">${review.comment}</textarea>
-                    <div class="rating">
-                        <input type="radio" id="star5" name="Rating" value="5" ${review.rating.value === 5 ? 'checked' : ''}>
-                        <label for="star5">&#9733;</label>
-                        <input type="radio" id="star4" name="Rating" value="4" ${review.rating.value === 4 ? 'checked' : ''}>
-                        <label for="star4">&#9733;</label>
-                        <input type="radio" id="star3" name="Rating" value="3" ${review.rating.value === 3 ? 'checked' : ''}>
-                        <label for="star3">&#9733;</label>
-                        <input type="radio" id="star2" name="Rating" value="2" ${review.rating.value === 2 ? 'checked' : ''}>
-                        <label for="star2">&#9733;</label>
-                        <input type="radio" id="star1" name="Rating" value="1" ${review.rating.value === 1 ? 'checked' : ''}>
-                        <label for="star1">&#9733;</label>
-                    </div>
-                    <span class="text-danger" id="ratingError"></span>
-                    <button class="btn btn-primary btn-sm mt-2" id="submitEdit">Save</button>
-                    <button class="btn btn-secondary btn-sm mt-2" id="cancelEdit">Cancel</button>
-                </div>`;
-
             this.#hideAllReviewEdits();
-
             const reviewContent = e.target.closest('.details-review').querySelector('.review-content');
-            const reviewEl = e.target.closest('.details-review').classList.add('editable-review');
-            reviewContent.innerHTML = reviewEditFormHtml;
+            e.target.closest('.details-review').classList.add('editable-review');
+            reviewContent.textContent = '';
+
+            const formGroup = document.createElement('div');
+            formGroup.className = 'form-group';
+
+            const textarea = document.createElement('textarea');
+            textarea.className = 'form-control';
+            textarea.id = 'editComment';
+            textarea.value = review.comment;
+            formGroup.appendChild(textarea);
+
+            const ratingDiv = document.createElement('div');
+            ratingDiv.className = 'rating';
+
+            for (let i = 5; i >= 1; i--) {
+                const input = document.createElement('input');
+                input.type = 'radio';
+                input.id = `star${i}`;
+                input.name = 'Rating';
+                input.value = i;
+                if (review.rating.value === i) {
+                    input.checked = true;
+                }
+                ratingDiv.appendChild(input);
+
+                const label = document.createElement('label');
+                label.htmlFor = `star${i}`;
+                label.innerHTML = '&#9733;';
+                ratingDiv.appendChild(label);
+            }
+
+            formGroup.appendChild(ratingDiv);
+
+            const errorSpan = document.createElement('span');
+            errorSpan.className = 'text-danger';
+            errorSpan.id = 'ratingError';
+            formGroup.appendChild(errorSpan);
+
+            const saveButton = document.createElement('button');
+            saveButton.className = 'btn btn-primary btn-sm mt-2';
+            saveButton.id = 'submitEdit';
+            saveButton.textContent = 'Save';
+            formGroup.appendChild(saveButton);
+
+            const cancelButton = document.createElement('button');
+            cancelButton.className = 'btn btn-secondary btn-sm mt-2';
+            cancelButton.id = 'cancelEdit';
+            cancelButton.textContent = 'Cancel';
+            formGroup.appendChild(cancelButton);
+
+            reviewContent.appendChild(formGroup);
 
             document.querySelector('#submitEdit').addEventListener('click', async (e) => {
                 this.#sendEditRequest(e);
@@ -226,8 +296,21 @@
             for (const reviewElement of previouslyEditedReviews) {
                 const rating = reviewElement.dataset.rating;
                 const comment = reviewElement.dataset.comment;
-                const reviewNonEditHtml = `<span class="review-rating">${rating}</span>★ <span class="review-comment">${comment}</span>`;
-                reviewElement.querySelector('.review-content').innerHTML = reviewNonEditHtml;
+
+                const reviewContent = reviewElement.querySelector('.review-content');
+                reviewContent.textContent = '';
+
+                const ratingSpan = document.createElement('span');
+                ratingSpan.className = 'review-rating';
+                ratingSpan.textContent = rating;
+                reviewContent.appendChild(ratingSpan);
+
+                reviewContent.appendChild(document.createTextNode('★ '));
+
+                const commentSpan = document.createElement('span');
+                commentSpan.className = 'review-comment';
+                commentSpan.textContent = comment;
+                reviewContent.appendChild(commentSpan);
             }
         }
 
@@ -270,16 +353,63 @@
 
             reviews.forEach(r => {
                 const reviewEl = document.createElement('div');
-                const badge = r.isCurrentUser
-                    ? ' <span class="badge badge-secondary">YOU</span>'
-                    : '';
                 reviewEl.className = 'details-review d-flex mb-3';
-                reviewEl.innerHTML =
-                    `<div>` +
-                    `<img style="width:100px;height:100px;" src="${r.profilePicturePath}" alt="This reviewer's profile picture."/>` +
-                    `<div><strong class="review-reviewer-name" data-user-id="${r.userId}">${r.reviewerName}</strong>${badge} -  <span class="review-points">${r.points} points</span> - <small>${new Date(r.date).toLocaleDateString()}</small></div>` +
-                    `<div class="review-content"><span class="review-rating">${r.rating.value}</span>★ <span class="review-comment">${r.comment}</span></div>` +
-                    `</div>`;
+
+                const outerDiv = document.createElement('div');
+
+                const img = document.createElement('img');
+                img.style.width = '100px';
+                img.style.height = '100px';
+                img.src = r.profilePicturePath;
+                img.alt = "This reviewer's profile picture.";
+                outerDiv.appendChild(img);
+
+                const infoDiv = document.createElement('div');
+
+                const reviewerNameStrong = document.createElement('strong');
+                reviewerNameStrong.className = 'review-reviewer-name';
+                reviewerNameStrong.dataset.userId = r.userId;
+                reviewerNameStrong.textContent = r.reviewerName;
+                infoDiv.appendChild(reviewerNameStrong);
+
+                if (r.isCurrentUser) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge badge-secondary';
+                    badge.textContent = 'YOU';
+                    infoDiv.appendChild(document.createTextNode(' '));
+                    infoDiv.appendChild(badge);
+                }
+
+                infoDiv.appendChild(document.createTextNode(' - '));
+                const pointsSpan = document.createElement('span');
+                pointsSpan.className = 'review-points';
+                pointsSpan.textContent = `${r.points} points`;
+                infoDiv.appendChild(pointsSpan);
+
+                infoDiv.appendChild(document.createTextNode(' - '));
+                const dateSmall = document.createElement('small');
+                dateSmall.textContent = new Date(r.date).toLocaleDateString();
+                infoDiv.appendChild(dateSmall);
+
+                outerDiv.appendChild(infoDiv);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'review-content';
+
+                const ratingSpan = document.createElement('span');
+                ratingSpan.className = 'review-rating';
+                ratingSpan.textContent = r.rating.value;
+                contentDiv.appendChild(ratingSpan);
+
+                contentDiv.appendChild(document.createTextNode('★ '));
+
+                const commentSpan = document.createElement('span');
+                commentSpan.className = 'review-comment';
+                commentSpan.textContent = r.comment;
+                contentDiv.appendChild(commentSpan);
+
+                outerDiv.appendChild(contentDiv);
+                reviewEl.appendChild(outerDiv);
 
                 if (r.isCurrentUser || r.isAdmin) {
                     const editButton = document.createElement('button');

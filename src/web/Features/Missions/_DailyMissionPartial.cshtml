@@ -14,9 +14,28 @@
             }
             const dto = await response.json();
 
-            const missionText = `<span id="mission-progress">${dto.currentProgress}</span>/<span id="mission-max-progress">${dto.maxProgress}</span> <span id="mission-description">${dto.description}</span>`;
             const missionTitle = document.getElementById('mission-title');
-            missionTitle.innerHTML = missionText;
+            missionTitle.textContent = '';
+
+            const currentProgressSpan = document.createElement('span');
+            currentProgressSpan.id = 'mission-progress';
+            currentProgressSpan.textContent = dto.currentProgress;
+            missionTitle.appendChild(currentProgressSpan);
+
+            missionTitle.appendChild(document.createTextNode('/'));
+
+            const maxProgressSpan = document.createElement('span');
+            maxProgressSpan.id = 'mission-max-progress';
+            maxProgressSpan.textContent = dto.maxProgress;
+            missionTitle.appendChild(maxProgressSpan);
+
+            missionTitle.appendChild(document.createTextNode(' '));
+
+            const descriptionSpan = document.createElement('span');
+            descriptionSpan.id = 'mission-description';
+            descriptionSpan.textContent = dto.description;
+            missionTitle.appendChild(descriptionSpan);
+            
             missionTitle.style.textDecoration = (dto.currentProgress == dto.maxProgress)
                 ? 'line-through'
                 : '';

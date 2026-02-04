@@ -89,6 +89,7 @@
             let artPieceTags = null;
             let artPieceId;
             let artPieceDetails = null;
+            let reviewTimeout = null;
             let isLiked = false;
             let currentPoints = @Model.CurrentReviewerActivePoints;
             let artPiece = await loadArtPiece();
@@ -145,10 +146,13 @@
 
             function disableReviewingUntilReady() {
                 const button = document.getElementById('reviewArt');
+                if (reviewTimeout !== null) {
+                    clearTimeout(reviewTimeout);
+                }
 
                 button.setAttribute('disabled', 'disabled');
 
-                setTimeout(() => {
+                reviewTimeout = setTimeout(() => {
                     button.removeAttribute('disabled');
                 }, Number(@reviewCooldown) * 1000);
             }
@@ -156,30 +160,49 @@
             async function loadArtPiece() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const tagParam = urlParams.get('tag');
-
-                const url = (tagParam === null) ? '/api/artpiece' : `/api/artpiece?tag=${tagParam}`;
+                const url = (tagParam === null) ? '/api/artpiece' : `/api/artpiece?tag=${encodeURIComponent(tagParam)}`;
                 const response = await fetch(url);
                 const artContainer = document.getElementById('artContainer');
+                
                 if (response.status === 204) {
-                    artContainer.innerHTML = '<h1>No more images to review.</h1>';
+                    artContainer.textContent = '';
+                    const noImagesH1 = document.createElement('h1');
+                    noImagesH1.textContent = 'No more images to review.';
+                    artContainer.appendChild(noImagesH1);
                     document.querySelector('#artPieceControls').style.display = 'none';
                     return null;
                 }
-
+                
                 const data = await response.json();
-
+                
                 if (!data || !data.imagePath) {
-                    artContainer.innerHTML = '<h1>No more images to review.</h1>';
+                    artContainer.textContent = '';
+                    const noImagesH1 = document.createElement('h1');
+                    noImagesH1.textContent = 'No more images to review.';
+                    artContainer.appendChild(noImagesH1);
                     document.querySelector('#artPieceControls').style.display = 'none';
                     return null;
                 }
-
-                artContainer.innerHTML = `<img id="artPieceImage" src="${data.imagePath}" alt="Art Piece" class="img-fluid rounded"><div class="p-2"><p>${data.description}</p></div>`;
+                
+                artContainer.textContent = '';
+                
+                const img = document.createElement('img');
+                img.id = 'artPieceImage';
+                img.src = data.imagePath;
+                img.alt = 'Art Piece';
+                img.className = 'img-fluid rounded';
+                artContainer.appendChild(img);
+                
+                const descriptionDiv = document.createElement('div');
+                descriptionDiv.className = 'p-2';
+                const descriptionP = document.createElement('p');
+                descriptionP.textContent = data.description;
+                descriptionDiv.appendChild(descriptionP);
+                artContainer.appendChild(descriptionDiv);
+                
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
                 artPieceId = data.id.value;
-
                 artPieceTags = new Tags(artPieceId, document.querySelector('#artPieceControls .art-piece-tags'));
-
                 disableReviewingUntilReady();
                 return data;
             }
@@ -266,6 +289,7 @@
                     }
 
                     currentPoints -= 5;
+                    document.getElementById('reviewArt').removeAttribute('disabled', 'disabled');
                     await loadArtPiece();
                 } catch (error) {
                     console.error('Error:', error);

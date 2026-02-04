@@ -48,21 +48,48 @@
             data.forEach(artPiece => {
                 const card = document.createElement("div");
                 card.className = "col-md-4 mb-3 art-piece-card";
-                card.innerHTML = `<div class="card">
-                    <img src="${artPiece.imagePath}" class="card-img-top" alt="Image">
-                    <div class="card-body">
-                        ${Array.from({ length: 5 }, (_, i) =>
-                    `<label class="${i < artPiece.averageRating ? 'checked-star' : ''}">&#9733;</label>`
-                ).join('')}
-                        <p class="card-text">${artPiece.description}</p>
-                        <small class="text-muted">${new Date(artPiece.uploadDate).toLocaleDateString()}</small>
-                        @if (Model.IsOwner && Model.BoostExpirationDate is null)
-                        {
-                            <button class="boost-btn" onclick="boostArtPiece('${artPiece.id.value}')">Boost</button>
-                        }
-                    </div>
-                </div>`;
-
+                
+                const cardInner = document.createElement("div");
+                cardInner.className = "card";
+                
+                const img = document.createElement("img");
+                img.src = artPiece.imagePath;
+                img.className = "card-img-top";
+                img.alt = "Image";
+                cardInner.appendChild(img);
+                
+                const cardBody = document.createElement("div");
+                cardBody.className = "card-body";
+                
+                Array.from({ length: 5 }, (_, i) => {
+                    const star = document.createElement('label');
+                    if (i < artPiece.averageRating) {
+                        star.className = 'checked-star';
+                    }
+                    star.innerHTML = '&#9733;';
+                    cardBody.appendChild(star);
+                });
+                
+                const description = document.createElement("p");
+                description.className = "card-text";
+                description.textContent = artPiece.description;
+                cardBody.appendChild(description);
+                
+                const dateSmall = document.createElement("small");
+                dateSmall.className = "text-muted";
+                dateSmall.textContent = new Date(artPiece.uploadDate).toLocaleDateString();
+                cardBody.appendChild(dateSmall);
+                
+                if (@Model.IsOwner.ToString().ToLower() && @(Model.BoostExpirationDate == null ? "true" : "false")) {
+                    const boostBtn = document.createElement("button");
+                    boostBtn.className = "boost-btn";
+                    boostBtn.textContent = "Boost";
+                    boostBtn.onclick = () => boostArtPiece(artPiece.id.value);
+                    cardBody.appendChild(boostBtn);
+                }
+                
+                cardInner.appendChild(cardBody);
+                card.appendChild(cardInner);
                 card.dataset.artPieceId = artPiece.id.value;
                 list.appendChild(card);
             });

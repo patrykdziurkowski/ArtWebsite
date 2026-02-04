@@ -68,52 +68,62 @@
                     try {
                         const response = await fetch(`/api/search?name=${encodeURIComponent(searchTerm)}`);
                         const searchResults = await response.json();
-
                         const hasResults = searchResults.tags.length > 0 ||
                             searchResults.artists.length > 0 ||
                             searchResults.reviewers.length > 0;
-
                         if (!hasResults) {
-                            resultsDiv.innerHTML = '<div class="list-group-item text-muted">No results found</div>';
+                            resultsDiv.textContent = '';
+                            const noResults = document.createElement('div');
+                            noResults.className = 'list-group-item text-muted';
+                            noResults.textContent = 'No results found';
+                            resultsDiv.appendChild(noResults);
                             resultsDiv.style.display = 'block';
                             return;
                         }
-
-                        let html = '';
-
-                        if (searchResults.tags.length > 0) {
-                            html += '<div class="search-category-label">Tags</div>';
-                            html += searchResults.tags.map(tag => `
-                                <a href="/Browse?tag=${encodeURIComponent(tag.name)}" 
-                                   class="list-group-item list-group-item-action">
-                                    ${tag.name}
-                                </a>
-                            `).join('');
+                        
+                        resultsDiv.textContent = '';
+                        
+                        function createCategorySection(items, categoryLabel, urlPattern) {
+                            if (items.length === 0) return;
+                            
+                            if (resultsDiv.children.length > 0) {
+                                const hr = document.createElement('hr');
+                                hr.className = 'search-category-divider';
+                                resultsDiv.appendChild(hr);
+                            }
+                            
+                            const label = document.createElement('div');
+                            label.className = 'search-category-label';
+                            label.textContent = categoryLabel;
+                            resultsDiv.appendChild(label);
+                            
+                            items.forEach(item => {
+                                const link = document.createElement('a');
+                                link.href = urlPattern(item.name);
+                                link.className = 'list-group-item list-group-item-action';
+                                link.textContent = item.name;
+                                resultsDiv.appendChild(link);
+                            });
                         }
-
-                        if (searchResults.artists.length > 0) {
-                            if (html) html += '<hr class="search-category-divider">';
-                            html += '<div class="search-category-label">Artists</div>';
-                            html += searchResults.artists.map(artist => `
-                                <a href="/Artists/${artist.name}" 
-                                   class="list-group-item list-group-item-action">
-                                    ${artist.name}
-                                </a>
-                            `).join('');
-                        }
-
-                        if (searchResults.reviewers.length > 0) {
-                            if (html) html += '<hr class="search-category-divider">';
-                            html += '<div class="search-category-label">Reviewers</div>';
-                            html += searchResults.reviewers.map(reviewer => `
-                                <a href="/Reviewers/${reviewer.name}" 
-                                   class="list-group-item list-group-item-action">
-                                    ${reviewer.name}
-                                </a>
-                            `).join('');
-                        }
-
-                        resultsDiv.innerHTML = html;
+                        
+                        createCategorySection(
+                            searchResults.tags, 
+                            'Tags', 
+                            name => `/Browse?tag=${encodeURIComponent(name)}`
+                        );
+                        
+                        createCategorySection(
+                            searchResults.artists, 
+                            'Artists', 
+                            name => `/Artists/${encodeURIComponent(name)}`
+                        );
+                        
+                        createCategorySection(
+                            searchResults.reviewers, 
+                            'Reviewers', 
+                            name => `/Reviewers/${encodeURIComponent(name)}`
+                        );
+                        
                         resultsDiv.style.display = 'block';
                     } catch (error) {
                         console.error('Error fetching search results:', error);

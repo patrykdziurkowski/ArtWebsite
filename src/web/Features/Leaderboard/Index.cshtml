@@ -92,9 +92,19 @@
                 const body = document.getElementById('leaderboard-body');
                 entries.forEach((e, i) => {
                     const tr = document.createElement('tr');
-                    tr.innerHTML = '<td>' + (offset + i + 1) + '</td>' +
-                        '<td>' + e.name + '</td>' +
-                        '<td>' + e.pointsInThatTimeSpan + '</td>';
+                    
+                    const rankTd = document.createElement('td');
+                    rankTd.textContent = offset + i + 1;
+                    tr.appendChild(rankTd);
+                    
+                    const nameTd = document.createElement('td');
+                    nameTd.textContent = e.name;
+                    tr.appendChild(nameTd);
+                    
+                    const pointsTd = document.createElement('td');
+                    pointsTd.textContent = e.pointsInThatTimeSpan;
+                    tr.appendChild(pointsTd);
+                    
                     body.appendChild(tr);
                 });
             }

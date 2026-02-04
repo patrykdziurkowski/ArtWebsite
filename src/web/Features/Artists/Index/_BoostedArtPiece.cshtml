@@ -36,10 +36,18 @@
 
                 const boostedImage = document.createElement("div");
                 boostedImage.className = "boosted-art-piece";
-                boostedImage.innerHTML = `
-                    <img src="${boost.imagePath}" alt="Boosted Art Piece">
-                    <span class="boost-expiration">Expires on ${boost.expirationDate}</span>
-                `;
+                boostedImage.textContent = '';
+
+                const img = document.createElement('img');
+                img.src = boost.imagePath;
+                img.alt = 'Boosted Art Piece';
+                boostedImage.appendChild(img);
+
+                const expirationSpan = document.createElement('span');
+                expirationSpan.className = 'boost-expiration';
+                expirationSpan.textContent = `Expires on ${boost.expirationDate}`;
+                boostedImage.appendChild(expirationSpan);
+                
                 container.appendChild(boostedImage);
                 const boostButtons = document.querySelectorAll(".boost-btn");
                 for (const button of boostButtons) {

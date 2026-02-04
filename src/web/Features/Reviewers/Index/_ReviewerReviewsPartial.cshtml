@@ -32,14 +32,30 @@
             const reviewItem = document.createElement('div');
             reviewItem.classList.add('list-group-item');
             reviewItem.classList.add('art-piece-card');
-            reviewItem.innerHTML = `
-                <strong>${new Date(review.date).toLocaleString()}</strong>
-                ${Array.from({ length: 5 }, (_, i) =>
-                `<label class="${i < review.rating ? 'checked-star' : ''}">&#9733;</label>`
-            ).join('')}
-                <p> ${review.comment}</p>
-                <img src="${review.imagePath}">
-            `;
+            
+            const dateStrong = document.createElement('strong');
+            dateStrong.textContent = new Date(review.date).toLocaleString();
+            reviewItem.appendChild(dateStrong);
+            
+            const starsContainer = document.createElement('div');
+            Array.from({ length: 5 }, (_, i) => {
+                const star = document.createElement('label');
+                if (i < review.rating) {
+                    star.classList.add('checked-star');
+                }
+                star.innerHTML = '&#9733;';
+                starsContainer.appendChild(star);
+            });
+            reviewItem.appendChild(starsContainer);
+            
+            const commentP = document.createElement('p');
+            commentP.textContent = review.comment;
+            reviewItem.appendChild(commentP);
+            
+            const img = document.createElement('img');
+            img.src = review.imagePath;
+            reviewItem.appendChild(img);
+            
             reviewItem.dataset.artPieceId = review.artPieceId.value;
             reviewItem.dataset.reviewId = review.reviewId.value;
             list.appendChild(reviewItem);
