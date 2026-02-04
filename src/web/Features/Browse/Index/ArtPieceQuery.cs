@@ -11,11 +11,17 @@ public class ArtPieceQuery(
         ArtistRepository artistRepository,
         ApplicationDbContext dbContext)
 {
-        public async Task<ArtPieceDto?> ExecuteAsync(Guid currentUserId, ArtPieceId? exceptArtPieceId = null)
+        public async Task<ArtPieceDto?> ExecuteAsync(Guid currentUserId)
         {
                 ArtPieceServed? artPieceServed = await dbContext.ArtPiecesServed
                         .FirstOrDefaultAsync(aps => aps.UserId == currentUserId);
-                if (artPieceServed is not null)
+
+                ArtPieceId? exceptArtPieceId = null;
+                if (artPieceServed is not null && artPieceServed.WasSkipped)
+                {
+                        exceptArtPieceId = artPieceServed.ArtPieceId;
+                }
+                else if (artPieceServed is not null)
                 {
                         ArtPiece? lastArtPiece = await artPieceRepository.GetByIdAsync(artPieceServed.ArtPieceId);
                         if (lastArtPiece is not null)

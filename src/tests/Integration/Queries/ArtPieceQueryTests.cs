@@ -71,17 +71,21 @@ public class ArtPieceQueryTests : DatabaseTest
         }
 
         [Fact]
-        public async Task Execute_ShouldNotReturnAnExemptArtPiece()
+        public async Task Execute_ShouldNotReturnASkippedArtPiece()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 await CreateArtPiecesForArtist(artistId);
                 Guid currentUserId = DbContext.Users.First().Id;
 
                 ArtPieceId artPiece1 = (await _query.ExecuteAsync(currentUserId))!.Id;
+                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPiece1);
+                DbContext.ArtPiecesServed.Single().WasSkipped = true;
+                await DbContext.SaveChangesAsync();
+
                 for (int i = 0; i < 100; i++)
                 {
                         ArtPieceId returnedArtPieceId = (await _query
-                                .ExecuteAsync(currentUserId, exceptArtPieceId: artPiece1))!.Id;
+                                .ExecuteAsync(currentUserId))!.Id;
                         returnedArtPieceId.Should().NotBe(artPiece1);
                 }
         }

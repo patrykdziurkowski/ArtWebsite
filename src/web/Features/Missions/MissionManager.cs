@@ -81,6 +81,7 @@ public class MissionManager(
                 {
                         Reviewer reviewer = await dbContext.Reviewers.FirstAsync(r => r.UserId == userId);
                         reviewer.Points += POINTS_PER_QUEST;
+                        reviewer.ActivePoints += POINTS_PER_QUEST;
                         await dbContext.ReviewerPointAwards.AddAsync(new()
                         {
                                 PointValue = POINTS_PER_QUEST,

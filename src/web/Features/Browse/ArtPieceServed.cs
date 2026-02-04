@@ -9,6 +9,7 @@ public class ArtPieceServed : AggregateRoot
         public DateTimeOffset Date { get; set; } = DateTimeOffset.UtcNow;
         public required ArtPieceId ArtPieceId { get; set; }
         public required Guid UserId { get; init; }
+        public bool WasSkipped { get; set; } = false;
 }
 
 public class ArtPieceServedId : DomainId;

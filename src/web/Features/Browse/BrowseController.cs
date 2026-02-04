@@ -13,13 +13,13 @@ public class BrowseController(ApplicationDbContext dbContext) : Controller
 {
         public async Task<ActionResult> Index()
         {
-                int currentReviewerPoints = await dbContext.Reviewers
+                int currentReviewerActivePoints = await dbContext.Reviewers
                         .Where(r => r.UserId == GetUserId())
-                        .Select(r => r.Points)
+                        .Select(r => r.ActivePoints)
                         .FirstAsync();
                 return View(new BrowseModel()
                 {
-                        CurrentReviewerPoints = currentReviewerPoints
+                        CurrentReviewerActivePoints = currentReviewerActivePoints
                 });
         }
 

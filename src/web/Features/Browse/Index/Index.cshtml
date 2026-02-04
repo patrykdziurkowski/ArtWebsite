@@ -15,8 +15,8 @@
     <div id="artPieceControls">
         <partial name="../Tags/_TagsPartial" />
         <button id="reviewArt" class="btn btn-light m-3" disabled><i class="bi bi-justify-left"></i></button>
-        <button  id="skipButton" class="btn btn-warning" @(Model.CurrentReviewerPoints < 5 ? "disabled" : "")>
-            Skip (<span id="skip-button-points">@Model.CurrentReviewerPoints</span> / 5)
+        <button  id="skipButton" class="btn btn-warning" @(Model.CurrentReviewerActivePoints < 5 ? "disabled" : "")>
+            Skip (<span id="skip-button-points">@Model.CurrentReviewerActivePoints</span> / 5)
         </button>
     </div>
 </div>
@@ -90,7 +90,7 @@
             let artPieceId;
             let artPieceDetails = null;
             let isLiked = false;
-            let currentPoints = @Model.CurrentReviewerPoints;
+            let currentPoints = @Model.CurrentReviewerActivePoints;
             let artPiece = await loadArtPiece();
 
             if (artPiece === null) return;
@@ -256,32 +256,24 @@
                 try {
                     const response = await fetch('/api/artpieces/current', {
                         method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            currentArtPieceId: artPieceId,
-                            tag: tagParameter,
-                        }),
                     });
                     
                     if (!response.ok) {
                         const data = await response.json();
                         alert('Failed to skip: ' + (data.errors?.[0]?.message || 'Unknown error'));
-                        button.disabled = false;
+                        
                         return;
                     }
 
                     currentPoints -= 5;
-                    document.querySelector('#skip-button-points').innerText = currentPoints;
-                    document.querySelector('#skipButton').disabled = currentPoints < 5;
-                    
                     await loadArtPiece();
                 } catch (error) {
                     console.error('Error:', error);
                     alert('An error occurred while skipping');
-                    button.disabled = false;
                 }
+
+                document.querySelector('#skip-button-points').innerText = currentPoints;
+                document.querySelector('#skipButton').disabled = currentPoints < 5;
             });
 
             likeButton.addEventListener('click', like);

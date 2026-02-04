@@ -4,6 +4,6 @@ namespace web.Features.Browse;
 
 public record BrowseModel
 {
-    public required int CurrentReviewerPoints { get; init; }
+    public required int CurrentReviewerActivePoints { get; init; }
     public ReviewArtPieceModel? ReviewForm { get; set; } = null;
 }

@@ -12,18 +12,18 @@ public class SkipArtPieceCommand(ApplicationDbContext dbContext)
     public async Task<Result> ExecuteAsync(Guid currentUserId)
     {
         Reviewer reviewer = await dbContext.Reviewers.FirstAsync(r => r.UserId == currentUserId);
-        if (reviewer.Points < SKIP_POINTS_COST)
+        if (reviewer.ActivePoints < SKIP_POINTS_COST)
         {
             return Result.Fail("You do not have enough points to skip an art piece.");  
         }
 
-        reviewer.Points -= SKIP_POINTS_COST;
+        reviewer.ActivePoints -= SKIP_POINTS_COST;
 
         ArtPieceServed? artPieceServed = await dbContext.ArtPiecesServed
             .FirstOrDefaultAsync(aps => aps.UserId == currentUserId);
         if (artPieceServed is not null)
         {
-            dbContext.Remove(artPieceServed);
+            artPieceServed.WasSkipped = true;
         }
 
         await dbContext.SaveChangesAsync();

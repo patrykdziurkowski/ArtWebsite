@@ -13,7 +13,13 @@ public class Reviewer : AggregateRoot
         public required string Name { get; set; }
         public DateTimeOffset JoinDate { get; init; } = DateTimeOffset.UtcNow;
         public int ReviewCount { get; set; } = 0;
+
+        // points is the total number of points ever received
         public int Points { get; set; } = 0;
+        
+        // active points is the remainig number of unspent points
+        public int ActivePoints { get; set; } = 0;
+
         public string ProfilePicturePath { get; set; } = Constants.DEFAULT_PROFILE_PICTURE_PATH;
         public required Guid UserId { get; init; }
         private List<Like> _activeLikes = [];

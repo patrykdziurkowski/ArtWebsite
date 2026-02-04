@@ -30,9 +30,11 @@ public class SkipArtPieceCommandTests : DatabaseTest
         DbContext.SaveChanges();
         await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieceIds.First());
         int reviewerPointsBefore = DbContext.Reviewers.Single(u => u.UserId == currentUserId).Points;
+        int activeReviewerPointsBefore = DbContext.Reviewers.Single(u => u.UserId == currentUserId).Points;
         
         Result result = await _command.ExecuteAsync(currentUserId);
         int reviewerPointsAfter = DbContext.Reviewers.Single(u => u.UserId == currentUserId).Points;
+        int activeReviewerPointsAfter = DbContext.Reviewers.Single(u => u.UserId == currentUserId).Points;
 
         result.IsSuccess.Should().BeFalse();
         DbContext.ArtPiecesServed.Should().HaveCount(1);
@@ -48,16 +50,21 @@ public class SkipArtPieceCommandTests : DatabaseTest
         await CreateReviewerWithReviewsForArtPieces(artPieceIds);
         Guid currentUserId = DbContext.Users.Single(u => u.Id != artistUserId).Id;
         DbContext.Reviewers.Single(r => r.UserId == currentUserId).Points = 200;
+        DbContext.Reviewers.Single(r => r.UserId == currentUserId).ActivePoints = 200;
         DbContext.SaveChanges();
         await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPieceIds.First());
         int reviewerPointsBefore = DbContext.Reviewers.Single(u => u.UserId == currentUserId).Points;
+        int activeReviewerPointsBefore = DbContext.Reviewers.Single(u => u.UserId == currentUserId).ActivePoints;
         
         Result result = await _command.ExecuteAsync(currentUserId);
         int reviewerPointsAfter = DbContext.Reviewers.Single(u => u.UserId == currentUserId).Points;
+        int activeReviewerPointsAfter = DbContext.Reviewers.Single(u => u.UserId == currentUserId).ActivePoints;
 
         result.IsFailed.Should().BeFalse();
-        DbContext.ArtPiecesServed.Count().Should().Be(0);
+        DbContext.ArtPiecesServed.Single().WasSkipped.Should().BeTrue();
         reviewerPointsBefore.Should().Be(200);
-        reviewerPointsAfter.Should().Be(195);
+        reviewerPointsAfter.Should().Be(200);
+        activeReviewerPointsBefore.Should().Be(200);
+        activeReviewerPointsAfter.Should().Be(195);
     }
 }

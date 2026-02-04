@@ -5,6 +5,7 @@ using tests.Integration.Fixtures;
 using web.Features.Artists;
 using web.Features.ArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Browse;
 using web.Features.Browse.ByTag;
 
 namespace tests.Integration.Queries;
@@ -13,12 +14,15 @@ public class ArtPieceByTagQueryTests : DatabaseTest
 {
         private readonly ArtPieceByTagQuery _query;
         private readonly UploadArtPieceCommand _uploadArtPieceCommand;
+        private readonly RegisterArtPieceServedCommand _registerArtPieceServedCommand;
 
         public ArtPieceByTagQueryTests(DatabaseTestContext databaseContext)
                 : base(databaseContext)
         {
                 _query = Scope.ServiceProvider.GetRequiredService<ArtPieceByTagQuery>();
                 _uploadArtPieceCommand = Scope.ServiceProvider.GetRequiredService<UploadArtPieceCommand>();
+                _registerArtPieceServedCommand = Scope.ServiceProvider.GetRequiredService<RegisterArtPieceServedCommand>();
+
         }
 
         [Fact]
@@ -48,7 +52,7 @@ public class ArtPieceByTagQueryTests : DatabaseTest
         }
 
         [Fact]
-        public async Task Execute_ShouldNotReturnAnExemptArtPiece()
+        public async Task Execute_ShouldNotReturnASkippedArtPiece()
         {
                 ArtistId artistId = await CreateUserWithArtistProfile();
                 Guid currentUserId = DbContext.Users.First().Id;
@@ -58,10 +62,14 @@ public class ArtPieceByTagQueryTests : DatabaseTest
                 await CreateArtPiecesForArtist(artistId);
 
                 ArtPieceId artPiece1 = (await _query.ExecuteAsync(currentUserId, tagName))!.Id;
+                await _registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPiece1);
+                DbContext.ArtPiecesServed.Single().WasSkipped = true;
+                await DbContext.SaveChangesAsync();
+
                 for (int i = 0; i < 100; i++)
                 {
                         ArtPieceId? returnedArtPieceId = (await _query
-                                .ExecuteAsync(currentUserId, tagName, exceptArtPieceId: artPiece1))?.Id;
+                                .ExecuteAsync(currentUserId, tagName))?.Id;
                         returnedArtPieceId.Should().NotBe(artPiece1);
                 }
         }
