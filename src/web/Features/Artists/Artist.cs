@@ -39,6 +39,9 @@ public class Artist : AggregateRoot
                         ArtistId = Id,
                         ArtPieceId = artPieceId,
                 };
+
+                Points += 20;
+
                 return Result.Ok();
         }
 

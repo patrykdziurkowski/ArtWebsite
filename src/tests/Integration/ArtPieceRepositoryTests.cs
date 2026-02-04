@@ -84,7 +84,7 @@ public class ArtPieceRepositoryTests : DatabaseTest
                 unpopularArtPieceServed.Should().BeTrue();
 
                 popularArtist = await DbContext.Artists.FirstAsync(a => a.Id == popularArtistId);
-                popularArtist.Points.Should().Be(10010);
+                popularArtist.Points.Should().Be(10000 + 10 + 20);
                 popularArtist.ActiveBoost.Should().NotBeNull();
                 popularArtist.ActiveBoost.ArtPieceId.Should().Be(popularArtPiece.Id);
                 DbContext.ArtPieces.First(ap => ap.Id == popularArtPiece.Id).AverageRating.Should().Be(new Rating(5));

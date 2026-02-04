@@ -100,6 +100,6 @@ public class BoostArtPieceCommandTests : DatabaseTest
 
                 _ = await _command.ExecuteAsync(currentUserId, artPieceId);
 
-                DbContext.Artists.Single().Points.Should().Be(25);
+                DbContext.Artists.Single().Points.Should().Be(45);
         }
 }

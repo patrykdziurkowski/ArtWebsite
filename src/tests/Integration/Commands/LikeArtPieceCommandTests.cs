@@ -134,7 +134,7 @@ public class LikeArtPieceCommandTests : DatabaseTest
                         await _command.ExecuteAsync(currentUserId, artPieceIds[i]);
                 }
 
-                DbContext.Reviewers.Single(r => r.UserId == currentUserId).Points.Should().Be(25 + numberOfLikesForMission * 10);
+                DbContext.Reviewers.Single(r => r.UserId == currentUserId).Points.Should().Be(75);
                 DbContext.Likes.Should().HaveCount(numberOfLikesForMission);
         }
 }

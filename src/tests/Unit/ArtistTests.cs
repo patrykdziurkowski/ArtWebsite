@@ -28,6 +28,7 @@ public class ArtistTests
 
                 firstResult.IsSuccess.Should().BeTrue();
                 secondResult.IsFailed.Should().BeTrue();
+                artist.Points.Should().Be(20);
         }
 
         [Fact]
@@ -49,6 +50,7 @@ public class ArtistTests
                 Result result = artist.BoostArtPiece(artPiece.Id, artPiece.ArtistId);
 
                 result.IsFailed.Should().BeTrue();
+                artist.Points.Should().Be(0);
         }
 
         [Fact]
@@ -71,6 +73,7 @@ public class ArtistTests
 
                 result.IsSuccess.Should().BeTrue();
                 artist.ActiveBoost.Should().NotBeNull();
+                artist.Points.Should().Be(20);
         }
 
 

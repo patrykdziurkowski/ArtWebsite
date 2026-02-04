@@ -39,6 +39,9 @@ public class Reviewer : AggregateRoot
                         return Result.Fail("Cannot add another like. The limit has been reached.");
                 }
 
+                Points += 15;
+                ActivePoints += 15;
+
                 _activeLikes.Add(new Like
                 {
                         ArtPieceId = artPieceId,
@@ -70,6 +73,10 @@ public class Reviewer : AggregateRoot
                 {
                         Like = like,
                 });
+
+                Points -= 15;
+                ActivePoints -= 15;
+
                 _activeLikes.Remove(like);
                 return Result.Ok();
         }
