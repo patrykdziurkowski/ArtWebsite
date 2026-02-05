@@ -1,0 +1,223 @@
+<!--
+Copyright (c) 2026 by Jon Kantner (https://codepen.io/jkantner/pen/KKEgENL)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+
+
+<label class="switch">
+	<input id="darkModeToggle" class="switch__input" type="checkbox" role="switch" />
+	<span class="switch__icon">
+		<span class="switch__icon-part switch__icon-part--1"></span>
+		<span class="switch__icon-part switch__icon-part--2"></span>
+		<span class="switch__icon-part switch__icon-part--3"></span>
+		<span class="switch__icon-part switch__icon-part--4"></span>
+		<span class="switch__icon-part switch__icon-part--5"></span>
+		<span class="switch__icon-part switch__icon-part--6"></span>
+		<span class="switch__icon-part switch__icon-part--7"></span>
+		<span class="switch__icon-part switch__icon-part--8"></span>
+		<span class="switch__icon-part switch__icon-part--9"></span>
+		<span class="switch__icon-part switch__icon-part--10"></span>
+		<span class="switch__icon-part switch__icon-part--11"></span>
+	</span>
+	<span class="switch__sr">Dark Mode</span>
+</label>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('darkModeToggle');
+        const htmlElement = document.documentElement;
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            toggleButton.checked = true;
+        }
+
+        htmlElement.setAttribute('data-bs-theme', savedTheme);
+        
+        toggleButton.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            htmlElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    })
+</script>
+
+<style>
+    :root {
+        --hue: 223;
+        --switch-light: 80%;
+        --switch-dark: 20%;
+        --trans-dur: 0.4s;
+        --trans-timing: cubic-bezier(0.65,0,0.35,1);
+    }
+    .switch,
+    .switch__input {
+        position: relative;
+        -webkit-tap-highlight-color: transparent;
+    }
+    .switch {
+        margin: auto;
+    }
+    .switch__input,
+    .switch__input:before {
+        background-color: hsl(var(--hue),10%,var(--switch-dark));
+    }
+    .switch__input {
+        border-radius: 0.75em;
+        cursor: pointer;
+        display: block;
+        width: 3em;
+        height: 1.5em;
+        transition: background-color var(--trans-dur) var(--trans-timing);
+        -webkit-appearance: none;
+        appearance: none;
+    }
+    .switch__input:before {
+        border-radius: 50%;
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0.125em;
+        left: 0.125em;
+        width: 1.25em;
+        height: 1.25em;
+        transition:
+            background-color var(--trans-dur) var(--trans-timing),
+            transform var(--trans-dur) var(--trans-timing);
+    }
+    .switch__icon,
+    .switch__icon-part {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .switch__icon {
+        background-color: hsl(var(--hue),10%, var(--switch-light));
+        border-radius: 50%;
+        overflow: hidden;
+        pointer-events: none;
+        top: 0.125em;
+        left: 0.125em;
+        width: 1.25em;
+        height: 1.25em;
+        transition: transform var(--trans-dur) var(--trans-timing);
+    }
+    .switch__icon-part {
+        transition:
+            box-shadow var(--trans-dur) var(--trans-timing),
+            transform var(--trans-dur) var(--trans-timing);
+    }
+    .switch__icon-part--1,
+    .switch__icon-part--2,
+    .switch__icon-part--3 {
+        border-radius: 50%;
+    }
+    .switch__icon-part--1 {
+        background-color: hsl(var(--hue),10%,var(--switch-light));
+        top: calc(50% - 0.375em);
+        left: calc(50% - 0.375em);
+        width: 0.75em;
+        height: 0.75em;
+    }
+    .switch__icon-part--2 {
+        background-color: hsl(var(--hue),10%,var(--switch-dark));
+        top: calc(50% - 0.4375em);
+        left: calc(50% - 0.0625em);
+        width: 0.5em;
+        height: 0.5em;
+        transform: translate(-0.1875em,0.1875em) scale(0.2);
+    }
+    .switch__icon-part--3 {
+        box-shadow: 0 0 0 0.625em hsl(var(--hue),10%,var(--switch-dark)) inset;
+        width: 1.25em;
+        height: 1.25em;
+        transform: scale(0.25);
+    }
+    .switch__icon-part--3 ~ .switch__icon-part {
+        background-color: hsl(var(--hue),10%,var(--switch-dark));
+        border-radius: 0.0625em;
+        top: 50%;
+        left: 50%;
+        width: 0.125em;
+        height: 0.1875em;
+        transform-origin: 50% 0;
+    }
+    .switch__icon-part--4 {
+        transform: translateX(-50%) rotate(0) translateY(0.25em);
+    }
+    .switch__icon-part--5 {
+        transform: translateX(-50%) rotate(45deg) translateY(0.25em);
+    }
+    .switch__icon-part--6 {
+        transform: translateX(-50%) rotate(90deg) translateY(0.25em);
+    }
+    .switch__icon-part--7 {
+        transform: translateX(-50%) rotate(135deg) translateY(0.25em);
+    }
+    .switch__icon-part--8 {
+        transform: translateX(-50%) rotate(180deg) translateY(0.25em);
+    }
+    .switch__icon-part--9 {
+        transform: translateX(-50%) rotate(225deg) translateY(0.25em);
+    }
+    .switch__icon-part--10 {
+        transform: translateX(-50%) rotate(270deg) translateY(0.25em);
+    }
+    .switch__icon-part--11 {
+        transform: translateX(-50%) rotate(315deg) translateY(0.25em);
+    }
+    .switch__sr {
+        overflow: hidden;
+        position: absolute;
+        width: 1px;
+        height: 1px;
+    }
+
+    /* `:checked` state */
+    .switch__input:checked {
+        background-color: hsl(var(--hue),10%,var(--switch-light));
+    }
+    .switch__input:checked:before,
+    .switch__input:checked ~ .switch__icon {
+        transform: translateX(1.5em);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--2 {
+        transform: translate(0,0) scale(1);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--3 {
+        box-shadow: 0 0 0 0.25em hsl(var(--hue),10%,var(--switch-dark)) inset;
+        transform: scale(1);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--4 {
+        transform: translateX(-50%) rotate(0) translateY(0.625em) scale(0);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--5 {
+        transform: translateX(-50%) rotate(45deg) translateY(0.625em) scale(0);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--6 {
+        transform: translateX(-50%) rotate(90deg) translateY(0.625em) scale(0);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--7 {
+        transform: translateX(-50%) rotate(135deg) translateY(0.625em) scale(0);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--8 {
+        transform: translateX(-50%) rotate(180deg) translateY(0.625em) scale(0);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--9 {
+        transform: translateX(-50%) rotate(225deg) translateY(0.625em) scale(0);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--10 {
+        transform: translateX(-50%) rotate(270deg) translateY(0.625em) scale(0);
+    }
+    .switch__input:checked ~ .switch__icon .switch__icon-part--11 {
+        transform: translateX(-50%) rotate(315deg) translateY(0.625em) scale(0);
+    }
+</style>
