@@ -14,38 +14,27 @@
 
     .search-results .list-group-item {
         cursor: pointer;
-        border-left: 1px solid #dee2e6;
-        border-right: 1px solid #dee2e6;
     }
 
     .search-results .list-group-item:first-child {
-        border-top: 1px solid #dee2e6;
         border-top-left-radius: 0.25rem;
         border-top-right-radius: 0.25rem;
     }
 
     .search-results .list-group-item:last-child {
-        border-bottom: 1px solid #dee2e6;
         border-bottom-left-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
     }
 
     .search-results .list-group-item:hover {
-        background-color: #f8f9fa;
-    }
-
-    .search-category-divider {
-        border-top: 1px solid #dee2e6;
-        margin: 0;
+        background-color: var(--bs-secondary);
     }
 
     .search-category-label {
         font-size: 0.75rem;
         font-weight: 600;
-        color: #6c757d;
         text-transform: uppercase;
         padding: 0.25rem 0.5rem;
-        background-color: #f8f9fa;
     }
 </style>
 <script>
@@ -86,14 +75,9 @@
                         function createCategorySection(items, categoryLabel, urlPattern) {
                             if (items.length === 0) return;
                             
-                            if (resultsDiv.children.length > 0) {
-                                const hr = document.createElement('hr');
-                                hr.className = 'search-category-divider';
-                                resultsDiv.appendChild(hr);
-                            }
-                            
                             const label = document.createElement('div');
                             label.className = 'search-category-label';
+                            label.classList.add('search-category-label', 'bg-body-secondary');
                             label.textContent = categoryLabel;
                             resultsDiv.appendChild(label);
                             

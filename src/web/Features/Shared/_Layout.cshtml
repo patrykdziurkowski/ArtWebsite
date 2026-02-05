@@ -22,7 +22,7 @@
     <div class="vh-100 d-flex flex-column">
         <header>
             <button class="btn btn-primary d-md-none position-fixed" id="toggleSidebar">☰</button>
-            <div class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow">
+            <div class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow">
                 <div class="container-fluid">
                     <a class="navbar-brand" asp-controller="Home" asp-action="Index">web</a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -45,7 +45,7 @@
 
         <div class="container h-100">
             <div class="row h-100">
-                <div class="col-lg-3 bg-light">
+                <div class="col-lg-3 bg-body-secondary">
                     <nav class="h-100 d-flex flex-column justify-content-between p-3" id="sidebar">
                         <ul class="nav nav-pills flex-column">
                             <li class="nav-item">
@@ -61,7 +61,7 @@
                                 <a asp-controller="Leaderboard" asp-action="Index" class="nav-link">Leaderboard</a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link">Settings</a>
+                                <button id="darkModeToggle" class="btn btn-outline-secondary"></button>
                             </li>
                         </ul>
                         <div class="border-top text-muted">
@@ -72,7 +72,7 @@
                 <main role="main" class="pb-3 col-lg-9 col-xl-6">
                     @RenderBody()
                 </main>
-                <div class="d-none d-xl-block col-3 bg-light">
+                <div class="d-none d-xl-block col-3 bg-body-secondary">
                 </div>
             </div>
         </div>
@@ -92,6 +92,24 @@
                     }
                 });
             };
+        });
+    </script>
+
+    <script>
+        const toggleButton = document.getElementById('darkModeToggle');
+        const htmlElement = document.documentElement;
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlElement.setAttribute('data-bs-theme', savedTheme);
+        toggleButton.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        
+        toggleButton.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            htmlElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            toggleButton.textContent = newTheme === 'dark' ? '☀️' : '🌙';
         });
     </script>
 

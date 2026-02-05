@@ -71,6 +71,12 @@ p {
         color: orange;
 }
 
+.tag {
+        margin: 0.1em;
+        border-radius: 1em;
+        padding: 0.5em;
+}
+
 .checked-star {
         color: orange;
 }
@@ -111,7 +117,7 @@ p {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #BBB;
+        background-color: #444;
         height: 100%;
 }
 
@@ -135,12 +141,12 @@ p {
 @keyframes review-loading-animation {
         from {
                 transform: scaleY(1);
-                transform-origin: bottom;
+                transform-origin: top;
         }
 
         to {
                 transform: scaleY(0);
-                transform-origin: bottom;
+                transform-origin: top;
         }
 }
 

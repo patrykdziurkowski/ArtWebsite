@@ -14,7 +14,7 @@
 
     <div id="artPieceControls">
         <partial name="../Tags/_TagsPartial" />
-        <button id="reviewArt" class="btn btn-light m-3" disabled><i class="bi bi-justify-left"></i></button>
+        <button id="reviewArt" class="btn btn-secondary m-3" disabled><i class="bi bi-justify-left"></i></button>
         <button  id="skipButton" class="btn btn-warning" @(Model.CurrentReviewerActivePoints < 5 ? "disabled" : "")>
             Skip (<span id="skip-button-points">@Model.CurrentReviewerActivePoints</span> / 5)
         </button>
@@ -30,9 +30,9 @@
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">
-                <button id="likeArtPiece" class="btn btn-light m-3">Like</button>
-                <button id="nextArtPiece" class="btn btn-light m-3">Next</button>
-                <button id="viewArtPiece" class="btn btn-light m-3">Details</button>
+                <button id="likeArtPiece" class="btn btn-secondary m-3">Like</button>
+                <button id="nextArtPiece" class="btn btn-secondary m-3">Next</button>
+                <button id="viewArtPiece" class="btn btn-secondary m-3">Details</button>
             </div>
         </div>
     </div>
