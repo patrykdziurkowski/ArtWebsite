@@ -50,8 +50,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 <style>
     :root {
         --hue: 223;
-        --switch-light: 80%;
-        --switch-dark: 20%;
+        --switch-light: 10%;
+        --switch-dark: 90%;
         --trans-dur: 0.4s;
         --trans-timing: cubic-bezier(0.65,0,0.35,1);
     }
@@ -68,6 +68,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         background-color: hsl(var(--hue),10%,var(--switch-dark));
     }
     .switch__input {
+        border: 0.15em solid hsl(var(--hue),10%,var(--switch-light));
         border-radius: 0.75em;
         cursor: pointer;
         display: block;
@@ -78,6 +79,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         appearance: none;
     }
     .switch__input:before {
+        opacity:0;
         border-radius: 50%;
         content: "";
         display: block;
@@ -102,8 +104,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         border-radius: 50%;
         overflow: hidden;
         pointer-events: none;
-        top: 0.125em;
-        left: 0.125em;
+        top: 0.1em;
+        left: 0.1em;
         width: 1.25em;
         height: 1.25em;
         transition: transform var(--trans-dur) var(--trans-timing);
@@ -182,10 +184,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     /* `:checked` state */
     .switch__input:checked {
         background-color: hsl(var(--hue),10%,var(--switch-light));
+        border: 0.15em solid hsl(var(--hue),10%,var(--switch-dark));
     }
     .switch__input:checked:before,
     .switch__input:checked ~ .switch__icon {
-        transform: translateX(1.5em);
+        transform: translateX(1.6em);
     }
     .switch__input:checked ~ .switch__icon .switch__icon-part--2 {
         transform: translate(0,0) scale(1);
