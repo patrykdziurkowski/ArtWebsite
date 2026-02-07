@@ -28,25 +28,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 </label>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const toggleButton = document.getElementById('darkModeToggle');
-        const htmlElement = document.documentElement;
-        
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        if (savedTheme === 'dark') {
-            toggleButton.checked = true;
-        }
+    const toggleButton = document.getElementById('darkModeToggle');
+    const htmlElement = document.documentElement;
+    
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+        toggleButton.checked = true;
+    }
 
-        htmlElement.setAttribute('data-bs-theme', savedTheme);
+    htmlElement.setAttribute('data-bs-theme', savedTheme);
+    
+    toggleButton.addEventListener('click', () => {
+        const currentTheme = htmlElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         
-        toggleButton.addEventListener('click', () => {
-            const currentTheme = htmlElement.getAttribute('data-bs-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            htmlElement.setAttribute('data-bs-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
-    })
+        htmlElement.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
 </script>
 
 <style>
