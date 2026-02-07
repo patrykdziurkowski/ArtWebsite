@@ -1,8 +1,75 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<section class="hero-section text-center py-5" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <div class="container py-5">
+        <h1 class="display-3 fw-bold mb-4">Discover Art, One Masterpiece at a Time 🎨</h1>
+        <p class="lead mb-4">Swipe through stunning artworks, review what you love, earn points, and share your own creations with the world.</p>
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <a href="/Register" class="btn btn-outline-light btn-lg px-5">Get Started Free</a>
+            <a href="/Login" class="btn btn-outline-light btn-lg px-5">Login</a>
+        }
+        else
+        {
+            <a href="/Browse" class="btn btn-outline-light btn-lg px-5">Browse</a>
+            <a href="/ArtPiece/Upload" class="btn btn-outline-light btn-lg px-5">Upload</a>
+        }
+    </div>
+</section>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-3 text-center">
+                <div class="display-4 mb-3">🖼️</div>
+                <h5>Browse Art</h5>
+                <p class="text-muted">Discover amazing artworks one at a time</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="display-4 mb-3">⭐</div>
+                <h5>Rate & Review</h5>
+                <p class="text-muted">Share your thoughts and earn points</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="display-4 mb-3">🎨</div>
+                <h5>Upload Your Art</h5>
+                <p class="text-muted">Showcase your creative masterpieces</p>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="display-4 mb-3">🏆</div>
+                <h5>Gain Popularity</h5>
+                <p class="text-muted">Build your following and climb the ranks</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-body-secondary">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="p-5 rounded-3" style="background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%); height: 400px; display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 120px;">🎨</span>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <h2 class="mb-4">Your Art Journey Starts Here</h2>
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <strong>Curated Content</strong> - Explore a variety of popular content
+                </div>
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <strong>Earn Rewards</strong> - Get points for reviews, and build engagement
+                </div>
+                <div class="mb-3">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <strong>Artist Tools</strong> - Upload, edit, and promote your work
+                </div>
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    <strong>Community Driven</strong> - Connect with art patrons worldwide
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using web.Features.Artists;
 using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Browse;
 
@@ -15,8 +16,9 @@ public class ArtPieceController(UploadArtPieceCommand uploadArtPieceCommand,
         {
                 if (await IsArtistAsync() == false)
                 {
-                        return RedirectToAction(nameof(BrowseController.Index), "Browse");
+                        return RedirectToAction(nameof(ArtistController.Index), "Artist");
                 }
+
                 return View();
         }
 
@@ -25,8 +27,9 @@ public class ArtPieceController(UploadArtPieceCommand uploadArtPieceCommand,
         {
                 if (await IsArtistAsync() == false)
                 {
-                        return RedirectToAction(nameof(BrowseController.Index), "Browse");
+                        return RedirectToAction(nameof(ArtistController.Index), "Artist");
                 }
+
                 await uploadArtPieceCommand.ExecuteAsync(model.Image, model.Description, GetUserId());
                 return RedirectToAction(nameof(BrowseController.Index), "Browse");
         }

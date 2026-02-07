@@ -47,26 +47,27 @@
             <div class="row h-100">
                 <div class="col-lg-3 bg-body-secondary">
                     <nav class="h-100 d-flex flex-column justify-content-between p-3" id="sidebar">
-                        <ul class="nav nav-pills flex-column">
-                            <li class="nav-item">
-                                <a asp-controller="Browse" asp-action="Index" class="nav-link">Browse</a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Reviewer" asp-action="Index" class="nav-link">Reviewer</a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Artist" asp-action="Index" class="nav-link">Artist</a>
-                            </li>
-                            <li class="nav-item">
-                                <a asp-controller="Leaderboard" asp-action="Index" class="nav-link">Leaderboard</a>
-                            </li>
-                            <li class="nav-item">
-                                <partial name="../Shared/_DarkModeSwitchPartial"/>
-                            </li>
-                        </ul>
-                        <div class="border-top text-muted">
-                            &copy; 2025 - web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </div>
+                            <ul class="nav nav-pills flex-column">
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <li class="nav-item">
+                                        <a asp-controller="Browse" asp-action="Index" class="nav-link">Browse</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Reviewer" asp-action="Index" class="nav-link">Reviewer</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Artist" asp-action="Index" class="nav-link">Artist</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Leaderboard" asp-action="Index" class="nav-link">Leaderboard</a>
+                                    </li>
+                                }
+                                <li class="nav-item">
+                                    <partial name="../Shared/_DarkModeSwitchPartial"/>
+                                </li>
+                            </ul>
+                        <div class="border-top text-muted">&copy; 2026 - web</div>
                     </nav>
                 </div>
                 <main role="main" class="pb-3 col-lg-9 col-xl-6">
