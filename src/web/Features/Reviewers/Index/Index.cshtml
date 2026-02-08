@@ -67,8 +67,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             document.querySelector('#editReviewerProfile').addEventListener('click', async (e) => {
-                const shouldRedirectToNewPage = window.location.pathName !== "/reviewer"
-                    && window.location.pathName !== "/reviewer/";
+                const shouldRedirectToNewPage = window.location.pathname !== "/reviewer"
+                    && window.location.pathname !== "/reviewer/";
                 const form = new FormData(document.querySelector('#editForm'));
 
                 const response = await fetch(`/api/reviewers/${form.get('ReviewerId')}`, {

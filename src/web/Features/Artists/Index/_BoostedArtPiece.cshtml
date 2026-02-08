@@ -1,18 +1,51 @@
 @using web.Features.Artists.Index
 @model ArtistProfileModel
 
-<div id="boosted-art-piece-container">
+<div id="boosted-art-piece-container" class="mb-4">
     @if (Model.BoostExpirationDate is not null)
     {
-        <div class="boosted-art-piece">
-            <img src="@Model.BoostedArtPiecePath" alt="Boosted Art Piece">
-            @if (Model.IsOwner)
-            {
-                <span class="boost-expiration">Expires on @Model.BoostExpirationDate</span>
-            }
+        <div class="boosted-art-piece position-relative">
+            <div class="card shadow-sm border-0 p-2">
+                <img src="@Model.BoostedArtPiecePath" alt="Boosted Art Piece" class="card-img-top">
+                @if (Model.IsOwner)
+                {
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-itzems-center">
+                            <small class="boost-expiration text-muted">
+                                <i class="bi bi-clock me-1"></i>Boost expires on @Model.BoostExpirationDate.Value.ToLocalTime().ToString("MMM dd, yyyy h:mm tt")
+                            </small>
+                            <span class="badge bg-gradient" style="background: linear-gradient(45deg, #ff006e, #8338ec);">
+                                <i class="bi bi-star-fill me-1"></i>BOOSTED
+                            </span>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     }
 </div>
+
+<style>
+    .boosted-art-piece {
+        padding: 4px;
+        border-radius: 8px;
+        background: linear-gradient(45deg, #ff006e, #8338ec, #ff006e);
+        background-size: 200% 200%;
+        animation: pink-glow 3s ease infinite;
+    }
+    
+    .boosted-art-piece .card {
+        background: var(--bs-body-bg);
+    }
+
+    .boosted-art-piece img {
+        margin: auto;
+    }
+    
+    [data-bs-theme="dark"] .boosted-art-piece .card {
+        background-color: var(--bs-dark);
+    }
+</style>
 
 <script>
     function boostArtPiece(artPieceId) {
@@ -27,28 +60,48 @@
                 if (!response.ok) {
                     throw new Error("Response from boosting art piece was not ok.");
                 }
-
                 return response.json();
             })
             .then(responseObject => {
                 const boost = responseObject;
                 const container = document.querySelector("#boosted-art-piece-container");
-
-                const boostedImage = document.createElement("div");
-                boostedImage.className = "boosted-art-piece";
-                boostedImage.textContent = '';
-
+                container.innerHTML = '';
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'boosted-art-piece position-relative mb-4';
+                
+                const card = document.createElement('div');
+                card.className = 'card shadow-sm border-0';
+                
                 const img = document.createElement('img');
                 img.src = boost.imagePath;
                 img.alt = 'Boosted Art Piece';
-                boostedImage.appendChild(img);
-
-                const expirationSpan = document.createElement('span');
-                expirationSpan.className = 'boost-expiration';
-                expirationSpan.textContent = `Expires on ${boost.expirationDate}`;
-                boostedImage.appendChild(expirationSpan);
+                img.className = 'card-img-top';
+                wrapper.appendChild(card);
+                card.appendChild(img);
                 
-                container.appendChild(boostedImage);
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body';
+                
+                const statsRow = document.createElement('div');
+                statsRow.className = 'd-flex justify-content-between align-items-center';
+                
+                const expirationSpan = document.createElement('small');
+                expirationSpan.className = 'boost-expiration text-muted';
+                expirationSpan.innerHTML = `<i class="bi bi-clock me-1"></i>Boost expires on ${boost.expirationDate}`;
+                statsRow.appendChild(expirationSpan);
+                
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-gradient';
+                badge.style.background = 'linear-gradient(45deg, #ff006e, #8338ec)';
+                badge.innerHTML = '<i class="bi bi-star-fill me-1"></i>BOOSTED';
+                statsRow.appendChild(badge);
+                
+                cardBody.appendChild(statsRow);
+                card.appendChild(cardBody);
+                wrapper.appendChild(card);
+                container.appendChild(wrapper);
+                
                 const boostButtons = document.querySelectorAll(".boost-btn");
                 for (const button of boostButtons) {
                     button.remove();

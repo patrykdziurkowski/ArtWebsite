@@ -1,10 +1,76 @@
 @using web.Features.Artists.Index
 @model ArtistProfileModel
 
-<div id="artPiecesList" class="list-group">Loading...</div>
-<button id="loadMoreArtPieces" class="btn btn-primary mt-3" style="display: none;">Load More</button>
+<div class="mb-4">
+    <h4 class="mb-3">Artwork Gallery</h4>
+    <div id="artPiecesList" class="row g-3">
+        <div class="col-12 text-center text-muted py-5">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-3">
+        <button id="loadMoreArtPieces" class="btn btn-outline-primary" style="display: none;">
+            <i class="bi bi-arrow-down-circle me-2"></i>Load More
+        </button>
+    </div>
+</div>
 
 <partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
+
+<style>
+    .art-piece-card {
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .art-piece-card:hover {
+        transform: translateY(-4px);
+    }
+    
+    .art-piece-card .card {
+        border: none;
+    }
+    
+    .art-piece-card .card-img-top {
+        height: 400px;
+        object-fit: cover;
+        border-radius: 0.375rem 0.375rem 0 0;
+    }
+    
+    .art-piece-rating {
+        color: #ffc107;
+        font-size: 0.9rem;
+    }
+    
+    .art-piece-rating .star {
+        margin-right: 2px;
+    }
+    
+    .art-piece-rating .empty-star {
+        color: #dee2e6;
+    }
+    
+    [data-bs-theme="dark"] .art-piece-rating .empty-star {
+        color: #495057;
+    }
+    
+    .boost-btn {
+        background: linear-gradient(45deg, #ff6b00, #ff3d00);
+        border: none;
+        color: white;
+        padding: 0.375rem 1rem;
+        border-radius: 0.375rem;
+        font-weight: 500;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .boost-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(255, 61, 0, 0.3);
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -17,6 +83,8 @@
             const element = e.target;
             const artPieceElement = element.closest('.art-piece-card');
             if (!artPieceElement) return;
+
+            if (e.target.closest('.boost-btn')) return;
 
             const artPieceId = artPieceElement.dataset.artPieceId;
             if (!artPieceId) {
@@ -35,63 +103,81 @@
             const response = await fetch(`/api/artists/${artistId}/artpieces?offset=${offset}`);
             const data = await response.json();
 
-            if (offset == 0) list.innerText = '';
-            if (offset == 0 && data.length === 0) list.innerText = 'No art pieces found.';
+            if (offset == 0) list.innerHTML = '';
+            if (offset == 0 && data.length === 0) {
+                list.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-image me-2"></i>No art pieces found.</div>';
+            }
 
-            // If loaded less art pieces than requested, hide the button since we're at the end
             if (data.length < artPiecesPerPage) {
                 loadMore.style.display = 'none';
             } else {
-                loadMore.style.display = 'block';
+                loadMore.style.display = 'inline-block';
             }
 
             data.forEach(artPiece => {
-                const card = document.createElement("div");
-                card.className = "col-md-4 mb-3 art-piece-card";
+                const col = document.createElement("div");
+                col.className = "col-12 art-piece-card";
+                col.dataset.artPieceId = artPiece.id.value;
                 
-                const cardInner = document.createElement("div");
-                cardInner.className = "card";
+                const card = document.createElement("div");
+                card.className = "card shadow-sm";
                 
                 const img = document.createElement("img");
                 img.src = artPiece.imagePath;
                 img.className = "card-img-top";
-                img.alt = "Image";
-                cardInner.appendChild(img);
+                img.alt = artPiece.description;
+                card.appendChild(img);
                 
                 const cardBody = document.createElement("div");
                 cardBody.className = "card-body";
                 
-                Array.from({ length: 5 }, (_, i) => {
-                    const star = document.createElement('label');
-                    if (i < artPiece.averageRating) {
-                        star.className = 'checked-star';
-                    }
-                    star.innerHTML = '&#9733;';
-                    cardBody.appendChild(star);
-                });
+                const ratingDiv = document.createElement("div");
+                ratingDiv.className = "art-piece-rating mb-2";
+                for (let i = 0; i < 5; i++) {
+                    const star = document.createElement('span');
+                    star.className = i < artPiece.averageRating ? 'star' : 'star empty-star';
+                    star.innerHTML = '★';
+                    ratingDiv.appendChild(star);
+                }
+                cardBody.appendChild(ratingDiv);
                 
                 const description = document.createElement("p");
-                description.className = "card-text";
+                description.className = "card-text text-muted small mb-3";
                 description.textContent = artPiece.description;
                 cardBody.appendChild(description);
+                
+                const statsRow = document.createElement("div");
+                statsRow.className = "d-flex justify-content-between align-items-center mb-2";
+                
+                const stats = document.createElement("div");
+                stats.className = "d-flex gap-3 small text-muted";
+                stats.innerHTML = `
+                    <span><i class="bi bi-heart me-1"></i>${artPiece.likeCount}</span>
+                    <span><i class="bi bi-chat me-1"></i>${artPiece.reviewCount}</span>
+                `;
+                statsRow.appendChild(stats);
                 
                 const dateSmall = document.createElement("small");
                 dateSmall.className = "text-muted";
                 dateSmall.textContent = new Date(artPiece.uploadDate).toLocaleDateString();
-                cardBody.appendChild(dateSmall);
+                statsRow.appendChild(dateSmall);
+                
+                cardBody.appendChild(statsRow);
                 
                 if (@Model.IsOwner.ToString().ToLower() && @(Model.BoostExpirationDate == null ? "true" : "false")) {
                     const boostBtn = document.createElement("button");
-                    boostBtn.className = "boost-btn";
-                    boostBtn.textContent = "Boost";
-                    boostBtn.onclick = () => boostArtPiece(artPiece.id.value);
+                    boostBtn.className = "boost-btn w-100";
+                    boostBtn.innerHTML = '<i class="bi bi-fire me-1"></i>Boost This Artwork';
+                    boostBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        boostArtPiece(artPiece.id.value);
+                    };
                     cardBody.appendChild(boostBtn);
                 }
                 
-                cardInner.appendChild(cardBody);
-                card.appendChild(cardInner);
-                card.dataset.artPieceId = artPiece.id.value;
-                list.appendChild(card);
+                card.appendChild(cardBody);
+                col.appendChild(card);
+                list.appendChild(col);
             });
             offset += artPiecesPerPage;
         }
