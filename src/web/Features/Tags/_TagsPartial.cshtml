@@ -1,6 +1,55 @@
 <div class="art-piece-tags">
-    <div class="tags-container">Loading tags...</div>
+    <div class="tags-container-wrapper">
+        <div class="tags-container">Loading tags...</div>
+    </div>
 </div>
+
+<style>
+    .art-piece-tags {
+        width: 100%;
+        margin: 1rem 0;
+    }
+
+    .tags-container-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 0.75rem 0;
+        background: var(--bs-body-bg);
+        border-radius: 0.5rem;
+        cursor: grab;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+
+    .tags-container-wrapper:active {
+        cursor: grabbing;
+    }
+
+    .tags-container {
+        display: flex;
+        gap: 0.5rem;
+        padding: 0 1rem;
+        min-width: min-content;
+    }
+
+    .tag {
+        margin: 0;
+        border-radius: 1rem;
+        padding: 0.5rem 1rem;
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .tag:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+</style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js"
     integrity="sha512-kkMt8UThSmWcdXLYFaGZ/U6vyWSNLZMUWQ5SMeF80pGqrEkH5ei9D/3MbVQpB8p7D5C3A4vlX7BpsWTT2BfB6A=="
@@ -15,6 +64,7 @@
                 this.tagsContainer = containerElement.querySelector('.tags-container');
                 this.connection = null;
                 this.init();
+                this.setupDragScroll();
             }
 
             async init() {
@@ -69,6 +119,43 @@
 
             selectTag(tag) {
                 window.location.href = `/Browse?tag=${encodeURIComponent(tag)}`;
+            }
+
+            setupDragScroll() {
+                const wrapper = this.containerElement.querySelector('.tags-container-wrapper');
+                let isDown = false;
+                let startX;
+                let scrollLeft;
+                let hasMoved = false;
+
+                wrapper.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    hasMoved = false;
+                    startX = e.pageX - wrapper.offsetLeft;
+                    scrollLeft = wrapper.scrollLeft;
+                });
+
+                document.addEventListener('mouseup', () => {
+                    isDown = false;
+                });
+
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - wrapper.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    if (Math.abs(walk) > 5) {
+                        hasMoved = true;
+                    }
+                    wrapper.scrollLeft = scrollLeft - walk;
+                });
+
+                wrapper.addEventListener('click', (e) => {
+                    if (hasMoved) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                }, true);
             }
 
         }

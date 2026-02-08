@@ -65,11 +65,6 @@ p {
 .rating input:checked~label {
         color: orange;
 }
-.tag {
-        margin: 0.1em;
-        border-radius: 1em;
-        padding: 0.5em;
-}
 
 .checked-star {
         color: orange;
