@@ -18,6 +18,7 @@ html, body {
         margin: 0;
         min-height: 100%;
         font-size: 14px;
+        scroll-behavior: smooth;
 }
 
 .form-floating>.form-control-plaintext::placeholder,
@@ -65,7 +66,6 @@ p {
 .rating input:checked~label {
         color: orange;
 }
-
 .tag {
         margin: 0.1em;
         border-radius: 1em;
@@ -131,6 +131,66 @@ p {
 
 #reviewArt:not([disabled="disabled"])::before {
         opacity: 0;
+}
+
+header {
+        position: fixed;
+        width: 100vw;
+        z-index: 1000;
+}
+
+main {
+        position: relative;
+        top: 56px;
+}
+
+.sidebar-fixed {
+    position: fixed;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+}
+
+.col-lg-3.bg-body-secondary:first-child {
+    left: 0;
+    width: 25%;
+}
+
+.d-xl-block.sidebar-fixed {
+    right: 0;
+}
+
+@media (min-width: 992px) {
+    main.col-lg-9 {
+        margin-left: 25%;
+    }
+}
+
+@media (min-width: 1200px) {
+    main.col-xl-6 {
+        margin-left: 25%;
+        margin-right: 25%;
+    }
+    
+    .d-xl-block.sidebar-fixed {
+        width: 25%;
+    }
+}
+
+@media (max-width: 991px) {
+    .sidebar-fixed {
+        position: relative;
+        top: auto;
+        height: auto;
+    }
+    
+    main.col-lg-9 {
+        margin-left: 0;
+    }
+}
+
+#sidebar {
+    height: 100%;
 }
 
 @keyframes review-loading-animation {

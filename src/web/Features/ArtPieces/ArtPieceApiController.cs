@@ -59,8 +59,7 @@ public class ArtPieceApiController(
                 [Range(0, int.MaxValue)] int offset = 0)
         {
                 List<ArtPiece> artPieces = await artPiecesQuery
-                        .ExecuteAsync(new ArtistId { Value = artistId }, ART_PIECES_TO_LOAD,
-                                offset);
+                        .ExecuteAsync(new ArtistId { Value = artistId }, ART_PIECES_TO_LOAD, offset);
                 return Ok(artPieces);
         }
 
