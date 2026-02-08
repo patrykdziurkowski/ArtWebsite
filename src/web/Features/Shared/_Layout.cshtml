@@ -33,13 +33,17 @@
                         </button>
                         <partial name="../Authentication/_LoginPartial" />
                     </div>
+
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <div style="flex: 1;" class="d-flex justify-content-center">
                             <partial name="../Search/_SearchBarPartial" />
                         </div>
-                        <div style="flex: 1;"></div>
                     }
+
+                    <div style="flex: 1;" class="d-flex justify-content-end m-2">
+                        <partial name="../Shared/_DarkModeSwitchPartial"/>
+                    </div>
                 </div>
             </div>
         </header>
@@ -47,7 +51,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-3 bg-body-secondary">
-                    <nav class="d-flex flex-column justify-content-between p-3" id="sidebar">
+                    <nav class="d-flex flex-column justify-content-between p-3 h-100" id="sidebar">
                         <ul class="nav nav-pills flex-column">
                             @if (User.Identity?.IsAuthenticated == true)
                             {
@@ -64,9 +68,6 @@
                                     <a asp-controller="Leaderboard" asp-action="Index" class="nav-link">Leaderboard</a>
                                 </li>
                             }
-                            <li class="nav-item">
-                                <partial name="../Shared/_DarkModeSwitchPartial"/>
-                            </li>
                         </ul>
                         <div class="border-top text-muted">&copy; 2026</div>
                     </nav>
