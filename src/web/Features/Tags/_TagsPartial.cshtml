@@ -22,6 +22,25 @@
         -webkit-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
+        scrollbar-width: none;
+    }
+
+    .tags-container-wrapper:hover {
+        scrollbar-width: thin;
+    }
+
+    .tags-container-wrapper::-webkit-scrollbar {
+        height: 8px;
+        opacity: 0;
+    }
+
+    .tags-container-wrapper:hover::-webkit-scrollbar {
+        opacity: 1;
+    }
+
+    .tags-container-wrapper::-webkit-scrollbar-thumb {
+        background: var(--bs-secondary-bg);
+        border-radius: 4px;
     }
 
     .tags-container-wrapper:active {

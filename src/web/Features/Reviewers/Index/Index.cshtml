@@ -2,17 +2,36 @@
 @using web.Features.Reviewers.Index
 @model ReviewerProfileDto
 
-<div class="container mt-5">
-    <img id="reviewer-profile-picture" src="@Model.ProfilePicturePath" alt="This reviewer's profile picture." />
-    <h2><span id="reviewerName" data-user-id="@Model.ReviewerUserId">@Model.Name</span>'s profile</h2>
-    @if (@Model.CurrentUserOwnsThisProfile || @Model.IsCurrentUserAdmin)
-    {
-        <button id="editProfileModalButton" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-            <i id="editProfile" class="bi bi-pencil-square"></i>
-        </button>
-    }
-    <p>Joined: <span id="reviewerJoinDate">@Html.Raw(Model.JoinDate.ToString("o"))</span> | @Model.ReviewCount total
-        reviews</p>
+<div class="container mt-4">
+    <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+        <div class="d-flex align-items-start gap-3">
+            <img id="reviewer-profile-picture" 
+                 src="@Model.ProfilePicturePath" 
+                 alt="This reviewer's profile picture." 
+                 class="rounded-circle border border-3 border-primary" 
+                 style="width: 100px; height: 100px; object-fit: cover;" />
+            <div class="flex-grow-1">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <h2 class="mb-0">
+                        <span id="reviewerName" data-user-id="@Model.ReviewerUserId">@Model.Name</span>'s profile
+                    </h2>
+                    @if (@Model.CurrentUserOwnsThisProfile || @Model.IsCurrentUserAdmin)
+                    {
+                        <button id="editProfileModalButton" 
+                                class="btn btn-outline-secondary btn-sm"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editProfileModal">
+                            <i id="editProfile" class="bi bi-pencil-square"></i>
+                        </button>
+                    }
+                </div>
+                <p class="text-muted mb-0">
+                    Joined: <span id="reviewerJoinDate">@Html.Raw(Model.JoinDate.ToString("o"))</span> | @Model.ReviewCount total reviews
+                </p>
+            </div>
+        </div>
+    </div>
 
     <div class="container mt-3">
         <ul class="nav nav-tabs" id="reviewerTabs">
@@ -34,29 +53,38 @@
 <partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
 
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editProfileModalLabel">Edit your reviewer profile!</h5>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold" id="editProfileModalLabel">Edit your reviewer profile!</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body px-4 py-4">
                 <form id="editForm">
-                    <div class="form-group">
-                        <input type="text" value="@Model.Name" name="Name" placeholder="Your reviewer name">
-                        <span asp-validation-for="Name" class="text-danger"></span>
+                    <div class="mb-4">
+                        <label for="Name" class="form-label fw-semibold">Reviewer Name</label>
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               value="@Model.Name" 
+                               name="Name" 
+                               placeholder="Your reviewer name">
+                        <span asp-validation-for="Name" class="text-danger small"></span>
                     </div>
-                    <div class="form-group">
-                        <label for="Image">Choose an image</label>
-                        <input type="file" class="form-control" id="image-input" name="Image" accept="image/*" />
-                        <small class="form-text text-muted">Optional</small>
+                    <div class="mb-3">
+                        <label for="image-input" class="form-label fw-semibold">Profile Picture</label>
+                        <input type="file" 
+                               class="form-control" 
+                               id="image-input" 
+                               name="Image" 
+                               accept="image/*" />
+                        <small class="form-text text-muted">Optional - Choose a new profile picture</small>
                     </div>
                     <input type="hidden" value="@Model.Id" name="ReviewerId">
                 </form>
             </div>
-            <div class="modal-footer">
-                <button id="editReviewerProfile" type="submit" class="btn btn-danger">Submit</button>
+            <div class="modal-footer border-0 pt-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button id="editReviewerProfile" type="submit" class="btn btn-primary px-4">Save Changes</button>
             </div>
         </div>
     </div>

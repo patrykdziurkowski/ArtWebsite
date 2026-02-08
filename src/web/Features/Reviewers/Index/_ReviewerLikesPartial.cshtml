@@ -1,6 +1,16 @@
 ﻿<div class="tab-pane fade" id="likesTab">
-    <div id="likesList" class="list-group">Loading...</div>
-    <button id="loadMoreLikes" class="btn btn-primary mt-3" style="display: none;">Load More</button>
+    <div id="likesList" class="row g-3">
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+    <div class="text-center">
+        <button id="loadMoreLikes" class="btn btn-outline-primary mt-4" style="display: none;">
+            Load More Likes
+        </button>
+    </div>
 </div>
 
 <script>
@@ -10,40 +20,64 @@
     async function loadLikes() {
         const list = document.querySelector('#likesList');
         const loadMore = document.querySelector('#loadMoreLikes');
-
         const response = await fetch(`/api/reviewer/@Model.Id/likes?offset=${likesOffset}`);
         const data = await response.json();
-
+        
         if (likesOffset == 0) {
-            list.innerText = '';
+            list.innerHTML = '';
         }
+        
         if (likesOffset == 0 && data.length === 0) {
-            list.innerText = 'No likes found.';
+            list.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-heart fs-1 d-block mb-2"></i>No likes found.</div>';
         }
-
-        // If loaded less likes than requested, hide the button since we're at the end
+        
         if (data.length < likesPerPage) {
             loadMore.style.display = 'none';
         } else {
             loadMore.style.display = 'block';
         }
-
+        
         data.forEach(like => {
-            const likeItem = document.createElement('div');
-            likeItem.classList.add('list-group-item');
-            likeItem.classList.add('art-piece-card');
+            const col = document.createElement('div');
+            col.className = 'col-12';
             
-            const dateStrong = document.createElement('strong');
-            dateStrong.textContent = new Date(like.date).toLocaleString();
-            likeItem.appendChild(dateStrong);
+            const likeCard = document.createElement('div');
+            likeCard.className = 'card border-0 shadow-sm art-piece-card cursor-pointer hover-lift';
+            likeCard.dataset.artPieceId = like.artPieceId.value;
             
+            const cardBody = document.createElement('div');
+            cardBody.className = 'card-body p-2';
+            
+            const row = document.createElement('div');
+            row.className = 'row g-2 align-items-center';
+            
+            const imgCol = document.createElement('div');
+            imgCol.className = 'col-auto';
             const img = document.createElement('img');
             img.src = like.imagePath;
-            likeItem.appendChild(img);
+            img.className = 'rounded';
+            img.style.cssText = 'width: 80px; height: 80px; object-fit: cover;';
+            imgCol.appendChild(img);
             
-            likeItem.dataset.artPieceId = like.artPieceId.value;
-            list.appendChild(likeItem);
+            const spacerCol = document.createElement('div');
+            spacerCol.className = 'col';
+            
+            const dateCol = document.createElement('div');
+            dateCol.className = 'col-auto text-end';
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'text-muted small d-flex align-items-center gap-2';
+            dateDiv.innerHTML = `<span>${new Date(like.date).toLocaleString()}</span><i class="bi bi-heart-fill text-danger fs-5"></i>`;
+            dateCol.appendChild(dateDiv);
+            
+            row.appendChild(imgCol);
+            row.appendChild(spacerCol);
+            row.appendChild(dateCol);
+            cardBody.appendChild(row);
+            likeCard.appendChild(cardBody);
+            col.appendChild(likeCard);
+            list.appendChild(col);
         });
+        
         likesOffset += likesPerPage;
     }
 
