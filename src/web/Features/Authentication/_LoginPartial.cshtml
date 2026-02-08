@@ -6,7 +6,7 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
-        <li class="nav-item">
+        <li class="nav-item d-flex align-items-center">
             Hello @UserManager.GetUserName(User)!
         </li>
         <li class="nav-item">
