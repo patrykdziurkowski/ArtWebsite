@@ -33,7 +33,6 @@ html, body {
 }
 
 #sidebar {
-        width: 250px;
         transition: transform 0.3s ease-in-out;
 }
 
@@ -134,44 +133,19 @@ p {
 }
 
 header {
-        position: fixed;
+        position: sticky;
+        top: 0;
         width: 100vw;
         z-index: 1000;
 }
 
-main {
-        position: relative;
-        top: 56px;
-}
-
 .sidebar-fixed {
-    position: fixed;
+    position: sticky;
     top: 56px;
     height: calc(100vh - 56px);
-    overflow-y: auto;
 }
 
-.col-lg-3.bg-body-secondary:first-child {
-    left: 0;
-    width: 25%;
-}
-
-.d-xl-block.sidebar-fixed {
-    right: 0;
-}
-
-@media (min-width: 992px) {
-    main.col-lg-9 {
-        margin-left: 25%;
-    }
-}
-
-@media (min-width: 1200px) {
-    main.col-xl-6 {
-        margin-left: 25%;
-        margin-right: 25%;
-    }
-    
+@media (min-width: 1200px) {    
     .d-xl-block.sidebar-fixed {
         width: 25%;
     }
