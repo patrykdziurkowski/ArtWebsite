@@ -1,31 +1,17 @@
 var whiteTheme = {
-        'common.bi.image': 'https://uicdn.toast.com/toastui/img/tui-image-editor-bi.png',
-        'common.bisize.width': '251px',
-        'common.bisize.height': '21px',
+        'common.bisize.width': '0',
+        'common.bisize.height': '0',
         'common.backgroundImage': 'none',
-        'common.backgroundColor': '#fff',
-        'common.border': '1px solid #c1c1c1',
+        'common.backgroundColor': getComputedStyle(document.documentElement).getPropertyValue('--bs-body-bg').trim(),
 
-        // header
         'header.backgroundImage': 'none',
         'header.backgroundColor': 'transparent',
         'header.border': '0px',
 
-        // load button
-        'loadButton.backgroundColor': '#fff',
-        'loadButton.border': '1px solid #ddd',
-        'loadButton.color': '#222',
-        'loadButton.fontFamily': "'Noto Sans', sans-serif",
-        'loadButton.fontSize': '12px',
+        'loadButton.display': 'none',
 
-        // download button
-        'downloadButton.backgroundColor': '#fdba3b',
-        'downloadButton.border': '1px solid #fdba3b',
-        'downloadButton.color': '#fff',
-        'downloadButton.fontFamily': "'Noto Sans', sans-serif",
-        'downloadButton.fontSize': '12px',
+        'downloadButton.display': 'none',
 
-        // main icons
         'menu.normalIcon.color': '#8a8a8a',
         'menu.activeIcon.color': '#555555',
         'menu.disabledIcon.color': '#434343',
@@ -33,27 +19,21 @@ var whiteTheme = {
         'menu.iconSize.width': '24px',
         'menu.iconSize.height': '24px',
 
-        // submenu icons
         'submenu.normalIcon.color': '#8a8a8a',
         'submenu.activeIcon.color': '#555555',
         'submenu.iconSize.width': '32px',
         'submenu.iconSize.height': '32px',
-
-        // submenu primary color
         'submenu.backgroundColor': 'transparent',
         'submenu.partition.color': '#e5e5e5',
 
-        // submenu labels
         'submenu.normalLabel.color': '#858585',
         'submenu.normalLabel.fontWeight': 'normal',
         'submenu.activeLabel.color': '#000',
         'submenu.activeLabel.fontWeight': 'normal',
 
-        // checkbox style
         'checkbox.border': '1px solid #ccc',
         'checkbox.backgroundColor': '#fff',
 
-        // rango style
         'range.pointer.color': '#333',
         'range.bar.color': '#ccc',
         'range.subbar.color': '#606060',
@@ -70,7 +50,6 @@ var whiteTheme = {
         'range.title.color': '#000',
         'range.title.fontWeight': 'lighter',
 
-        // colorpicker style
         'colorpicker.button.border': '0px',
         'colorpicker.title.color': '#000',
 };

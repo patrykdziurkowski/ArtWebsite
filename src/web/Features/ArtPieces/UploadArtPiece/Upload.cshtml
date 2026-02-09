@@ -1,32 +1,100 @@
 ﻿@using web.Features.ArtPieces.UploadArtPiece
 @model UploadArtPieceModel
 
-<h1>Upload an art piece!</h1>
+<div class="h-100">
+    <div class="row justify-content-center h-100">
 
-<div id="tui-image-editor-container" class="tui-image-editor-container bottom"
-    style="width:100%; height:100%;display:none;"></div>
+        <div id="step-1" class="card border-0 shadow-sm mb-4">
+            <div class="card-body text-center p-5">
+                <h1 class="mb-4">Upload some art!</h1>
+                <div class="upload-area">
+                    <i class="bi bi-cloud-upload fs-1 text-primary mb-3 d-block"></i>
+                    <label for="image-input" class="btn btn-primary btn-lg">
+                        <i class="bi bi-image"></i> Choose an Image
+                    </label>
+                    <input type="file" class="d-none" id="image-input" name="Image" accept="image/*" />
+                    <p class="text-muted mt-3 mb-0">Select an image to get started</p>
+                </div>
+            </div>
+        </div>
 
-<form id="upload-form" asp-action="Upload" method="POST" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
+        <div id="step-2" style="display: none;" class="h-100">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header border-0 p-3">
+                    <h4 class="mb-0">Edit Your Art</h4>
+                </div>
+                <div class="card-body p-0">
+                    <div id="tui-image-editor-container"></div>
+                </div>
+                <div class="card-footer border-0 p-3 text-end">
+                    <button id="apply-edits" class="btn btn-primary btn-lg">
+                        Apply Edits & Continue <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    <div class="form-group">
-        <label for="Image">Choose an image</label>
-        <input type="file" class="form-control" id="image-input" name="Image" accept="image/*" asp-for="Image" />
-        <span asp-validation-for="Image" class="text-danger"></span>
+        <div id="step-3" style="display: none;">
+            <form id="upload-form" asp-action="Upload" method="POST" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header border-0 p-3">
+                        <h4 class="mb-0">Almost Done!</h4>
+                    </div>
+                    <div class="form-group d-none">
+                        <label for="Image">Choose an image</label>
+                        <input type="file" class="form-control" id="image-input-hidden" name="Image" accept="image/*" asp-for="Image" />
+                        <span asp-validation-for="Image" class="text-danger"></span>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-4">
+                            <label for="description-input" class="form-label fw-semibold">
+                                Add a Description
+                            </label>
+                            <textarea class="form-control form-control-lg" 
+                                        id="description-input" 
+                                        name="Description" 
+                                        rows="4"
+                                        placeholder="Tell us about your artwork..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="card-footer border-0 p-3 text-end">
+                        <button type="button" id="back-to-edit" class="btn btn-outline-secondary me-2">
+                            <i class="bi bi-arrow-left"></i> Back to Edit
+                        </button>
+                        <button id="upload-submit" type="submit" class="btn btn-success btn-lg">
+                            <i class="bi bi-upload"></i> Upload Art
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
     </div>
-
-    <div class="form-group">
-        <label for="Description">Description</label>
-        <textarea class="form-control" id="description-input" name="Description" rows="4"
-            asp-for="Description"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
-
-    <button id="upload-submit" type="submit" class="btn btn-primary mb-4">Upload</button>
-</form>
+</div>
 
 <link type="text/css" href="https://uicdn.toast.com/tui-color-picker/v2.2.6/tui-color-picker.css" rel="stylesheet">
-<link rel="stylesheet" href="https://uicdn.toast.com/tui-image-editor/latest/tui-image-editor.css">
+<link rel="stylesheet" href="~/css/tui-image-editor.css">
+<style>
+    .upload-area {
+        padding: 3rem 1rem;
+    }
+
+    .upload-area label {
+        cursor: pointer;
+    }
+
+    .tui-image-editor-container .tui-image-editor-wrap {
+        overflow: hidden;
+    }
+
+    .tui-image-editor {
+        top: 0 !important;
+        height: 100%;
+    }
+</style>
 
 @section Scripts
 {
@@ -40,68 +108,75 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let validImageLoaded = false;
+        let validImageLoaded = false;
+        
+        const step1 = document.getElementById('step-1');
+        const step2 = document.getElementById('step-2');
+        const step3 = document.getElementById('step-3');
 
-            const imageEditor = new tui.ImageEditor('#tui-image-editor-container', {
-                includeUI: {
-                    loadImage: {
-                        path: '/img/placeholder.png',
-                        name: 'SampleImage',
-                    },
-                    theme: whiteTheme,
-                    initMenu: 'filter',
-                    menuBarPosition: 'bottom',
+        const imageEditor = new tui.ImageEditor('#tui-image-editor-container', {
+            includeUI: {
+                loadImage: {
+                    path: '/img/placeholder.png',
+                    name: 'SampleImage',
                 },
-                cssMaxWidth: 800,
-                cssMaxHeight: 1000,
-                usageStatistics: false,
-            });
-
-            window.onresize = function () {
-                imageEditor.ui.resizeEditor();
-            };
-
-            document.querySelector('#image-input').onchange = async (e) => {
-                const file = e.target.files[0];
-                const imageEditorContainer = document.querySelector('#tui-image-editor-container');
-                if (file) {
-                    imageEditorContainer.style.display = 'block';
-                    try {
-                        await imageEditor.loadImageFromFile(file);
-                        validImageLoaded = true;
-                    } catch {
-                        validImageLoaded = false;
-                    }
-                }
-                else {
-                    imageEditorContainer.style.display = 'none';
-                    validImageLoaded = false;
-                }
-            };
-
-            // replaces the image to be sent to the server with the one
-            // from the image editor
-            document.querySelector('#upload-form').onsubmit = async (e) => {
-                e.preventDefault();
-
-                const fileInput = document.querySelector('#image-input');
-                const file = fileInput.files[0];
-                if (!validImageLoaded || !file || !file.type.startsWith('image/')) {
-                    // send it immediately to be rejected by server side validation
-                    e.target.submit();
-                    return;
-                }
-
-                const dataURL = imageEditor.toDataURL();
-                const blob = await (await fetch(dataURL)).blob();
-                const newFile = new File([blob], 'edited-image.png', { type: 'image/png' });
-
-                const container = new DataTransfer();
-                container.items.add(newFile);
-                fileInput.files = container.files;
-
-                e.target.submit();
-            };
+                theme: whiteTheme,
+                initMenu: 'draw',
+                menuBarPosition: 'bottom',
+            },
+            usageStatistics: false,
         });
+
+        window.onresize = function () {
+            imageEditor.ui.resizeEditor();
+        };
+
+        document.querySelector('#image-input').onchange = async (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                try {
+                    await imageEditor.loadImageFromFile(file);
+                    validImageLoaded = true;
+                    step1.style.display = 'none';
+                    step2.style.display = 'block';
+                } catch {
+                    validImageLoaded = false;
+                    alert('Failed to load image. Please try another file.');
+                }
+            }
+        };
+
+        document.getElementById('apply-edits').onclick = () => {
+            step2.style.display = 'none';
+            step3.style.display = 'block';
+        };
+
+        document.getElementById('back-to-edit').onclick = () => {
+            step3.style.display = 'none';
+            step2.style.display = 'block';
+        };
+
+        document.querySelector('#upload-form').onsubmit = async (e) => {
+            e.preventDefault();
+
+            const fileInput = document.querySelector('#image-input');
+            const file = fileInput.files[0];
+            if (!validImageLoaded || !file || !file.type.startsWith('image/')) {
+                // send it immediately to be rejected by server side validation
+                e.target.submit();
+                return;
+            }
+
+            const dataURL = imageEditor.toDataURL();
+            const blob = await (await fetch(dataURL)).blob();
+            const newFile = new File([blob], 'edited-image.png', { type: 'image/png' });
+
+            const container = new DataTransfer();
+            container.items.add(newFile);
+            document.querySelector('#image-input-hidden').files = container.files;
+
+            e.target.submit();
+        };
+    });
     </script>
 }
