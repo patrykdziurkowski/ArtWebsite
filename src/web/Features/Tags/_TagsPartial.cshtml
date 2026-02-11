@@ -1,6 +1,6 @@
 <div class="art-piece-tags">
     <div class="tags-container-wrapper">
-        <div class="tags-container">Loading tags...</div>
+        <div class="tags-container"></div>
     </div>
 </div>
 
@@ -82,35 +82,47 @@
                 this.containerElement = containerElement;
                 this.tagsContainer = containerElement.querySelector('.tags-container');
                 this.connection = null;
-                this.init();
-                this.setupDragScroll();
+
+                this.tagsContainer.innerHTML = '';
             }
 
-            async init() {
+            async initialize() {
                 try {
-                    await this.setupSignalR();
-                    await this.loadTags();
+                    await this.#setupSignalR();
+                    await this.#loadTags();
                 } catch (error) {
                     console.error(`Error initializing tags for art piece ${this.artPieceId}:`, error);
                     this.tagsContainer.innerHTML = '<span class="text-danger">Error loading tags</span>';
                 }
+
+                this.#setupDragScroll();
             }
 
-            async setupSignalR() {
+            selectTag(tag) {
+                window.location.href = `/Browse?tag=${encodeURIComponent(tag)}`;
+            }
+
+            highlight(tag) {
+                const tagElement = [... document.querySelectorAll('.tag')].find(t => t.innerText === tag);
+                tagElement.classList.remove('bg-body-secondary');
+                tagElement.classList.add('bg-primary');
+            }
+
+            async #setupSignalR() {
                 this.connection = new signalR.HubConnectionBuilder()
                     .withUrl("/tagshub")
                     .withAutomaticReconnect()
                     .build();
 
                 this.connection.on("TagsReady", (tags) => {
-                    this.renderTags(tags);
+                    this.#renderTags(tags);
                 });
 
                 await this.connection.start();
                 await this.connection.invoke("JoinArtGroup", this.artPieceId);
             }
 
-            async loadTags() {
+            async #loadTags() {
                 const res = await fetch(`/api/artpieces/${this.artPieceId}/tags`);
                 if (!res.ok) {
                     throw new Error(`HTTP error! Status: ${res.status}`);
@@ -122,10 +134,10 @@
                     return;
                 }
 
-                this.renderTags(tags);
+                this.#renderTags(tags);
             }
 
-            renderTags(tags) {
+            #renderTags(tags) {
                 this.tagsContainer.innerHTML = '';
                 tags.forEach(tag => {
                     const span = document.createElement('span');
@@ -136,11 +148,7 @@
                 });
             }
 
-            selectTag(tag) {
-                window.location.href = `/Browse?tag=${encodeURIComponent(tag)}`;
-            }
-
-            setupDragScroll() {
+            #setupDragScroll() {
                 const wrapper = this.containerElement.querySelector('.tags-container-wrapper');
                 let isDown = false;
                 let startX;

@@ -92,11 +92,24 @@ p {
         animation: gradient-animation 1.5s ease infinite;
 }
 
+#skipButton {
+        font-size: 1.5em;
+        width: 60px;
+        height: 60px;
+}
+
+#skipButton:disabled {
+        background-color: rgba(100, 100, 100, 0.5);
+        border: white solid 0.1em;
+}
+
 #reviewArt {
         border-radius: 50%;
         position: relative;
         overflow: hidden;
-        font-size: 1.5em;
+        font-size: 2em;
+        width: 60px;
+        height: 60px;
 }
 
 #reviewArt::before {

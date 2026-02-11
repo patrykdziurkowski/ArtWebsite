@@ -87,6 +87,7 @@
             this.artPieceDetailsModal = new bootstrap.Modal(document.querySelector('#artPieceDetailsModal'));
 
             this.artPieceTags = new Tags(artPieceId, document.querySelector('#art-piece-about .art-piece-tags'));
+            this.artPieceTags.initialize();
 
             this.#loadReviews(false);
 

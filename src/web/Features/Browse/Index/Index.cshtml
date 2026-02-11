@@ -6,54 +6,82 @@
     string reviewCooldown = Environment.GetEnvironmentVariable("REVIEW_COOLDOWN_SECONDS")!;
 }
 
-<div class="container">
-    <div id="selectedTag"></div>
-    <div id="artContainer" class="m-auto text-center">
+<div class="container h-100 d-flex flex-column p-0 position-relative">
+    <partial name="../Tags/_TagsPartial" />
+    <div id="artContainer" class="m-auto d-flex flex-column text-center flex-grow-1">
         <h1>Loading...</h1>
     </div>
 
-    <div id="artPieceControls">
-        <partial name="../Tags/_TagsPartial" />
-        <button id="reviewArt" class="btn btn-secondary m-3" disabled><i class="bi bi-justify-left"></i></button>
-        <button  id="skipButton" class="btn btn-warning" @(Model.CurrentReviewerActivePoints < 5 ? "disabled" : "")>
-            Skip (<span id="skip-button-points">@Model.CurrentReviewerActivePoints</span> / 5)
-        </button>
+    <div id="artPieceControls" class="d-none position-absolute bottom-0 start-0 end-0 pb-4" style="z-index: 10;">
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-4 text-center">
+                <button id="reviewArt" class="btn btn-secondary" disabled>
+                    <i class="bi bi-justify-left"></i>
+                </button>
+            </div>
+            <div class="col-4">
+                <button id="skipButton" class="btn btn-warning rounded-circle position-relative" 
+                @(Model.CurrentReviewerActivePoints < 5 ? "disabled" : "")>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
+                        <span id="skip-button-points">@Model.CurrentReviewerActivePoints</span>/5
+                    </span>
+                    <i class="bi bi-skip-forward fs-5"></i>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="modal fade" id="postReviewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">What next?</h5>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-2">
+                <h5 class="modal-title fw-bold">Review Submitted!</h5>
                 <button type="button" class="btn-close"></button>
             </div>
-            <div class="modal-body"></div>
-            <div class="modal-footer">
-                <button id="likeArtPiece" class="btn btn-secondary m-3">Like</button>
-                <button id="nextArtPiece" class="btn btn-secondary m-3">Next</button>
-                <button id="viewArtPiece" class="btn btn-secondary m-3">Details</button>
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-check-circle text-success fs-1 mb-3 d-block"></i>
+                <p class="text-muted mb-0">What would you like to do next?</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center gap-2 pt-0">
+                <button id="likeArtPiece" class="btn btn-outline-danger">
+                    <i class="bi bi-heart"></i> Like
+                </button>
+                <button id="nextArtPiece" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i> Next Art
+                </button>
+                <button id="viewArtPiece" class="btn btn-outline-secondary">
+                    <i class="bi bi-eye"></i> Details
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="reviewModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Review Art</h5>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-2">
+                <h5 class="modal-title fw-bold">Review This Art</h5>
                 <button type="button" class="btn-close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body px-4 py-4">
                 <form asp-controller="Review" asp-action="ReviewArtPiece" method="post" id="reviewForm">
-                    <div class="form-group">
-                        <textarea name="comment" class="form-control mb-2" placeholder="Review this art piece" required
-                            asp-for="ReviewForm.Comment"></textarea>
-                        <span asp-validation-for="ReviewForm.Comment" class="text-danger"></span>
+                    <div class="mb-4">
+                        <label for="comment" class="form-label fw-semibold">Your Review</label>
+                        <textarea name="comment" 
+                                  class="form-control form-control-lg" 
+                                  placeholder="Share your thoughts about this art piece..." 
+                                  rows="4"
+                                  required
+                                  asp-for="ReviewForm.Comment"></textarea>
+                        <span asp-validation-for="ReviewForm.Comment" class="text-danger small"></span>
                     </div>
-                    <div class="form-group">
-                        <div class="rating">
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold d-block mb-3">Rating</label>
+                        <div class="rating justify-content-center">
                             <input type="radio" id="star5" name="Rating" asp-for="ReviewForm.Rating" value="5">
                             <label for="star5">&#9733;</label>
                             <input type="radio" id="star4" name="Rating" asp-for="ReviewForm.Rating" value="4">
@@ -65,12 +93,16 @@
                             <input type="radio" id="star1" name="Rating" asp-for="ReviewForm.Rating" value="1">
                             <label for="star1">&#9733;</label>
                         </div>
-                        <span asp-validation-for="ReviewForm.Rating" class="text-danger"></span>
+                        <span asp-validation-for="ReviewForm.Rating" class="text-danger small d-block text-center"></span>
                     </div>
-                    <div class="form-group">
-                        <input type="hidden" name="artPieceId" value="">
+                    
+                    <input type="hidden" name="artPieceId" value="">
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-send"></i> Submit Review
+                        </button>
                     </div>
-                    <button type="submit" class="btn btn-primary">Submit Review</button>
                 </form>
             </div>
         </div>
@@ -79,12 +111,25 @@
 
 <partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
 
+<style>
+    .rating {
+        font-size: 2rem;
+    }
+
+    .rating label {
+        transition: all 0.2s ease;
+    }
+
+    .rating label:hover {
+        transform: scale(1.2);
+    }
+</style>
+
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             const tagParameter = params.get('tag');
-            document.querySelector('#selectedTag').innerText = tagParameter;
 
             let artPieceTags = null;
             let artPieceId;
@@ -169,7 +214,7 @@
                     const noImagesH1 = document.createElement('h1');
                     noImagesH1.textContent = 'No more images to review.';
                     artContainer.appendChild(noImagesH1);
-                    document.querySelector('#artPieceControls').style.display = 'none';
+                    document.querySelector('#artPieceControls').classList.add('d-none');
                     return null;
                 }
                 
@@ -180,30 +225,45 @@
                     const noImagesH1 = document.createElement('h1');
                     noImagesH1.textContent = 'No more images to review.';
                     artContainer.appendChild(noImagesH1);
-                    document.querySelector('#artPieceControls').style.display = 'none';
+                    document.querySelector('#artPieceControls').classList.add('d-none');
                     return null;
                 }
                 
                 artContainer.textContent = '';
-                
-                const img = document.createElement('img');
-                img.id = 'artPieceImage';
-                img.src = data.imagePath;
-                img.alt = 'Art Piece';
-                img.className = 'img-fluid rounded';
-                artContainer.appendChild(img);
-                
+
                 const descriptionDiv = document.createElement('div');
                 descriptionDiv.className = 'p-2';
                 const descriptionP = document.createElement('p');
                 descriptionP.textContent = data.description;
                 descriptionDiv.appendChild(descriptionP);
                 artContainer.appendChild(descriptionDiv);
+
+                const imgWrapper = document.createElement('div');
+                imgWrapper.className = 'flex-grow-1 d-flex align-items-center justify-content-center';
+                imgWrapper.style.minHeight = '0';
+
+                const img = document.createElement('img');
+                img.id = 'artPieceImage';
+                img.src = data.imagePath;
+                img.alt = 'Art Piece';
+                img.className = 'img-fluid rounded';
+                img.style.cssText = 'height: 100%; max-width: 100%; object-fit: cover;';
+                imgWrapper.appendChild(img);
+                artContainer.appendChild(imgWrapper);
                 
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
                 artPieceId = data.id.value;
-                artPieceTags = new Tags(artPieceId, document.querySelector('#artPieceControls .art-piece-tags'));
+
+                artPieceTags = new Tags(artPieceId, document.querySelector('.container .art-piece-tags'));
+                await artPieceTags.initialize();
+                if (tagParameter !== null && tagParameter !== "") {
+                    artPieceTags.highlight(tagParameter);
+                }
+
                 disableReviewingUntilReady();
+
+                document.querySelector('#artPieceControls').classList.remove('d-none');
+
                 return data;
             }
 
@@ -223,7 +283,7 @@
                         return;
                     }
 
-                    likeButton.innerText = "Like";
+                    likeButton.innerHTML = '<i class="bi bi-heart"></i> Like';
                     isLiked = false;
                 } else {
                     const response = await fetch(`/api/artpieces/${artPieceId}/like`, {
@@ -238,7 +298,7 @@
                         return;
                     }
 
-                    likeButton.innerText = "Unlike";
+                    likeButton.innerHTML = '<i class="bi bi-heart-fill"></i> Unlike';
                     isLiked = true;
                 }
             }
