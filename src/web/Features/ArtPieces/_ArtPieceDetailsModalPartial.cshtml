@@ -1,48 +1,84 @@
 <div class="modal fade" id="artPieceDetailsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Art piece details</h5>
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-0 pb-2">
+                <h5 class="modal-title fw-bold">Art Details</h5>
                 <button type="button" class="btn-close"></button>
             </div>
             <div class="modal-body d-flex flex-column flex-md-row">
                 <div class="container-fluid">
                     <div class="row">
-                        <div id="artDetailsImageContainer" class="col-7 text-center">
-                            <img id="artDetailsImage" src="" class="img-fluid rounded mb-3" alt="Art Piece">
-                            <div id="art-piece-about">
-                                <img id="art-piece-details-artist-profile-picture" src=""
-                                    alt="This art piece's artist's profile picture." />
-                                <h3 id="art-piece-details-artist"></h3>
-                                <p id="detailsDescription" class="mt-3"></p>
-                                <p id="art-piece-details-like-count"></p>
-                                <p id="art-piece-details-review-count"></p>
+                        <div id="artDetailsImageContainer" class="col-lg-7 mb-4 mb-lg-0">
+                            <img id="artDetailsImage" src="" class="img-fluid rounded shadow-sm mb-4" alt="Art Piece" style="max-height: 500px; object-fit: contain; width: 100%;">
+                            
+                            <div id="art-piece-about" class="card border-0 p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <img id="art-piece-details-artist-profile-picture" 
+                                        src="" 
+                                        alt="Artist profile picture" 
+                                        class="rounded-circle me-3"
+                                        style="width: 60px; height: 60px; object-fit: cover;">
+                                    <div class="flex-grow-1">
+                                        <h5 id="art-piece-details-artist" class="mb-0 text-primary cursor-pointer"></h5>
+                                        <small class="text-muted">Artist</small>
+                                    </div>
+                                    <button id="edit-art-piece-button" class="btn btn-link text-secondary p-0">
+                                        <i class="bi bi-pencil-square fs-5"></i>
+                                    </button>
+                                </div>
+                                
+                                <p id="detailsDescription" class="mb-3"></p>
+                                
+                                <div class="d-flex gap-3">
+                                    <span id="art-piece-details-like-count" class="badge bg-danger">
+                                        <i class="bi bi-heart-fill"></i> <span id="art-piece-details-like-number"></span>
+                                    </span>
+                                    <span id="art-piece-details-review-count" class="badge bg-primary">
+                                        <i class="bi bi-star-fill"></i> <span id="art-piece-details-review-number"></span>
+                                    </span>
+                                </div>
+                                
                                 <partial name="../Tags/_TagsPartial" />
                             </div>
-                            <button id="edit-art-piece-button" class="btn btn-secondary btn-sm ms-2">
-                                <i class="bi bi-pencil-square"></i>'
-                            </button>
                         </div>
 
-                        <div class="col-5 d-flex flex-column" style="max-height: 70vh;">
-                            <h6 class="fw-bold mb-2">Reviews</h6>
+                        <div class="col-lg-5 d-flex flex-column">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <h5 class="fw-bold mb-0">
+                                    <i class="bi bi-chat-left-text text-primary"></i> Reviews
+                                </h5>
+                            </div>
 
-                            <div id="artReviewsContainer" class="flex-grow-1 overflow-auto border rounded p-2"
-                                style="min-height: 0;"></div>
+                            <div id="artReviewsContainer" 
+                                class="flex-grow-1 overflow-auto p-3 rounded" 
+                                style="min-height: 400px; max-height: 60vh;">
+                            </div>
 
-                            <button id="details-load-more-reviews" class="btn btn-outline-secondary mt-2">
-                                Load more
+                            <button id="details-load-more-reviews" class="btn btn-outline-primary mt-3">
+                                Load More Reviews
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button id="details-back" class="btn btn-secondary">Back</button>
+            <div class="modal-footer border-0">
+                <button id="details-back" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .cursor-pointer:hover {
+        text-decoration: underline;
+    }
+</style>
 
 <script>
     class ArtPieceDetails {
@@ -62,24 +98,10 @@
                     document.getElementById('art-piece-details-artist').dataset.userId = data.artistUserId;
                     
                     const likeCountEl = document.getElementById('art-piece-details-like-count');
-                    likeCountEl.textContent = '';
-                    
-                    const likeNumberSpan = document.createElement('span');
-                    likeNumberSpan.id = 'art-piece-details-like-number';
-                    likeNumberSpan.textContent = data.likeCount;
-                    likeCountEl.appendChild(likeNumberSpan);
-                    
-                    likeCountEl.appendChild(document.createTextNode(data.likeCount === 1 ? ' like' : ' likes'));
-                    
+                    likeCountEl.innerHTML = `<i class="bi bi-heart-fill"></i> <span id="art-piece-details-like-number">${data.likeCount}</span>`;
+
                     const reviewCountEl = document.getElementById('art-piece-details-review-count');
-                    reviewCountEl.textContent = '';
-                    
-                    const reviewNumberSpan = document.createElement('span');
-                    reviewNumberSpan.id = 'art-piece-details-review-number';
-                    reviewNumberSpan.textContent = data.reviewCount;
-                    reviewCountEl.appendChild(reviewNumberSpan);
-                    
-                    reviewCountEl.appendChild(document.createTextNode(data.reviewCount === 1 ? ' review' : ' reviews'));
+                    reviewCountEl.innerHTML = `<i class="bi bi-star-fill"></i> <span id="art-piece-details-review-number">${data.reviewCount}</span>`;
                 });
 
             this.reviewsOffset = 0;
@@ -134,50 +156,62 @@
         }
 
         hide() {
+            this.#hideAllReviewEdits();
+            this.#hideArtPieceEditForm();
             this.artPieceDetailsModal.hide();
         }
 
+        #hideArtPieceEditForm() {
+            const formDiv = document.querySelector('#artPieceEditForm');
+            if (!formDiv) return;
+
+            const p = document.createElement('p');
+            p.id = 'detailsDescription';
+            p.className = 'mb-3';
+            p.textContent = this.description;
+            formDiv.replaceWith(p);
+        }
+
         async #showArtPieceEditForm(e) {
-            const aboutContainer = document.querySelector('#art-piece-about');
-            
+            const descriptionP = document.getElementById('detailsDescription');
+            if (!descriptionP) return;
+
             const previousDescription = this.description;
             
-            aboutContainer.textContent = '';
-            
             const formDiv = document.createElement('div');
+            formDiv.id = "artPieceEditForm";
+            formDiv.className = 'mb-3';
             
             const textarea = document.createElement('textarea');
             textarea.id = 'edit-art-piece-description';
+            textarea.className = 'form-control mb-2';
             textarea.name = 'description';
+            textarea.rows = 4;
             textarea.value = this.description;
             formDiv.appendChild(textarea);
             
             const buttonDiv = document.createElement('div');
+            buttonDiv.className = 'd-flex gap-2';
             
             const saveButton = document.createElement('button');
             saveButton.id = 'edit-art-piece-save';
             saveButton.type = 'submit';
-            saveButton.className = 'btn btn-primary';
+            saveButton.className = 'btn btn-primary btn-sm';
             saveButton.textContent = 'Save';
             buttonDiv.appendChild(saveButton);
             
             const cancelButton = document.createElement('button');
             cancelButton.id = 'edit-art-piece-cancel';
             cancelButton.type = 'button';
-            cancelButton.className = 'btn btn-secondary';
+            cancelButton.className = 'btn btn-secondary btn-sm';
             cancelButton.textContent = 'Cancel';
             buttonDiv.appendChild(cancelButton);
             
             formDiv.appendChild(buttonDiv);
-            aboutContainer.appendChild(formDiv);
+            descriptionP.replaceWith(formDiv);
             
             cancelButton.addEventListener('click', () => {
-                aboutContainer.textContent = '';
-                const p = document.createElement('p');
-                p.id = 'detailsDescription';
-                p.className = 'mt-3';
-                p.textContent = this.description;
-                aboutContainer.appendChild(p);
+                this.#hideArtPieceEditForm();
             });
             
             saveButton.addEventListener('click', async () => {
@@ -196,12 +230,11 @@
                     return;
                 }
                 
-                aboutContainer.textContent = '';
                 const p = document.createElement('p');
                 p.id = 'detailsDescription';
-                p.className = 'mt-3';
+                p.className = 'mb-3';
                 p.textContent = newDescription;
-                aboutContainer.appendChild(p);
+                formDiv.replaceWith(p);
                 
                 this.description = newDescription;
             });
@@ -353,96 +386,111 @@
             if (!append) container.innerHTML = '';
 
             reviews.forEach(r => {
-                const reviewEl = document.createElement('div');
-                reviewEl.className = 'details-review d-flex mb-3';
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'card border-0 shadow-sm mb-3 details-review';
+                reviewCard.dataset.rating = r.rating.value;
+                reviewCard.dataset.comment = r.comment;
+                reviewCard.dataset.reviewId = r.reviewId;
 
-                const outerDiv = document.createElement('div');
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body';
+
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'd-flex align-items-center mb-3';
 
                 const img = document.createElement('img');
-                img.style.width = '100px';
-                img.style.height = '100px';
+                img.className = 'rounded-circle me-3';
+                img.style.cssText = 'width: 50px; height: 50px; object-fit: cover;';
                 img.src = r.profilePicturePath;
-                img.alt = "This reviewer's profile picture.";
-                outerDiv.appendChild(img);
+                img.alt = "Reviewer's profile picture";
+                headerDiv.appendChild(img);
 
                 const infoDiv = document.createElement('div');
+                infoDiv.className = 'flex-grow-1';
+
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'd-flex align-items-center gap-2 mb-1';
 
                 const reviewerNameStrong = document.createElement('strong');
-                reviewerNameStrong.className = 'review-reviewer-name';
+                reviewerNameStrong.className = 'review-reviewer-name text-primary cursor-pointer';
                 reviewerNameStrong.dataset.userId = r.userId;
                 reviewerNameStrong.textContent = r.reviewerName;
-                infoDiv.appendChild(reviewerNameStrong);
+                nameDiv.appendChild(reviewerNameStrong);
 
                 if (r.isCurrentUser) {
                     const badge = document.createElement('span');
-                    badge.className = 'badge badge-secondary';
+                    badge.className = 'badge bg-secondary';
                     badge.textContent = 'YOU';
-                    infoDiv.appendChild(document.createTextNode(' '));
-                    infoDiv.appendChild(badge);
+                    nameDiv.appendChild(badge);
                 }
 
-                infoDiv.appendChild(document.createTextNode(' - '));
-                const pointsSpan = document.createElement('span');
-                pointsSpan.className = 'review-points';
-                pointsSpan.textContent = `${r.points} points`;
-                infoDiv.appendChild(pointsSpan);
+                infoDiv.appendChild(nameDiv);
 
-                infoDiv.appendChild(document.createTextNode(' - '));
-                const dateSmall = document.createElement('small');
-                dateSmall.textContent = new Date(r.date).toLocaleDateString();
-                infoDiv.appendChild(dateSmall);
+                const metaDiv = document.createElement('div');
+                metaDiv.className = 'text-muted small';
+                metaDiv.innerHTML = `<i class="bi bi-trophy-fill text-warning"></i> ${r.points} points • ${new Date(r.date).toLocaleDateString()}`;
+                infoDiv.appendChild(metaDiv);
 
-                outerDiv.appendChild(infoDiv);
-
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'review-content';
-
-                const ratingSpan = document.createElement('span');
-                ratingSpan.className = 'review-rating';
-                ratingSpan.textContent = r.rating.value;
-                contentDiv.appendChild(ratingSpan);
-
-                contentDiv.appendChild(document.createTextNode('★ '));
-
-                const commentSpan = document.createElement('span');
-                commentSpan.className = 'review-comment';
-                commentSpan.textContent = r.comment;
-                contentDiv.appendChild(commentSpan);
-
-                outerDiv.appendChild(contentDiv);
-                reviewEl.appendChild(outerDiv);
+                headerDiv.appendChild(infoDiv);
 
                 if (r.isCurrentUser || r.isAdmin) {
+                    const buttonGroup = document.createElement('div');
+                    buttonGroup.className = 'btn-group';
+
                     const editButton = document.createElement('button');
                     editButton.innerHTML = '<i class="bi bi-pencil-square"></i>';
-                    editButton.className = 'btn edit-review-button btn-secondary btn-sm ms-2';
+                    editButton.className = 'btn edit-review-button btn-sm btn-outline-secondary';
                     editButton.dataset.reviewId = r.reviewId;
                     editButton.addEventListener('click', async (e) => {
                         await this.#editReview(e, r);
                     });
-
-                    reviewEl.appendChild(editButton);
+                    buttonGroup.appendChild(editButton);
 
                     const deleteButton = document.createElement('button');
                     deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
-                    deleteButton.className = 'btn delete-review-button btn-danger btn-sm ms-2';
+                    deleteButton.className = 'btn delete-review-button btn-sm btn-outline-danger';
                     deleteButton.dataset.reviewId = r.reviewId;
-                    reviewEl.appendChild(deleteButton);
+                    buttonGroup.appendChild(deleteButton);
+
+                    headerDiv.appendChild(buttonGroup);
                 }
 
-                if (r.isCurrentUser) reviewEl.classList.add('py-4');
-                reviewEl.dataset.rating = r.rating.value;
-                reviewEl.dataset.comment = r.comment;
-                reviewEl.dataset.reviewId = r.reviewId;
-                container.appendChild(reviewEl);
+                cardBody.appendChild(headerDiv);
+
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'review-content';
+
+                const ratingDiv = document.createElement('div');
+                ratingDiv.className = 'mb-2';
+                for (let i = 0; i < 5; i++) {
+                    const star = document.createElement('span');
+                    star.className = i < r.rating.value ? 'text-warning' : 'text-muted';
+                    star.innerHTML = '★';
+                    ratingDiv.appendChild(star);
+                }
+                contentDiv.appendChild(ratingDiv);
+
+                const commentP = document.createElement('p');
+                commentP.className = 'review-comment mb-0';
+                commentP.textContent = r.comment;
+                contentDiv.appendChild(commentP);
+
+                cardBody.appendChild(contentDiv);
+                reviewCard.appendChild(cardBody);
+                container.appendChild(reviewCard);
             });
 
             if (reviews.length > 0) this.reviewsOffset += reviews.length;
 
+            const loadMoreButton = document.getElementById('details-load-more-reviews');
+            if (reviews.length < 10) {
+                loadMoreButton.style.display = 'none';
+            } else {
+                loadMoreButton.style.display = 'block';
+            }
+
             document.querySelectorAll('.review-reviewer-name').forEach(el => {
                 el.removeEventListener('click', e => this.#openUserDetails(e, el, false));
-            });
-            document.querySelectorAll('.review-reviewer-name').forEach(el => {
                 el.addEventListener('click', e => this.#openUserDetails(e, el, false));
             });
         }
