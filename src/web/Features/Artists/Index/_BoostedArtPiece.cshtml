@@ -4,20 +4,29 @@
 <div id="boosted-art-piece-container" class="mb-4">
     @if (Model.BoostExpirationDate is not null)
     {
-        <div class="boosted-art-piece position-relative">
-            <div class="card shadow-sm border-0 p-2">
-                <img src="@Model.BoostedArtPiecePath" alt="Boosted Art Piece" class="card-img-top">
+        <div class="boost-wrapper" data-art-piece-id="@Model.BoostedArtPieceId">
+            <div class="boost-ribbon">
+                <i class="bi bi-star-fill me-1"></i> FEATURED
+            </div>
+
+            <div class="card boost-card border-0 shadow-lg">
+                <div class="boost-image-wrapper">
+                    <img src="@Model.BoostedArtPiecePath"
+                        alt="Boosted Art Piece"
+                        class="boost-image">
+                </div>
+
                 @if (Model.IsOwner)
                 {
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-itzems-center">
-                            <small class="boost-expiration text-muted">
-                                <i class="bi bi-clock me-1"></i>Boost expires on @Model.BoostExpirationDate.Value.ToLocalTime().ToString("MMM dd, yyyy h:mm tt")
-                            </small>
-                            <span class="badge bg-gradient" style="background: linear-gradient(45deg, #ff006e, #8338ec);">
-                                <i class="bi bi-star-fill me-1"></i>BOOSTED
-                            </span>
-                        </div>
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <small class="boost-expiration text-muted">
+                            <i class="bi bi-clock me-1"></i>
+                            Expires @Model.BoostExpirationDate.Value.ToLocalTime().ToString("MMM dd, yyyy h:mm tt")
+                        </small>
+
+                        <span class="boost-badge">
+                            <i class="bi bi-lightning-fill me-1"></i> Boost Active
+                        </span>
                     </div>
                 }
             </div>
@@ -26,28 +35,92 @@
 </div>
 
 <style>
-    .boosted-art-piece {
+    .boost-wrapper {
+        position: relative;
         padding: 4px;
-        border-radius: 8px;
-        background: linear-gradient(45deg, #ff006e, #8338ec, #ff006e);
-        background-size: 200% 200%;
-        animation: pink-glow 3s ease infinite;
-    }
-    
-    .boosted-art-piece .card {
-        background: var(--bs-body-bg);
+        border-radius: 18px;
+        background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
+        background-size: 300% 300%;
+        animation: pink-glow 6s ease infinite;
     }
 
-    .boosted-art-piece img {
-        margin: auto;
+    .boost-wrapper::before {
+        content: "";
+        position: absolute;
+        inset: -6px;
+        border-radius: 22px;
+        background: radial-gradient(circle at top left,
+            rgba(255, 0, 110, 0.4),
+            transparent 60%);
+        z-index: -1;
+        filter: blur(20px);
     }
-    
-    [data-bs-theme="dark"] .boosted-art-piece .card {
-        background-color: var(--bs-dark);
+
+    .boost-card {
+        border-radius: 16px;
+        overflow: hidden;
+        background: var(--bs-body-bg);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .boost-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .boost-image-wrapper {
+        overflow: hidden;
+    }
+
+    .boost-image {
+        width: 100%;
+        height: 320px;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .boost-card:hover .boost-image {
+        transform: scale(1.05);
+    }
+
+    .boost-ribbon {
+        position: absolute;
+        top: 16px;
+        left: -8px;
+        background: linear-gradient(45deg, #ffbe0b, #ff006e);
+        color: white;
+        font-weight: 600;
+        padding: 6px 16px;
+        font-size: 0.75rem;
+        border-radius: 6px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        z-index: 2;
+    }
+
+    .boost-badge {
+        background: linear-gradient(45deg, #ff006e, #8338ec);
+        color: white;
+        padding: 6px 12px;
+        font-size: 0.75rem;
+        border-radius: 999px;
+        font-weight: 500;
     }
 </style>
 
 <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        let artPieceDetails = null;
+        const container = document.querySelector('#boosted-art-piece-container');
+        const boostWrapper = container.querySelector('.boost-wrapper');
+        if (boostWrapper) {
+            container.addEventListener('click', (e) => {
+                const artPieceId = boostWrapper.dataset.artPieceId;
+                artPieceDetails = new ArtPieceDetails(artPieceId);
+                artPieceDetails.show();
+            });
+        }
+    });
+
     function boostArtPiece(artPieceId) {
         fetch('/api/artist/boost', {
             method: 'POST',
@@ -60,52 +133,56 @@
                 if (!response.ok) {
                     throw new Error("Response from boosting art piece was not ok.");
                 }
+
                 return response.json();
             })
-            .then(responseObject => {
-                const boost = responseObject;
+            .then(boost => {
                 const container = document.querySelector("#boosted-art-piece-container");
-                container.innerHTML = '';
-                
-                const wrapper = document.createElement('div');
-                wrapper.className = 'boosted-art-piece position-relative mb-4';
-                
-                const card = document.createElement('div');
-                card.className = 'card shadow-sm border-0';
-                
-                const img = document.createElement('img');
-                img.src = boost.imagePath;
-                img.alt = 'Boosted Art Piece';
-                img.className = 'card-img-top';
-                wrapper.appendChild(card);
-                card.appendChild(img);
-                
-                const cardBody = document.createElement('div');
-                cardBody.className = 'card-body';
-                
-                const statsRow = document.createElement('div');
-                statsRow.className = 'd-flex justify-content-between align-items-center';
-                
-                const expirationSpan = document.createElement('small');
-                expirationSpan.className = 'boost-expiration text-muted';
-                expirationSpan.innerHTML = `<i class="bi bi-clock me-1"></i>Boost expires on ${boost.expirationDate}`;
-                statsRow.appendChild(expirationSpan);
-                
-                const badge = document.createElement('span');
-                badge.className = 'badge bg-gradient';
-                badge.style.background = 'linear-gradient(45deg, #ff006e, #8338ec)';
-                badge.innerHTML = '<i class="bi bi-star-fill me-1"></i>BOOSTED';
-                statsRow.appendChild(badge);
-                
-                cardBody.appendChild(statsRow);
-                card.appendChild(cardBody);
-                wrapper.appendChild(card);
-                container.appendChild(wrapper);
-                
-                const boostButtons = document.querySelectorAll(".boost-btn");
-                for (const button of boostButtons) {
-                    button.remove();
-                }
+
+                const formattedDate = new Date(boost.expirationDate)
+                    .toLocaleString('en-US', {
+                        month: 'short',
+                        day: '2-digit',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+
+                container.innerHTML = `
+                    <div class="boost-wrapper" data-art-piece-id="${boost.artPieceId.value}">
+                        <div class="boost-ribbon">
+                            <i class="bi bi-star-fill me-1"></i> FEATURED
+                        </div>
+
+                        <div class="card boost-card border-0 shadow-lg">
+                            <div class="boost-image-wrapper">
+                                <img src="${boost.imagePath}"
+                                    alt="Boosted Art Piece"
+                                    class="boost-image">
+                            </div>
+
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <small class="boost-expiration text-muted">
+                                    <i class="bi bi-clock me-1"></i>
+                                    Expires ${formattedDate}
+                                </small>
+
+                                <span class="boost-badge">
+                                    <i class="bi bi-lightning-fill me-1"></i> Boost Active
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                const wrapper = container.querySelector('.boost-wrapper');
+                wrapper.addEventListener('click', () => {
+                    const artPieceDetails = new ArtPieceDetails(boost.artPieceId.value);
+                    artPieceDetails.show();
+                });
+
+                document.querySelectorAll(".boost-btn").forEach(b => b.remove());
             })
             .catch(() => alert('Error boosting art piece.'));
     }

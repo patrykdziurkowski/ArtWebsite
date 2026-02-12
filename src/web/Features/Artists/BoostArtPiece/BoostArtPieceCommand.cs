@@ -10,7 +10,6 @@ namespace web.Features.Artists.BoostArtPiece;
 public class BoostArtPieceCommand(
         ArtistRepository artistRepository,
         ApplicationDbContext dbContext,
-        IMapper mapper,
         MissionManager missionManager)
 {
         public async Task<Result<BoostDto>> ExecuteAsync(
@@ -38,7 +37,17 @@ public class BoostArtPieceCommand(
 
                 ArtPiece boostedArtPiece = await dbContext.ArtPieces
                         .SingleAsync(ap => ap.Id == currentArtist.ActiveBoost!.ArtPieceId);
-                BoostDto boostDto = mapper.Map<BoostDto>((currentArtist.ActiveBoost!, boostedArtPiece));
+                Boost boost = currentArtist.ActiveBoost!;
+                BoostDto boostDto = new()
+                {
+                        Id = boost.Id,
+                        Date = boost.Date,
+                        ExpirationDate = boost.ExpirationDate,
+                        ImagePath = boostedArtPiece.ImagePath,
+                        ArtistId = boostedArtPiece.ArtistId,
+                        ArtPieceId = boostedArtPiece.Id,
+
+                };
                 return Result.Ok(boostDto);
         }
 }

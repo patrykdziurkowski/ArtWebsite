@@ -11,4 +11,5 @@ public class ArtistProfileModel
         public required bool IsAdmin { get; init; }
         public required string? BoostedArtPiecePath { get; init; }
         public required DateTimeOffset? BoostExpirationDate { get; init; }
+        public required Guid? BoostedArtPieceId { get; init; }
 }
