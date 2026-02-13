@@ -1,0 +1,112 @@
+<div id="imageViewer" class="position-fixed top-0 start-0 w-100 h-100 d-none" style="z-index: 9999; background-color: rgba(0, 0, 0, 0.8);">
+    <button id="closeViewer" class="btn btn-close btn-close-white position-absolute top-0 end-0 m-3" style="z-index: 10000;"></button>
+    <div class="w-100 h-100 d-flex align-items-center justify-content-center overflow-hidden" style="cursor: grab;">
+        <img id="viewerImage" src="" alt="" style="max-width: 95vw; max-height: 95vh; object-fit: contain; user-select: none;">
+    </div>
+</div>
+
+<script>
+    window.ImageViewer = (function() {
+        let instance;
+        
+        class ImageViewerClass {
+            constructor() {
+                if (instance) {
+                    return instance;
+                }
+                
+                this.viewer = document.getElementById('imageViewer');
+                this.image = document.getElementById('viewerImage');
+                this.closeBtn = document.getElementById('closeViewer');
+                this.container = this.viewer.querySelector('.overflow-hidden');
+                
+                this.scale = 1;
+                this.translateX = 0;
+                this.translateY = 0;
+                this.isDragging = false;
+                this.startX = 0;
+                this.startY = 0;
+                
+                this.init();
+                instance = this;
+            }
+            
+            init() {
+                if (this.initialized) return;
+                this.initialized = true;
+                
+                this.closeBtn.addEventListener('click', () => this.close());
+                this.viewer.addEventListener('click', (e) => {
+                    if (e.target === this.viewer || e.target === this.container) {
+                        this.close();
+                    }
+                });
+                
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && !this.viewer.classList.contains('d-none')) {
+                        this.close();
+                    }
+                });
+                
+                this.image.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                    this.scale *= delta;
+                    this.scale = Math.max(0.5, Math.min(5, this.scale));
+                    this.updateTransform();
+                });
+                
+                this.image.addEventListener('mousedown', (e) => {
+                    this.isDragging = true;
+                    this.startX = e.clientX - this.translateX;
+                    this.startY = e.clientY - this.translateY;
+                    this.container.style.cursor = 'grabbing';
+                    e.preventDefault();
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!this.isDragging) return;
+                    this.translateX = e.clientX - this.startX;
+                    this.translateY = e.clientY - this.startY;
+                    this.updateTransform();
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    if (this.isDragging) {
+                        this.isDragging = false;
+                        this.container.style.cursor = 'grab';
+                    }
+                });
+            }
+            
+            updateTransform() {
+                this.image.style.transform = `translate(${this.translateX}px, ${this.translateY}px) scale(${this.scale})`;
+            }
+            
+            open(imageSrc, imageAlt = '') {
+                this.image.src = imageSrc;
+                this.image.alt = imageAlt;
+                this.scale = 1;
+                this.translateX = 0;
+                this.translateY = 0;
+                this.updateTransform();
+                this.viewer.classList.remove('d-none');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            close() {
+                this.viewer.classList.add('d-none');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        return {
+            getInstance: function() {
+                if (!instance) {
+                    instance = new ImageViewerClass();
+                }
+                return instance;
+            }
+        };
+    })();
+</script>

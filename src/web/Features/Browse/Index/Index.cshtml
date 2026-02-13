@@ -35,7 +35,7 @@
                 </button>
             </div>
             <div class="col-4">
-                <button id="skipButton" class="btn btn-warning rounded-circle position-relative" 
+                <button id="skipButton" class="btn btn-secondary rounded-circle position-relative" 
                 @(Model.CurrentReviewerActivePoints < 5 ? "disabled" : "")>
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
                         <span id="skip-button-points">@Model.CurrentReviewerActivePoints</span>/5
@@ -142,11 +142,11 @@
         font-size: 1.5em;
         width: 60px;
         height: 60px;
+        border: white solid 0.1em;
     }
 
     #skipButton:disabled {
-            background-color: rgba(100, 100, 100, 0.5);
-            border: white solid 0.1em;
+            background-color: rgba(100, 100, 100, 0.5); 
     }
 
     #reviewArt {
@@ -216,6 +216,12 @@
 
             toggleDescriptionBtn.addEventListener('click', () => {
                 descriptionOverlay.classList.toggle('d-none');
+            });
+
+            const imageViewer = ImageViewer.getInstance();
+            const img = document.getElementById('artPieceImage');
+            img.addEventListener('click', () => {
+                imageViewer.open(img.src, img.alt);
             });
 
             // note: this is registered here via event listener instead of using boostrap's data tags

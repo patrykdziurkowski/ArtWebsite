@@ -86,6 +86,12 @@
         onBack = null;
 
         constructor(artPieceId) {
+            const imageViewer = ImageViewer.getInstance();
+            const img = document.getElementById('artDetailsImage');
+            img.addEventListener('click', () => {
+                imageViewer.open(img.src, img.alt);
+            });
+
             fetch(`/api/artpieces/${artPieceId}`)
                 .then(r => r.json())
                 .then(data => {
