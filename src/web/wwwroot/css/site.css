@@ -105,6 +105,11 @@ header {
     height: calc(100vh - 56px);
 }
 
+.site-name-highlight {
+        font-weight: bold;
+        color: var(--bs-primary);
+}
+
 @media (min-width: 1200px) {    
     .d-xl-block.sidebar-fixed {
         width: 25%;

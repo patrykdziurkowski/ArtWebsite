@@ -21,7 +21,7 @@
             <img id="artPieceImage" 
                 src=""
                 alt="Art Piece" 
-                class="img-fluid rounded" 
+                class="img-fluid rounded d-none" 
                 style="height: 100%; max-width: 100%; object-fit: cover;">
         </div>
     </div>
@@ -307,6 +307,7 @@
                 
                 overlayDescription.textContent = data.description;
                 artPieceImage.src = data.imagePath;
+                artPieceImage.classList.remove('d-none');
                 imgWrapper.classList.remove('d-none');
                 document.querySelector('#descriptionOverlay').classList.add('d-none');
                 

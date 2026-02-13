@@ -165,7 +165,7 @@
                 if (@Model.IsOwner.ToString().ToLower() && @(Model.BoostExpirationDate == null ? "true" : "false")) {
                     const boostBtn = document.createElement("button");
                     boostBtn.className = "boost-btn w-100";
-                    boostBtn.innerHTML = '<i class="bi bi-fire me-1"></i>Boost This Artwork';
+                    boostBtn.innerHTML = '<i class="bi bi-fire me-1"></i>Boost This Art Piece';
                     boostBtn.onclick = (e) => {
                         e.stopPropagation();
                         boostArtPiece(artPiece.id.value);
