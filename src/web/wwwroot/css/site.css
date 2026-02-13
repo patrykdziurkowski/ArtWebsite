@@ -36,6 +36,10 @@ html, body {
         transition: transform 0.3s ease-in-out;
 }
 
+#sidebar a {
+        font-size: 1.2em;
+}
+
 p {
         word-wrap: break-word;
         white-space: normal;

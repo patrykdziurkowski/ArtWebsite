@@ -30,12 +30,12 @@
         <div class="row">
             <div class="col-4"></div>
             <div class="col-4 text-center">
-                <button id="reviewArt" class="btn btn-primary border-2 border-white" disabled>
-                    <i class="bi bi-chat-left"></i>
+                <button id="reviewArt" class="btn btn-primary shadow" disabled>
+                    <i class="bi bi-justify-left"></i>
                 </button>
             </div>
             <div class="col-4">
-                <button id="skipButton" class="btn btn-secondary rounded-circle position-relative" 
+                <button id="skipButton" class="btn btn-secondary rounded-circle position-relative shadow" 
                 @(Model.CurrentReviewerActivePoints < 5 ? "disabled" : "")>
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
                         <span id="skip-button-points">@Model.CurrentReviewerActivePoints</span>/5
@@ -142,7 +142,6 @@
         font-size: 1.5em;
         width: 60px;
         height: 60px;
-        border: white solid 0.1em;
     }
 
     #skipButton:disabled {
