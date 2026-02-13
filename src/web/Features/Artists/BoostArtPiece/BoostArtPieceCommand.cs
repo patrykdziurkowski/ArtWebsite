@@ -3,6 +3,7 @@ using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.ArtPieces;
+using web.Features.Leaderboard.Artist;
 using web.Features.Missions;
 
 namespace web.Features.Artists.BoostArtPiece;
@@ -30,6 +31,12 @@ public class BoostArtPieceCommand(
                 {
                         return result;
                 }
+
+                dbContext.ArtistPointAwards.Add(new ArtistPointAward()
+                {
+                        ArtistId = currentArtist.Id,
+                        PointValue = 20,
+                });
 
                 await artistRepository.SaveChangesAsync(currentArtist);
 

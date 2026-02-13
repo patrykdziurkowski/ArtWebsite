@@ -2,6 +2,7 @@ using FluentResults;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.ArtPieces;
+using web.Features.Leaderboard.Reviewer;
 using web.Features.Missions;
 
 namespace web.Features.Reviewers.LikeArtPiece;
@@ -41,6 +42,12 @@ public class LikeArtPieceCommand(
                 {
                         return likeResult;
                 }
+
+                dbContext.ReviewerPointAwards.Add(new ReviewerPointAward()
+                {
+                        ReviewerId = reviewer.Id,
+                        PointValue = 15,
+                });
 
                 ArtPiece likedArtPiece = await dbContext.ArtPieces.FirstAsync(ap => ap.Id == artPieceId);
                 likedArtPiece.LikeCount = await dbContext.Likes.CountAsync(l => l.ArtPieceId == artPieceId) + 1;
