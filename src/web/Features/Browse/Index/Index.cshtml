@@ -8,16 +8,30 @@
 
 <div class="container h-100 d-flex flex-column p-0 position-relative">
     <partial name="../Tags/_TagsPartial" />
-    <div id="artContainer" class="m-auto d-flex flex-column text-center flex-grow-1">
-        <h1>Loading...</h1>
+    <div id="artContainer" class="m-auto d-flex flex-column text-center flex-grow-1">        
+        <div id="imgWrapper" class="flex-grow-1 d-flex align-items-center justify-content-center position-relative" style="min-height: 0;">
+            <button id="toggleDescription" class="btn btn-sm position-absolute top-0 start-50 translate-middle-x m-2 bg-dark bg-opacity-75 text-white border-2 rounded-pill px-3" style="z-index: 20;">
+                <i class="bi bi-three-dots"></i>
+            </button>
+            
+            <div id="descriptionOverlay" class="position-absolute top-0 start-0 end-0 p-4 d-none" style="z-index: 15; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);">
+                <p id="overlayDescription" class="text-white mt-4 text-center"></p>
+            </div>
+            
+            <img id="artPieceImage" 
+                src=""
+                alt="Art Piece" 
+                class="img-fluid rounded" 
+                style="height: 100%; max-width: 100%; object-fit: cover;">
+        </div>
     </div>
 
     <div id="artPieceControls" class="d-none position-absolute bottom-0 start-0 end-0 pb-4" style="z-index: 10;">
         <div class="row">
             <div class="col-4"></div>
             <div class="col-4 text-center">
-                <button id="reviewArt" class="btn btn-secondary" disabled>
-                    <i class="bi bi-justify-left"></i>
+                <button id="reviewArt" class="btn btn-primary border-2 border-white" disabled>
+                    <i class="bi bi-chat-left"></i>
                 </button>
             </div>
             <div class="col-4">
@@ -26,7 +40,7 @@
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark">
                         <span id="skip-button-points">@Model.CurrentReviewerActivePoints</span>/5
                     </span>
-                    <i class="bi bi-skip-forward fs-5"></i>
+                    <i class="bi bi-skip-forward"></i>
                 </button>
             </div>
         </div>
@@ -123,6 +137,55 @@
     .rating label:hover {
         transform: scale(1.2);
     }
+
+    #skipButton {
+        font-size: 1.5em;
+        width: 60px;
+        height: 60px;
+    }
+
+    #skipButton:disabled {
+            background-color: rgba(100, 100, 100, 0.5);
+            border: white solid 0.1em;
+    }
+
+    #reviewArt {
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            font-size: 2em;
+            width: 60px;
+            height: 60px;
+    }
+
+    #reviewArt::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #444;
+            height: 100%;
+    }
+
+    #reviewArt>i {
+            position: relative;
+            z-index: 5;
+    }
+
+    #reviewArt[disabled="disabled"]::before {
+            animation-name: review-loading-animation;
+            animation-duration: var(--review-cooldown);
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+            animation-iteration-count: 1;
+    }
+
+    #reviewArt:not([disabled="disabled"])::before {
+            opacity: 0;
+    }
+
 </style>
 
 @section Scripts {
@@ -147,6 +210,13 @@
             const reviewForm = document.querySelector('#reviewForm');
             const reviewModal = new bootstrap.Modal(document.querySelector('#reviewModal'));
             const postReviewModal = new bootstrap.Modal(document.querySelector('#postReviewModal'));
+
+            const toggleDescriptionBtn = document.getElementById('toggleDescription');
+            const descriptionOverlay = document.getElementById('descriptionOverlay');
+
+            toggleDescriptionBtn.addEventListener('click', () => {
+                descriptionOverlay.classList.toggle('d-none');
+            });
 
             // note: this is registered here via event listener instead of using boostrap's data tags
             // because of issues when using both data-bs-dismiss alongside new bootstrap.Modal(...)
@@ -229,27 +299,10 @@
                     return null;
                 }
                 
-                artContainer.textContent = '';
-
-                const descriptionDiv = document.createElement('div');
-                descriptionDiv.className = 'p-2';
-                const descriptionP = document.createElement('p');
-                descriptionP.textContent = data.description;
-                descriptionDiv.appendChild(descriptionP);
-                artContainer.appendChild(descriptionDiv);
-
-                const imgWrapper = document.createElement('div');
-                imgWrapper.className = 'flex-grow-1 d-flex align-items-center justify-content-center';
-                imgWrapper.style.minHeight = '0';
-
-                const img = document.createElement('img');
-                img.id = 'artPieceImage';
-                img.src = data.imagePath;
-                img.alt = 'Art Piece';
-                img.className = 'img-fluid rounded';
-                img.style.cssText = 'height: 100%; max-width: 100%; object-fit: cover;';
-                imgWrapper.appendChild(img);
-                artContainer.appendChild(imgWrapper);
+                overlayDescription.textContent = data.description;
+                artPieceImage.src = data.imagePath;
+                imgWrapper.classList.remove('d-none');
+                document.querySelector('#descriptionOverlay').classList.add('d-none');
                 
                 document.querySelector('#reviewForm input[name="artPieceId"]').value = data.id.value;
                 artPieceId = data.id.value;
