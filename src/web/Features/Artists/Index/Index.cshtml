@@ -16,13 +16,18 @@
                             </button>
                         }
                     </h2>
+                    <span class="badge rounded-pill fs-6 d-inline-block mb-2" style="background-color: var(--bs-primary);">
+                        <i class="bi bi-star-fill"></i> @Model.Points Points
+                    </span>
                     <p><strong>Summary:</strong> <span id="artistSummary">@Model.Summary</span></p>
+                    
                     @if (@Model.IsOwner || @Model.IsAdmin)
                     {
-                        <a asp-controller="ArtPiece" asp-action="Upload" class="btn btn-primary">Upload!</a>
-
-                        <button id="deactivate-artist-popup" class="btn btn-danger" data-bs-toggle="modal"
-                            data-bs-target="#deleteModal">Delete Profile</button>
+                        <div class="d-flex gap-2">
+                            <a asp-controller="ArtPiece" asp-action="Upload" class="btn btn-primary">Upload!</a>
+                            <button id="deactivate-artist-popup" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal">Delete Profile</button>
+                        </div>
                     }
                 </div>
             </div>

@@ -44,6 +44,7 @@ public class ArtistController(
                         IsAdmin = await userManager.IsInRoleAsync(
                                 (await userManager.FindByIdAsync(GetUserId().ToString()))!,
                                 Constants.ADMIN_ROLE),
+                        Points = artist.Points,
                         ProfilePicturePath = artist.ProfilePicturePath,
                         BoostedArtPiecePath = boostedArtPiece?.ImagePath,
                         BoostExpirationDate = artist.ActiveBoost?.ExpirationDate,
@@ -75,6 +76,7 @@ public class ArtistController(
                         IsAdmin = await userManager.IsInRoleAsync(
                                 (await userManager.FindByIdAsync(GetUserId().ToString()))!,
                                 Constants.ADMIN_ROLE),
+                        Points = artist.Points,
                         ProfilePicturePath = artist.ProfilePicturePath,
                         BoostedArtPiecePath = boostedArtPiece?.ImagePath,
                         BoostExpirationDate = artist.ActiveBoost?.ExpirationDate,

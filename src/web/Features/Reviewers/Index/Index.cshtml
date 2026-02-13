@@ -13,9 +13,14 @@
                  style="width: 100px; height: 100px; object-fit: cover;" />
             <div class="flex-grow-1">
                 <div class="d-flex align-items-center gap-3 mb-2">
-                    <h2 class="mb-0">
-                        <span id="reviewerName" data-user-id="@Model.ReviewerUserId">@Model.Name</span>'s profile
-                    </h2>
+                    <div>
+                        <h2 class="mb-0">
+                            <span id="reviewerName" data-user-id="@Model.ReviewerUserId">@Model.Name</span>'s profile
+                        </h2>
+                        <span class="badge rounded-pill mt-2 fs-6" style="background-color: var(--bs-primary);">
+                            <i class="bi bi-star-fill"></i> @Model.Points Points
+                        </span>
+                    </div>
                     @if (@Model.CurrentUserOwnsThisProfile || @Model.IsCurrentUserAdmin)
                     {
                         <button id="editProfileModalButton" 
