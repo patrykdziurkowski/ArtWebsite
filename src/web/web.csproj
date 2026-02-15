@@ -33,6 +33,7 @@
     <Folder Include="Features/Reviews/DeleteReview/" />
     <Folder Include="Features/Reviews/EditReview/" />
     <Folder Include="wwwroot/img/" />
+    <Folder Include="wwwroot/js/" />
   </ItemGroup>
 
 </Project>

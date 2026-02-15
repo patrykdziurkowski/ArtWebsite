@@ -1,7 +1,7 @@
 ﻿@using web.Features.ArtPieces.UploadArtPiece
 @model UploadArtPieceModel
 
-<div class="h-100">
+<div>
     <div class="row justify-content-center h-100">
 
         <div id="step-1" class="card border-0 shadow-sm mb-4">
@@ -19,12 +19,12 @@
         </div>
 
         <div id="step-2" style="display: none;" class="h-100">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100 d-flex">
                 <div class="card-header border-0 p-3">
                     <h4 class="mb-0">Edit Your Art</h4>
                 </div>
-                <div class="card-body p-0">
-                    <div id="tui-image-editor-container"></div>
+                <div class="card-body p-0 flex-grow-1" style="overflow:hidden;">
+                    <div id="image-editor-container"></div>
                 </div>
                 <div class="card-footer border-0 p-3 text-end">
                     <button id="apply-edits" class="btn btn-primary btn-lg">
@@ -86,216 +86,287 @@
         cursor: pointer;
     }
 
-    .tui-image-editor-submenu svg .use-default {
-        stroke: #8a8a8a !important;
-        stroke-width: 2px;
+    .main-buttons button {
+        width: 4em !important;
     }
 
-    .tui-image-editor-virtual-range-bar {
-        background-color: #6a6a6a !important;
+    .extended-buttons button {
+        width: 4em !important;
     }
 
-    .tui-image-editor-virtual-range-subbar {
-        background-color: white !important;
+    #tip-container {
+        display: none;
     }
 
-    .tui-image-editor-container .tui-image-editor-main {
-        top: 55px;
+    main > div {
+        height: calc(100vh - 56px);
     }
 
-    .tui-image-editor-container .tui-image-editor-wrap {
-        overflow: hidden;
+    #canvas-holder {
+        display: block;
     }
 
-    .tui-image-editor-range-value {
-        font-weight: bold !important;
+    #toolbar {
+        background-color: var(--bs-secondary-bg);
     }
 
-    .tui-image-editor {
-        top: 0 !important;
-        height: 100%;
-        width: 100%;
+    #toolbar button {
+        background: none;
+        color: var(--bs-body-color);
+        fill: var(--bs-body-color);
+        stroke: var(--bs-body-color);
     }
 
-    .tui-image-editor-container .tui-image-editor-help-menu.top {
-        top: 0;
+    #toolbar div button.active {
+        border: 0.5em solid var(--bs-body-color);
     }
 
-    .tui-image-editor-menu,
-    .tui-image-editor-help-menu,
-    .tui-image-editor-header {
-        background-color: var(--bs-secondary-bg) !important;
+    #toolbar button path {
+        fill: inherit !important;
     }
 
-    .tui-image-editor-main-container {
-        background-image: url('/img/transparency-pattern.png') !important;
-        background-size: 400px;
-        background-repeat: repeat;
+    #image-editor-container {
+        position: relative;
     }
 
-    .tui-image-editor-container label {
-        color: white !important;
-        text-shadow: 1px 1px black;
+    #image-editor-container .toolpanel {
+        background-color: var(--bs-secondary-bg);
+        color: var(--bs-body-color);
+        border-left: none;
+        border-top: none;
+        border-bottom: none;
     }
 
-    .tui-image-editor-align-wrap {
-        height: 100%;
+    #image-editor-container .toolpanel .tab-label,
+    #image-editor-container .toolpanel .title {
+        color: inherit;
     }
 
-    .tui-image-editor-submenu {
-        padding: 1em !important;
-        background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
-        height: 50% !important;
+    #image-editor-container .toolpanel .custom-number-input {
+        background-color: var(--bs-secondary-bg);
     }
 
-    .color-picker-control {
-        background-color: var(--bs-secondary-bg) !important;
+    #image-editor-container .toolpanel input {
+        border-radius: 0 !important;
+        border: 2px solid var(--bs-body-color) !important;
+    }
+    
+    #image-editor-container .toolpanel .custom-number-input button:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
     }
 
-    .tui-colorpicker-clearfix, .tui-colorpicker-palette-hex {
-        background-color: var(--bs-secondary-bg) !important;
+    #image-editor-container .toolpanel .custom-number-input button:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+
+    #image-editor-container .floating-zoom-level-container {
+        background-color: var(--bs-secondary-bg);
+        z-index: 10;
+        right: 1em;
+        padding: 0.5em 1em;
+        border-bottom: none;
+    }
+
+    #sp-container,
+    .sp-picker-container,
+    .sp-palette-container {
+        background-color: var(--bs-body-bg);
+    }
+
+    input.sp-input {
+        color: var(--bs-body-color);
+    }
+
+    .sp-container .sp-picker-container button {
+        color: var(--bs-body-color);
+    }
+
+    .sp-palette span.sp-thumb-inner {
+        border-radius: 0;
+    }
+
+    div.sp-container {
+        border-radius: 0;
+    }
+
+    .toolpanel .content div.hide-show-handler {
+        border-top-right-radius: 1em;
+        border-bottom-right-radius: 1em;
+        background-color: var(--bs-body-bg);
+        border-left: none;
+    }
+
+    #shapes-panel svg * {
+        stroke: var(--bs-body-color);
+        color: var(--bs-body-color);
+        fill: var(--bs-body-color);
     }
 </style>
 
 @section Scripts
 {
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.4.0/fabric.js"></script>
-    <script type="text/javascript" src="https://uicdn.toast.com/tui.code-snippet/v1.5.0/tui-code-snippet.min.js"></script>
-    <script type="text/javascript" src="https://uicdn.toast.com/tui-color-picker/v2.2.6/tui-color-picker.js"></script>
-    <script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
-    <script type="text/javascript" src="~/js/tui-image-editor.js"></script>
-    <script type="text/javascript" src="~/js/theme/white-theme.js"></script>
+    <link rel="stylesheet" href="~/lib/fabricjs-image-editor-origin/style.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        jQuery.fn.outerHTML = function() {
+            return jQuery('<div />').append(this.eq(0).clone()).html();
+        };
+        Number.prototype.countDecimals = function () {
+            if(Math.floor(this.valueOf()) === this.valueOf()) return 0;
+            return this.toString().split(".")[1].length || 0; 
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.6.3/fabric.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/spectrum-colorpicker2/dist/spectrum.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/spectrum-colorpicker2/dist/spectrum.min.css">
+
+    <script src="~/lib/fabricjs-image-editor-origin/grapick.min.js"></script>
+    <link rel="stylesheet" href="~/lib/fabricjs-image-editor-origin/grapick.min.css">
+
+    <script src="~/lib/fabricjs-image-editor-origin/undo-redo-stack.js"></script>
+
+    <script src="~/lib/fabricjs-image-editor-origin/core.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/toolbar.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/canvas.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/shapes.js"></script>
+
+    <script src="~/lib/fabricjs-image-editor-origin/freeDrawSettings.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/canvasSettings.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/selectionSettings.js"></script>
+
+    <script src="~/lib/fabricjs-image-editor-origin/drawingLine.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/drawingPath.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/drawingText.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/tip.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/upload.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/copyPaste.js"></script>
+
+    <script src="~/lib/fabricjs-image-editor-origin/utils.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/zoom.js"></script>
+    <script src="~/lib/fabricjs-image-editor-origin/saveInBrowser.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-        let validImageLoaded = false;
-        
-        const step1 = document.getElementById('step-1');
-        const step2 = document.getElementById('step-2');
-        const step3 = document.getElementById('step-3');
+            let validImageLoaded = false;
+            
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const step3 = document.getElementById('step-3');
 
-        const imageEditor = new tui.ImageEditor('#tui-image-editor-container', {
-            includeUI: {
-                loadImage: {
-                    path: '/img/placeholder.png',
-                    name: 'SampleImage',
-                },
-                theme: whiteTheme,
-                initMenu: 'draw',
-                menuBarPosition: 'bottom',
-            },
-            usageStatistics: false,
-            cssMaxWidth: 3840,
-            cssMaxHeight: 2160,
-        });
+            const buttons = [
+                'select',
+                'shapes',
+                'draw',
+                'line',
+                'path',
+                'textbox',
+                'background',
+                'undo',
+                'redo',
+                'download',
+            ];
 
-        window.onresize = function () {
-            imageEditor.ui.resizeEditor();
-        };
+            let imgEditor = new ImageEditor('#image-editor-container', buttons, []);
 
-        document.querySelector('#image-input').onchange = async (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                try {
-                    await imageEditor.loadImageFromFile(file);
-                    validImageLoaded = true;
-                    step1.style.display = 'none';
-                    step2.style.display = 'block';
-                    
-                    setTimeout(() => {
-                        document.querySelector('.tie-btn-zoomOut').remove();
-                        document.querySelector('.tie-btn-zoomIn').remove();
-                        const canvasContainer = document.querySelector('.tui-image-editor-canvas-container');
-                        if (canvasContainer) {
-                            canvasContainer.addEventListener('wheel', (event) => {
-                                event.preventDefault();
-                                
-                                const delta = event.deltaY > 0 ? -0.1 : 0.1;
-                                const canvas = imageEditor._graphics.getCanvas();
-                                const currentZoom = canvas.getZoom();
-                                const newZoom = Math.max(0.1, Math.min(3, currentZoom + delta));
-                                
-                                canvas.setZoom(newZoom);
-                                canvas.renderAll();
-                            }, { passive: false });
-                            
-                            let isPanning = false;
-                            let lastPosX = 0;
-                            let lastPosY = 0;
-                            
-                            canvasContainer.addEventListener('mousedown', (event) => {
-                                const isHandTool = document.querySelector('.tie-btn-hand.on') !== null;
-                                
-                                if (isHandTool && event.button === 0) {
-                                    isPanning = true;
-                                    lastPosX = event.clientX;
-                                    lastPosY = event.clientY;
-                                    canvasContainer.style.cursor = 'grabbing';
-                                    event.preventDefault();
-                                }
-                            });
-                            
-                            document.addEventListener('mousemove', (event) => {
-                                if (isPanning) {
-                                    const canvas = imageEditor._graphics.getCanvas();
-                                    const deltaX = event.clientX - lastPosX;
-                                    const deltaY = event.clientY - lastPosY;
-                                    
-                                    canvas.relativePan({ x: deltaX, y: deltaY });
-                                    canvas.renderAll();
-                                    
-                                    lastPosX = event.clientX;
-                                    lastPosY = event.clientY;
-                                }
-                            });
-                            
-                            document.addEventListener('mouseup', () => {
-                                if (isPanning) {
-                                    isPanning = false;
-                                    canvasContainer.style.cursor = 'grab';
-                                }
-                            });
-                        }
-                    }, 200);
-                } catch {
-                    validImageLoaded = false;
-                    alert('Failed to load image. Please try another file.');
+            const canvasHolder = document.getElementById('canvas-holder');
+            let isPanning = false;
+            let lastPosX = 0;
+            let lastPosY = 0;
+
+            canvasHolder.addEventListener('mousedown', function(e) {
+                if (e.button === 2) {
+                    isPanning = true;
+                    lastPosX = e.clientX;
+                    lastPosY = e.clientY;
+                    e.preventDefault();
                 }
-            }
-        };
-        
-        document.getElementById('apply-edits').onclick = () => {
-            step2.style.display = 'none';
-            step3.style.display = 'block';
-        };
+            });
 
-        document.getElementById('back-to-edit').onclick = () => {
-            step3.style.display = 'none';
-            step2.style.display = 'block';
-        };
+            canvasHolder.addEventListener('mousemove', function(e) {
+                if (isPanning) {
+                    const deltaX = e.clientX - lastPosX;
+                    const deltaY = e.clientY - lastPosY;
+                    
+                    canvasHolder.scrollLeft -= deltaX;
+                    canvasHolder.scrollTop -= deltaY;
+                    
+                    lastPosX = e.clientX;
+                    lastPosY = e.clientY;
+                }
+            });
 
-        document.querySelector('#upload-form').onsubmit = async (e) => {
-            e.preventDefault();
+            document.addEventListener('mouseup', function(e) {
+                if (isPanning) {
+                    isPanning = false;
+                }
+            });
 
-            const fileInput = document.querySelector('#image-input');
-            const file = fileInput.files[0];
-            if (!validImageLoaded || !file || !file.type.startsWith('image/')) {
-                // send it immediately to be rejected by server side validation
+            canvasHolder.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.querySelector('#image-input').onchange = async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        fabric.Image.fromURL(event.target.result, function(img) {
+                            const canvas = imgEditor.canvas;
+                            
+                            document.querySelector('#input-height').value = img.height;
+                            $(document.querySelector('#input-height')).change();
+                            document.querySelector('#input-width').value = img.width;
+                            $(document.querySelector('#input-width')).change();
+
+                            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+
+                            validImageLoaded = true;
+                            step1.style.display = 'none';
+                            step2.style.display = 'block';
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+            
+            document.getElementById('apply-edits').onclick = () => {
+                step2.style.display = 'none';
+                step3.style.display = 'block';
+            };
+
+            document.getElementById('back-to-edit').onclick = () => {
+                step3.style.display = 'none';
+                step2.style.display = 'block';
+            };
+
+            document.querySelector('#upload-form').onsubmit = async (e) => {
+                e.preventDefault();
+
+                const fileInput = document.querySelector('#image-input');
+                const file = fileInput.files[0];
+                if (!validImageLoaded || !file || !file.type.startsWith('image/')) {
+                    // send it immediately to be rejected by server side validation
+                    e.target.submit();
+                    return;
+                }
+
+                document.querySelector('#input-zoom-level').value = 1;
+                $(document.querySelector('#input-zoom-level')).change();
+
+                const dataURL = imgEditor.canvas.toDataURL({ format: 'png', quality: 1 });
+                const blob = await (await fetch(dataURL)).blob();
+                const newFile = new File([blob], 'edited-image.png', { type: 'image/png' });
+
+                const container = new DataTransfer();
+                container.items.add(newFile);
+                document.querySelector('#image-input-hidden').files = container.files;
+
                 e.target.submit();
-                return;
-            }
-
-            const dataURL = imageEditor.toDataURL();
-            const blob = await (await fetch(dataURL)).blob();
-            const newFile = new File([blob], 'edited-image.png', { type: 'image/png' });
-
-            const container = new DataTransfer();
-            container.items.add(newFile);
-            document.querySelector('#image-input-hidden').files = container.files;
-
-            e.target.submit();
-        };
-    });
+            };
+        });
     </script>
 }

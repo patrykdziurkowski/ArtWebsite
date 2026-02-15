@@ -104,9 +104,9 @@ header {
 }
 
 .sidebar-fixed {
-    position: sticky;
-    top: 56px;
-    height: calc(100vh - 56px);
+        position: sticky;
+        top: 56px;
+        height: calc(100vh - 56px);
 }
 
 .site-name-highlight {
@@ -121,19 +121,19 @@ header {
 }
 
 @media (max-width: 991px) {
-    .sidebar-fixed {
-        position: relative;
-        top: auto;
-        height: auto;
-    }
-    
-    main.col-lg-9 {
-        margin-left: 0;
-    }
+        .sidebar-fixed {
+                position: relative;
+                top: auto;
+                height: auto;
+        }
+
+        main.col-lg-9 {
+                margin-left: 0;
+        }
 }
 
 #sidebar {
-    height: 100%;
+        height: 100%;
 }
 
 @keyframes review-loading-animation {
