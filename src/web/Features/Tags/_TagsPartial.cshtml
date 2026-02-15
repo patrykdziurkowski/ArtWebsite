@@ -88,8 +88,13 @@
 
             async initialize() {
                 try {
-                    await this.#setupSignalR();
-                    await this.#loadTags();
+                    const tagsLoaded = await this.#loadTags();
+                    
+                    if (!tagsLoaded) {
+                        this.#setupSignalR().catch(error => {
+                            console.warn('SignalR setup failed:', error);
+                        });
+                    }
                 } catch (error) {
                     console.error(`Error initializing tags for art piece ${this.artPieceId}:`, error);
                     this.tagsContainer.innerHTML = '<span class="text-danger">Error loading tags</span>';
@@ -123,18 +128,25 @@
             }
 
             async #loadTags() {
-                const res = await fetch(`/api/artpieces/${this.artPieceId}/tags`);
-                if (!res.ok) {
-                    throw new Error(`HTTP error! Status: ${res.status}`);
-                }
+                try {
+                    const res = await fetch(`/api/artpieces/${this.artPieceId}/tags`);
+                    if (!res.ok) {
+                        return false;
+                    }
 
-                const tags = await res.json();
-                if (tags.length === 0) {
-                    this.tagsContainer.innerHTML = '<span class="text-muted">No tags</span>';
-                    return;
-                }
+                    const tags = await res.json();
+                    if (tags.length === 0) {
+                        this.tagsContainer.innerHTML = '<span class="text-muted">No tags</span>';
+                        return true;
+                    }
 
-                this.#renderTags(tags);
+                    this.#renderTags(tags);
+                    return true;
+                } catch (error) {
+                    console.error('Failed to load tags:', error);
+                    this.tagsContainer.innerHTML = '<span class="text-danger">Failed to load tags</span>';
+                    return false;
+                }
             }
 
             #renderTags(tags) {
