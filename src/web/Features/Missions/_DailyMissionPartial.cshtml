@@ -1,49 +1,52 @@
-<div id="daily-quest-card" class="card text-white bg-success mb-3 loading-gradient mx-auto" style="max-width: 18rem;">
-    <div class="card-header">Daily mission:</div>
-    <div class="card-body">
-        <h5 id="mission-title" class="card-title">Loading...</h5>
+@if (User.Identity?.IsAuthenticated == true)
+{
+     <div id="daily-quest-card" class="card text-white bg-success mb-3 loading-gradient mx-auto" style="max-width: 18rem;">
+        <div class="card-header">Daily mission:</div>
+        <div class="card-body">
+            <h5 id="mission-title" class="card-title">Loading...</h5>
+        </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', async () => {
-        try {
-            const response = await fetch('/api/mission');
-            if (!response.ok) {
-                throw new Error('Network response was not OK.');
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const response = await fetch('/api/mission');
+                if (!response.ok) {
+                    throw new Error('Network response was not OK.');
+                }
+                const dto = await response.json();
+
+                const missionTitle = document.getElementById('mission-title');
+                missionTitle.textContent = '';
+
+                const currentProgressSpan = document.createElement('span');
+                currentProgressSpan.id = 'mission-progress';
+                currentProgressSpan.textContent = dto.currentProgress;
+                missionTitle.appendChild(currentProgressSpan);
+
+                missionTitle.appendChild(document.createTextNode('/'));
+
+                const maxProgressSpan = document.createElement('span');
+                maxProgressSpan.id = 'mission-max-progress';
+                maxProgressSpan.textContent = dto.maxProgress;
+                missionTitle.appendChild(maxProgressSpan);
+
+                missionTitle.appendChild(document.createTextNode(' '));
+
+                const descriptionSpan = document.createElement('span');
+                descriptionSpan.id = 'mission-description';
+                descriptionSpan.textContent = dto.description;
+                missionTitle.appendChild(descriptionSpan);
+                
+                missionTitle.style.textDecoration = (dto.currentProgress == dto.maxProgress)
+                    ? 'line-through'
+                    : '';
+            } catch (error) {
+                console.error('Error fetching the mission:', error);
+                document.getElementById('mission-title').innerText = 'Failed to load mission';
             }
-            const dto = await response.json();
 
-            const missionTitle = document.getElementById('mission-title');
-            missionTitle.textContent = '';
-
-            const currentProgressSpan = document.createElement('span');
-            currentProgressSpan.id = 'mission-progress';
-            currentProgressSpan.textContent = dto.currentProgress;
-            missionTitle.appendChild(currentProgressSpan);
-
-            missionTitle.appendChild(document.createTextNode('/'));
-
-            const maxProgressSpan = document.createElement('span');
-            maxProgressSpan.id = 'mission-max-progress';
-            maxProgressSpan.textContent = dto.maxProgress;
-            missionTitle.appendChild(maxProgressSpan);
-
-            missionTitle.appendChild(document.createTextNode(' '));
-
-            const descriptionSpan = document.createElement('span');
-            descriptionSpan.id = 'mission-description';
-            descriptionSpan.textContent = dto.description;
-            missionTitle.appendChild(descriptionSpan);
-            
-            missionTitle.style.textDecoration = (dto.currentProgress == dto.maxProgress)
-                ? 'line-through'
-                : '';
-        } catch (error) {
-            console.error('Error fetching the mission:', error);
-            document.getElementById('mission-title').innerText = 'Failed to load mission';
-        }
-
-        document.querySelector('#daily-quest-card').classList.remove('loading-gradient');
-    });
-</script>
+            document.querySelector('#daily-quest-card').classList.remove('loading-gradient');
+        });
+    </script>
+}
