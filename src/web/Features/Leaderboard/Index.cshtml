@@ -96,8 +96,19 @@
                     tr.appendChild(rankTd);
                     
                     const nameTd = document.createElement('td');
+                    nameTd.classList.add('leaderboard-name');
+                    nameTd.dataset.userId = e.userId;
                     nameTd.textContent = e.name;
                     tr.appendChild(nameTd);
+
+                    nameTd.addEventListener('click', (e) => {
+                        const el = e.currentTarget;
+                        userDetails.show(
+                            el,
+                            el.dataset.userId,
+                            el.textContent,
+                            currentMode === 'artists');
+                    });
                     
                     const pointsTd = document.createElement('td');
                     pointsTd.textContent = e.pointsInThatTimeSpan;

@@ -14,6 +14,7 @@ public class ReviewerLeaderboardQuery(ApplicationDbContext dbContext)
                 return await dbContext.Reviewers
                         .Select(r => new LeaderboardDto
                         {
+                                UserId = r.UserId,
                                 Name = r.Name,
                                 PointsInThatTimeSpan = dbContext.ReviewerPointAwards
                                         .Where(award => award.ReviewerId == r.Id && award.DateAwarded >= cutoffTime)

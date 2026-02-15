@@ -14,6 +14,7 @@ public class ArtistLeaderboardQuery(ApplicationDbContext dbContext)
                 return await dbContext.Artists
                         .Select(a => new LeaderboardDto
                         {
+                                UserId = a.UserId,
                                 Name = a.Name,
                                 PointsInThatTimeSpan = dbContext.ArtistPointAwards
                                         .Where(pa => pa.ArtistId == a.Id && pa.DateAwarded >= cutoffTime)
