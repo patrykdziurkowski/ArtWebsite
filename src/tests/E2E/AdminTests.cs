@@ -133,7 +133,7 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
 
                 Driver.Navigate().Refresh();
                 Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card")).Text.Contains(NEW_COMMENT));
-                Driver.FindElements(By.ClassName("checked-star")).Should().HaveCount(1);
+                Driver.FindElements(By.ClassName("filled-star")).Should().HaveCount(1);
         }
 
         [Fact, Order(5)]

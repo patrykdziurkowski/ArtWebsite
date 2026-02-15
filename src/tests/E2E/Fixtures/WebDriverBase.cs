@@ -87,7 +87,9 @@ public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDispos
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
                 Wait.Until(d => d.FindElement(By.Id("image-input"))).SendKeys(Path.GetFullPath(filePath));
-                Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
+                
+                Driver.FindElement(By.Id("apply-edits")).Click();
+                Wait.Until(d => d.FindElement(By.Id("description-input"))).SendKeys("Description!");
 
                 var submit = Driver.FindElement(By.Id("upload-submit"));
                 ScrollIntoView(submit);
@@ -104,7 +106,7 @@ public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDispos
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("reviewModal")));
                 Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
                 Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
-                Driver.FindElement(By.CssSelector("#reviewForm > button")).Click();
+                Driver.FindElement(By.CssSelector("#submitReview")).Click();
 
                 Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("reviewModal")));
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
@@ -117,7 +119,7 @@ public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDispos
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("reviewModal")));
                 Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
                 Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
-                Driver.FindElement(By.CssSelector("#reviewForm > button")).Click();
+                Driver.FindElement(By.CssSelector("#submitReview")).Click();
 
                 Wait.Until(ExpectedConditions.InvisibilityOfElementLocated(By.Id("reviewModal")));
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
@@ -133,7 +135,7 @@ public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDispos
 
                 Driver.FindElement(By.CssSelector("#reviewForm textarea")).SendKeys("Review text! One that is long enough for the validation to pass. One that is long enough for the validation to pass.");
                 Driver.FindElement(By.CssSelector("#reviewForm label[for=\"star3\"]")).Click();
-                Driver.FindElement(By.CssSelector("#reviewForm button")).Click();
+                Driver.FindElement(By.CssSelector("#submitReview")).Click();
 
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
                 IWebElement likeButton = Wait.Until(d => d.FindElement(By.Id("likeArtPiece")));

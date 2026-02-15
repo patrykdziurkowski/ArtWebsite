@@ -36,7 +36,7 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
                 bool hasOneReview = Wait.Until(d => d.FindElements(By.CssSelector("#reviewsList > *")).Count == 1);
 
                 hasOneReview.Should().BeTrue();
-                Driver.FindElements(By.ClassName("checked-star")).Should().HaveCount(3);
+                Driver.FindElements(By.ClassName("filled-star")).Should().HaveCount(3);
         }
 
         [Fact, Order(2)]
@@ -207,7 +207,7 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
 
                 Driver.Navigate().Refresh();
                 Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card")).Text.Contains(NEW_COMMENT));
-                Driver.FindElements(By.ClassName("checked-star")).Should().HaveCount(1);
+                Driver.FindElements(By.ClassName("filled-star")).Should().HaveCount(1);
         }
 
         [Fact, Order(10)]

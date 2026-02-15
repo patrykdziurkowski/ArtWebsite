@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using web.Features.Artists;
+using web.Features.ArtPieces.DeleteArtPiece;
 using web.Features.ArtPieces.EditArtPiece;
 using web.Features.ArtPieces.LoadArtPieces;
 using web.Features.Browse;
@@ -19,6 +20,7 @@ public class ArtPieceApiController(
         ArtPiecesQuery artPiecesQuery,
         ArtPieceByTagQuery artPiecesByTagQuery,
         EditArtPieceCommand editArtPieceCommand,
+        DeleteArtPieceCommand deleteArtPieceCommand,
         ArtPieceDetailsQuery artPieceDetailsQuery,
         RegisterArtPieceServedCommand registerArtPieceServedCommand) : ControllerBase
 {
@@ -71,6 +73,13 @@ public class ArtPieceApiController(
                         new ArtPieceId() { Value = artPieceId },
                         model.Description);
                 return Ok();
+        }
+
+        [HttpDelete("/api/artpieces/{artPieceId}")]
+        public async Task<IActionResult> DeleteArtPiece(Guid artPieceId)
+        {
+                await deleteArtPieceCommand.ExecuteAsync(GetUserId(), new ArtPieceId() { Value = artPieceId });
+                return NoContent();
         }
 
         private Guid GetUserId()

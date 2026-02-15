@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
+using web.Features.Browse;
 
 namespace web.Features.ArtPieces.DeleteArtPiece;
 

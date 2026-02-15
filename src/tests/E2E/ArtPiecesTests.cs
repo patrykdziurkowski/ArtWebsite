@@ -16,7 +16,9 @@ public class ArtPiecesTests(WebDriverInitializer initializer, SharedPerTestClass
                 string filePath = "../../../resources/exampleNonImage.txt";
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/ArtPiece/Upload");
                 Wait.Until(d => d.FindElement(By.Id("image-input"))).SendKeys(Path.GetFullPath(filePath));
-                Driver.FindElement(By.Id("description-input")).SendKeys("Description!");
+                
+                Driver.FindElement(By.Id("apply-edits")).Click();
+                Wait.Until(d => d.FindElement(By.Id("description-input"))).SendKeys("Description!");
 
                 var submit = Driver.FindElement(By.Id("upload-submit"));
                 ScrollIntoView(submit);
@@ -52,11 +54,11 @@ public class ArtPiecesTests(WebDriverInitializer initializer, SharedPerTestClass
         [Fact, Order(3)]
         public void Tags_WhenClicked_ShowsArtPiecesThatHaveThisTag()
         {
-                var tag = Driver.FindElement(By.ClassName("tag"));
+                var tag = Wait.Until(d => d.FindElement(By.ClassName("tag")));
                 string tagName = tag.Text;
                 tag.Click();
 
-                Wait.Until(d => d.FindElement(By.Id("selectedTag")).Text == tagName);
+                Wait.Until(d => d.FindElement(By.CssSelector(".tag.bg-primary")).Text == tagName);
         }
 
         [Fact, Order(4)]
@@ -78,6 +80,25 @@ public class ArtPiecesTests(WebDriverInitializer initializer, SharedPerTestClass
                 Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
                 Wait.Until(d => d.FindElement(By.Id("detailsDescription")).Text == "This is a brand new art piece description");
+        }
+
+        [Fact, Order(5)]
+        public void DeletingArtPiece_DeletesIt()
+        {
+                ResetTestContext();
+                CreateUserWithArtistProfile();
+                UploadArtPiece();
+
+                Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Artist/");
+                Wait.Until(d => d.FindElement(By.CssSelector(".art-piece-card"))).Click();
+                Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
+
+                Wait.Until(d => d.FindElement(By.Id("delete-art-piece-button"))).Click();
+                IAlert alert = Wait.Until(d => d.SwitchTo().Alert());
+                alert.Accept();
+
+                Driver.Navigate().Refresh();
+                Wait.Until(d => d.FindElements(By.CssSelector(".art-piece-card")).Count == 0);
         }
 
 }

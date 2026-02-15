@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using web.Data;
 
@@ -11,9 +12,11 @@ using web.Data;
 namespace web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class IdentityDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260215153243_ChangeArtPieceServedToCascadeDelete")]
+    partial class ChangeArtPieceServedToCascadeDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -644,13 +647,13 @@ namespace web.Migrations
                     b.HasOne("web.Features.ArtPieces.ArtPiece", null)
                         .WithMany()
                         .HasForeignKey("ArtPieceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("web.Features.Artists.Artist", null)
                         .WithMany()
                         .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("web.Features.Artists.Artist", null)
@@ -672,7 +675,7 @@ namespace web.Migrations
                     b.HasOne("web.Features.Artists.Artist", null)
                         .WithMany()
                         .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -681,7 +684,7 @@ namespace web.Migrations
                     b.HasOne("web.Features.Reviewers.Reviewer", null)
                         .WithMany()
                         .HasForeignKey("ReviewerId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -690,7 +693,7 @@ namespace web.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser<System.Guid>", null)
                         .WithOne()
                         .HasForeignKey("web.Features.Missions.MissionProgress", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -699,13 +702,13 @@ namespace web.Migrations
                     b.HasOne("web.Features.ArtPieces.ArtPiece", null)
                         .WithMany()
                         .HasForeignKey("ArtPieceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("web.Features.Reviews.Review", null)
                         .WithOne()
                         .HasForeignKey("web.Features.Reviewers.Like", "ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("web.Features.Reviewers.Reviewer", null)
                         .WithMany("ActiveLikes")
@@ -758,13 +761,13 @@ namespace web.Migrations
                     b.HasOne("web.Features.ArtPieces.ArtPiece", null)
                         .WithMany()
                         .HasForeignKey("ArtPieceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("web.Features.Tags.Tag", null)
                         .WithMany()
                         .HasForeignKey("TagId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

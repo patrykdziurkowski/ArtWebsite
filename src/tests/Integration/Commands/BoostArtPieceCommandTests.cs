@@ -23,7 +23,7 @@ public class BoostArtPieceCommandTests : DatabaseTest
                 ArtistRepository artistRepository = Scope.ServiceProvider.GetRequiredService<ArtistRepository>();
                 _mockMissionGenerator = Substitute.For<IMissionGenerator>();
                 MissionManager missionManager = new(DbContext, _mockMissionGenerator);
-                _command = new(artistRepository, DbContext, mapper, missionManager);
+                _command = new(artistRepository, DbContext, missionManager);
         }
 
         [Fact]

@@ -38,7 +38,7 @@ public class ArtPieceRepositoryTests : DatabaseTest
                 _mockMissionGenerator = Substitute.For<IMissionGenerator>();
                 MissionManager missionManager = new(DbContext, _mockMissionGenerator);
                 _uploadArtPieceCommand = new UploadArtPieceCommand(DbContext, artistRepository, imageTaggingQueue, missionManager, Scope.ServiceProvider.GetRequiredService<ImageManager>(), serviceScopeFactory);
-                _boostArtPieceCommand = new BoostArtPieceCommand(artistRepository, DbContext, mapper, missionManager);
+                _boostArtPieceCommand = new BoostArtPieceCommand(artistRepository, DbContext, missionManager);
         }
 
         [Fact]
