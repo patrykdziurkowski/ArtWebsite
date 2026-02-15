@@ -24,7 +24,7 @@ public class BoostsTests(WebDriverInitializer initializer, SharedPerTestClass sh
                 ScrollIntoView(secondBoostButton);
                 Wait.Until(ExpectedConditions.ElementToBeClickable(secondBoostButton)).Click();
 
-                Wait.Until(d => d.FindElement(By.CssSelector(".boosted-art-piece img"))).Should().NotBeNull();
+                Wait.Until(d => d.FindElement(By.CssSelector("#boosted-art-piece-container img"))).Should().NotBeNull();
                 Action findingBoostButton = () => Driver.FindElement(By.CssSelector(".boost-btn"));
                 findingBoostButton.Should().Throw<NoSuchElementException>();
         }

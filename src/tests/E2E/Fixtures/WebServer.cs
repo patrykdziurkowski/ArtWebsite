@@ -136,4 +136,29 @@ public class WebServer : IDisposable
                         Thread.Sleep(2500);
                 }
         }
+
+        /// <summary>
+        /// Waits until an unsuccessful status code is recevied from localhost.
+        /// Ran synchronously in order to block test execution until ready.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"></exception>
+        private void WaitUntilWebServerFails()
+        {
+                const int maxIterations = 25;
+                for (int i = 0; i < maxIterations; ++i)
+                {
+                        bool webStillExists = Server.Containers.Any(c => c.Name.Contains("-web"));
+                        if (!webStillExists)
+                        {
+                                break;
+                        }
+
+                        if (i >= 24)
+                        {
+                                throw new InvalidOperationException("Waiting for web server to be down failed after 25 attempts.");
+                        }
+
+                        Thread.Sleep(2500);
+                }
+        }
 }

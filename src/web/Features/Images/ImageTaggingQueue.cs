@@ -31,6 +31,7 @@ public class ImageTaggingQueue
 
 public record ImageTaggingItem
 {
+        public DateTimeOffset TimeStarted { get; init; } = DateTimeOffset.UtcNow;
         public required ArtPieceId ArtPieceId { get; init; }
         public required string FullImagePath { get; init; }
         public required Func<List<string>, Task> CallBack { get; init; }

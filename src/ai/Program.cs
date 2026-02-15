@@ -54,7 +54,7 @@ app.MapPost("/tag", async (HttpContext context) =>
                                 { "data", inputOrtValue }
                         };
 
-                using var session = new InferenceSession("models/resnet50-v2-7.onnx");
+                using var session = new InferenceSession("models/vgg16-12-qdq.onnx");
                 using var runOptions = new RunOptions();
                 using IDisposableReadOnlyCollection<OrtValue> results = session.Run(runOptions, inputs, session.OutputNames);
 

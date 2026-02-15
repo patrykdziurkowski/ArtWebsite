@@ -31,6 +31,8 @@ public class ImageProcessor(
                                         continue;
                                 }
 
+                                logger.LogInformation($"INFO: Finished tagging an image in {DateTimeOffset.UtcNow.Subtract(imageTaggingItem.TimeStarted).TotalSeconds} seconds.");
+
                                 List<string> tags = result.Value;
                                 await imageTaggingItem.CallBack(tags);
                                 logger.LogDebug("Sending TagsReady to group: {group}", $"art-{imageTaggingItem.ArtPieceId}");

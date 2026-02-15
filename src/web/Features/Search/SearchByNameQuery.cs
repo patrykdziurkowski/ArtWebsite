@@ -9,7 +9,9 @@ namespace web.Features.Search;
 // this warning is disabled since the suggestion doesn't get evaluated to SQL by EFCore
 #pragma warning disable CA1862 // Use the 'StringComparison' method overloads to perform case-insensitive string comparisons
 
-public class SearchByNameQuery(ApplicationDbContext dbContext)
+public class SearchByNameQuery(
+        ApplicationDbContext dbContext,
+        IConfiguration configuration)
 {
         private const int ELEMENTS_TO_LOAD_PER_CATEGORY = 5;
 
@@ -34,6 +36,7 @@ public class SearchByNameQuery(ApplicationDbContext dbContext)
                         .ToListAsync();
 
                 List<Reviewer> reviewersTask = await dbContext.Reviewers
+                        .Where(r => r.Name != configuration.GetValue<string>("ROOT_USERNAME"))
                         .Where(t => t.Name.ToLower().Contains(nameLowerCase))
                         .OrderBy(t => EF.Functions.Like(t.Name.ToLower(), $"{nameLowerCase}%") ? 0 : 1)
                         .ThenBy(t => t.Name.Length)

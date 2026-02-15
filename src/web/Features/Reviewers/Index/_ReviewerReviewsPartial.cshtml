@@ -75,7 +75,12 @@
                 star.className = i < review.rating ? 'text-warning' : 'text-muted';
                 star.innerHTML = '★';
                 star.style.fontSize = '1.2rem';
-                star.classList.add('filled-star');
+                if (i < review.rating) {
+                    star.classList.add('filled-star');
+                } else {
+                    star.classList.add('empty-star');
+                }
+                
                 starsContainer.appendChild(star);
             });
             contentCol.appendChild(starsContainer);

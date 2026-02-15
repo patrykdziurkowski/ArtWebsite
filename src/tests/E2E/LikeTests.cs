@@ -31,7 +31,8 @@ public class LikeTests(WebDriverInitializer initializer, SharedPerTestClass shar
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
                 Wait.Until(d => d.FindElements(By.CssSelector("#likesList > div")).Count >= 1);
-                ReadOnlyCollection<IWebElement> images = Wait.Until(d => d.FindElements(By.CssSelector("#likesList img")));
+                Wait.Until(d => d.FindElements(By.CssSelector("#likesList img")).Count == 1);
+                ReadOnlyCollection<IWebElement> images = Driver.FindElements(By.CssSelector("#likesList img"));
                 images.Should().HaveCount(1);
 
                 string srcOnReviewerProfile = images.Single().GetDomAttribute("src");

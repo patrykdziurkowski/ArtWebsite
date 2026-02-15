@@ -3,7 +3,9 @@ using web.Data;
 
 namespace web.Features.Leaderboard.Reviewer;
 
-public class ReviewerLeaderboardQuery(ApplicationDbContext dbContext)
+public class ReviewerLeaderboardQuery(
+        ApplicationDbContext dbContext,
+        IConfiguration configuration)
 {
         public async Task<List<LeaderboardDto>> ExecuteAsync(int offset, int amount, TimeSpan? timeSpan = null)
         {
@@ -12,6 +14,7 @@ public class ReviewerLeaderboardQuery(ApplicationDbContext dbContext)
                         : DateTimeOffset.MinValue;
 
                 return await dbContext.Reviewers
+                        .Where(r => r.Name != configuration.GetValue<string>("ROOT_USERNAME"))
                         .Select(r => new LeaderboardDto
                         {
                                 UserId = r.UserId,

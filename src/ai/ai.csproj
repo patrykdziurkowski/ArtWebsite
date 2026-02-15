@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="models\resnet50-v2-7.onnx">
+    <None Include="models\vgg16-12-qdq.onnx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="models\synset.txt">
