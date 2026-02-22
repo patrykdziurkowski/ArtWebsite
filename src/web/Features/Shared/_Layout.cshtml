@@ -34,7 +34,7 @@
                         <partial name="../Authentication/_LoginPartial" />
                     </div>
 
-                    @if (User.Identity?.IsAuthenticated == true)
+                    @if (User.Identity?.IsAuthenticated == true && (Context.Items["IsSuspended"] as bool?) == false)
                     {
                         <div style="flex: 1;" class="d-flex justify-content-center">
                             <partial name="../Search/_SearchBarPartial" />

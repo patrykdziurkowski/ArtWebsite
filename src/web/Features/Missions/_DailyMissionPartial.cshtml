@@ -1,4 +1,4 @@
-@if (User.Identity?.IsAuthenticated == true)
+@if (User.Identity?.IsAuthenticated == true && (Context.Items["IsSuspended"] as bool?) == false)
 {
      <div id="daily-quest-card" class="card text-white bg-success mb-3 loading-gradient mx-auto" style="max-width: 18rem;">
         <div class="card-header">Daily mission:</div>
@@ -50,3 +50,4 @@
         });
     </script>
 }
+
