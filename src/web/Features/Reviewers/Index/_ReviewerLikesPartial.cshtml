@@ -14,76 +14,91 @@
 </div>
 
 <script>
-    let likesOffset = 0;
-    const likesPerPage = 10;
+    document.addEventListener('DOMContentLoaded', async () => {
+        let likesOffset = 0;
+        const likesPerPage = 10;
 
-    async function loadLikes() {
-        const list = document.querySelector('#likesList');
-        const loadMore = document.querySelector('#loadMoreLikes');
-        const response = await fetch(`/api/reviewer/@Model.Id/likes?offset=${likesOffset}`);
-        const data = await response.json();
-        
-        if (likesOffset == 0) {
-            list.innerHTML = '';
+        async function loadLikes() {
+            const list = document.querySelector('#likesList');
+            const loadMore = document.querySelector('#loadMoreLikes');
+            const response = await fetch(`/api/reviewer/@Model.Id/likes?offset=${likesOffset}`);
+            const data = await response.json();
+            
+            if (likesOffset == 0) {
+                list.innerHTML = '';
+            }
+            
+            if (likesOffset == 0 && data.length === 0) {
+                list.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-heart fs-1 d-block mb-2"></i>No likes found.</div>';
+            }
+            
+            if (data.length < likesPerPage) {
+                loadMore.style.display = 'none';
+            } else {
+                loadMore.style.display = 'block';
+            }
+            
+            data.forEach(like => {
+                const col = document.createElement('div');
+                col.className = 'col-12';
+                
+                const likeCard = document.createElement('div');
+                likeCard.className = 'card border-0 shadow-sm art-piece-card cursor-pointer hover-lift';
+                likeCard.dataset.artPieceId = like.artPieceId.value;
+                likeCard.dataset.reviewId = like.reviewId.value;
+                
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body p-2';
+                
+                const row = document.createElement('div');
+                row.className = 'row g-2 align-items-center';
+                
+                const imgCol = document.createElement('div');
+                imgCol.className = 'col-auto';
+                const img = document.createElement('img');
+                img.src = like.imagePath;
+                img.className = 'rounded';
+                img.style.cssText = 'width: 80px; height: 80px; object-fit: cover;';
+                imgCol.appendChild(img);
+                
+                const spacerCol = document.createElement('div');
+                spacerCol.className = 'col';
+                
+                const dateCol = document.createElement('div');
+                dateCol.className = 'col-auto text-end';
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'text-muted small d-flex align-items-center gap-2';
+                dateDiv.innerHTML = `<span>${new Date(like.date).toLocaleString()}</span><i class="bi bi-heart-fill text-danger fs-5"></i>`;
+                dateCol.appendChild(dateDiv);
+                
+                row.appendChild(imgCol);
+                row.appendChild(spacerCol);
+                row.appendChild(dateCol);
+                cardBody.appendChild(row);
+                likeCard.appendChild(cardBody);
+                col.appendChild(likeCard);
+                list.appendChild(col);
+            });
+            
+            likesOffset += likesPerPage;
         }
-        
-        if (likesOffset == 0 && data.length === 0) {
-            list.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-heart fs-1 d-block mb-2"></i>No likes found.</div>';
-        }
-        
-        if (data.length < likesPerPage) {
-            loadMore.style.display = 'none';
-        } else {
-            loadMore.style.display = 'block';
-        }
-        
-        data.forEach(like => {
-            const col = document.createElement('div');
-            col.className = 'col-12';
-            
-            const likeCard = document.createElement('div');
-            likeCard.className = 'card border-0 shadow-sm art-piece-card cursor-pointer hover-lift';
-            likeCard.dataset.artPieceId = like.artPieceId.value;
-            
-            const cardBody = document.createElement('div');
-            cardBody.className = 'card-body p-2';
-            
-            const row = document.createElement('div');
-            row.className = 'row g-2 align-items-center';
-            
-            const imgCol = document.createElement('div');
-            imgCol.className = 'col-auto';
-            const img = document.createElement('img');
-            img.src = like.imagePath;
-            img.className = 'rounded';
-            img.style.cssText = 'width: 80px; height: 80px; object-fit: cover;';
-            imgCol.appendChild(img);
-            
-            const spacerCol = document.createElement('div');
-            spacerCol.className = 'col';
-            
-            const dateCol = document.createElement('div');
-            dateCol.className = 'col-auto text-end';
-            const dateDiv = document.createElement('div');
-            dateDiv.className = 'text-muted small d-flex align-items-center gap-2';
-            dateDiv.innerHTML = `<span>${new Date(like.date).toLocaleString()}</span><i class="bi bi-heart-fill text-danger fs-5"></i>`;
-            dateCol.appendChild(dateDiv);
-            
-            row.appendChild(imgCol);
-            row.appendChild(spacerCol);
-            row.appendChild(dateCol);
-            cardBody.appendChild(row);
-            likeCard.appendChild(cardBody);
-            col.appendChild(likeCard);
-            list.appendChild(col);
+
+        document.querySelector('#loadMoreLikes').addEventListener('click', function () {
+            loadLikes();
         });
-        
-        likesOffset += likesPerPage;
-    }
 
-    document.querySelector('#loadMoreLikes').addEventListener('click', function () {
         loadLikes();
-    });
 
-    loadLikes();
+        await artPieceDetailsReady;
+        artPieceDetails.onReviewDeleted.push((reviewId) => {
+            const card = document.querySelector(`#likesList .art-piece-card[data-review-id="${reviewId}"]`);
+            if (card) {
+                card.remove();
+                if (document.querySelectorAll('#likesList .art-piece-card').length === 0) {
+                    document.querySelector('#likesList').innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-heart fs-1 d-block mb-2"></i>No likes found.</div>';
+                }
+                artPieceDetails.hide();
+            }
+        });
+    });
 </script>

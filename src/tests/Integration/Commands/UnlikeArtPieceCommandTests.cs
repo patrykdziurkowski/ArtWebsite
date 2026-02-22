@@ -28,6 +28,7 @@ public class UnlikeArtPieceCommandTests : DatabaseTest
                         ArtPieceId = artPieceToLike,
                         ReviewerId = reviewer.Id,
                         Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(16)),
+                        ReviewId = DbContext.Reviews.First().Id,
                 });
                 await DbContext.SaveChangesAsync();
 
@@ -61,6 +62,7 @@ public class UnlikeArtPieceCommandTests : DatabaseTest
                         ArtPieceId = artPieceToLike,
                         ReviewerId = reviewer.Id,
                         Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(14)),
+                        ReviewId = DbContext.Reviews.First().Id,
                 });
                 await DbContext.SaveChangesAsync();
 

@@ -92,7 +92,7 @@ public class ReviewerRepositoryTests : DatabaseTest
                 Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
                 await _likeArtPieceCommand.ExecuteAsync(reviewer.UserId, artPieceIds.First());
 
-                reviewer.LikeArtPiece(artPieceIds.Last());
+                reviewer.LikeArtPiece(artPieceIds.Last(), DbContext.Reviews.First().Id);
                 await _reviewerRepository.SaveAsync(reviewer);
 
                 Reviewer? queriedReviewer = await _reviewerRepository.GetByIdAsync(reviewer.Id);

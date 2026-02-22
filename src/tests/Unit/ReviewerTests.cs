@@ -2,6 +2,7 @@ using FluentAssertions;
 using FluentResults;
 using web.Features.ArtPieces;
 using web.Features.Reviewers;
+using web.Features.Reviews;
 
 namespace tests.Unit;
 
@@ -15,15 +16,15 @@ public class ReviewerTests
                         Name = "SomeReviewer1",
                         UserId = Guid.NewGuid(),
                         ActiveLikes = [
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                         ],
                 };
                 ArtPieceId artPieceToLikeId = new();
 
-                Result likeResult = reviewer.LikeArtPiece(artPieceToLikeId);
+                Result likeResult = reviewer.LikeArtPiece(artPieceToLikeId, new ReviewId());
 
                 likeResult.IsSuccess.Should().BeTrue();
                 reviewer.ActiveLikes.Should().HaveCount(5);
@@ -41,16 +42,16 @@ public class ReviewerTests
                         Name = "SomeReviewer1",
                         UserId = Guid.NewGuid(),
                         ActiveLikes = [
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                         ],
                 };
                 ArtPieceId artPieceToLikeId = new();
 
-                Result likeResult = reviewer.LikeArtPiece(artPieceToLikeId);
+                Result likeResult = reviewer.LikeArtPiece(artPieceToLikeId, new ReviewId());
 
                 likeResult.IsSuccess.Should().BeFalse();
                 reviewer.ActiveLikes.Should().HaveCount(5);
@@ -68,11 +69,11 @@ public class ReviewerTests
                         Name = "SomeReviewer1",
                         UserId = Guid.NewGuid(),
                         ActiveLikes = [
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                         ],
                 };
 
@@ -92,11 +93,11 @@ public class ReviewerTests
                         Name = "SomeReviewer1",
                         UserId = Guid.NewGuid(),
                         ActiveLikes = [
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId() , ExpirationDate = DateTimeOffset.MinValue},
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId(), ReviewId = new ReviewId(), ExpirationDate = DateTimeOffset.MinValue},
                         ],
                 };
 
@@ -116,11 +117,11 @@ public class ReviewerTests
                         Name = "SomeReviewer1",
                         UserId = Guid.NewGuid(),
                         ActiveLikes = [
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId() , Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(16))},
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId(), ReviewId = new ReviewId() , Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(16))},
                         ],
                 };
 
@@ -140,11 +141,11 @@ public class ReviewerTests
                         Name = "SomeReviewer1",
                         UserId = Guid.NewGuid(),
                         ActiveLikes = [
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId() },
-                                new Like { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId() , Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(14))},
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
+                                new Like { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId(), ReviewId = new ReviewId(), Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(14))},
                         ],
                         Points = 15,
                         ActivePoints = 15,

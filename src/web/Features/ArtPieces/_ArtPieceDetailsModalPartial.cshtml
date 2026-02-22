@@ -88,6 +88,7 @@
         onHidden = [];
         onBack = [];
         onDeleted = [];
+        onReviewDeleted = [];
 
         constructor() {
             this.artPieceDetailsModal = new bootstrap.Modal(document.querySelector('#artPieceDetailsModal'));
@@ -274,9 +275,8 @@
                 });
 
                 if (response.ok) {
-                    event.target.closest('div.d-flex.mb-3').remove();
-                    document.querySelector(`.art-piece-card[data-art-piece-id="${this.artPieceId}"]`).remove();
-                    this.hide();
+                    document.querySelector(`.details-review[data-review-id="${reviewId}"]`).remove();
+                    this.onReviewDeleted.forEach(handler => handler(reviewId));
                 } else {
                     alert('Failed to delete the review.');
                 }

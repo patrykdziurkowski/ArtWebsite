@@ -14,98 +14,112 @@
 </div>
 
 <script>
-    let reviewsOffset = 0;
-    const reviewsPerPage = 10;
+    document.addEventListener('DOMContentLoaded', async () => {
+        let reviewsOffset = 0;
+        const reviewsPerPage = 10;
 
-    async function loadReviews() {
-        const list = document.querySelector('#reviewsList');
-        const loadMore = document.querySelector('#loadMoreReviews');
-        const response = await fetch(`/api/reviewers/@Model.Id/reviews?offset=${reviewsOffset}`);
-        const data = await response.json();
-        
-        if (reviewsOffset == 0) {
-            list.innerHTML = '';
-        }
-        
-        if (reviewsOffset == 0 && data.length === 0) {
-            list.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No reviews found.</div>';
-        }
-        
-        if (data.length < reviewsPerPage) {
-            loadMore.style.display = 'none';
-        } else {
-            loadMore.style.display = 'block';
-        }
-        
-        data.forEach(review => {
-            const col = document.createElement('div');
-            col.className = 'col-12';
+        async function loadReviews() {
+            const list = document.querySelector('#reviewsList');
+            const loadMore = document.querySelector('#loadMoreReviews');
+            const response = await fetch(`/api/reviewers/@Model.Id/reviews?offset=${reviewsOffset}`);
+            const data = await response.json();
             
-            const reviewCard = document.createElement('div');
-            reviewCard.className = 'card border-0 shadow-sm art-piece-card cursor-pointer hover-lift';
-            reviewCard.dataset.artPieceId = review.artPieceId.value;
-            reviewCard.dataset.reviewId = review.reviewId.value;
-            
-            const cardBody = document.createElement('div');
-            cardBody.className = 'card-body';
-            
-            const row = document.createElement('div');
-            row.className = 'row g-3';
-            
-            const imgCol = document.createElement('div');
-            imgCol.className = 'col-md-3';
-            const img = document.createElement('img');
-            img.src = review.imagePath;
-            img.className = 'img-fluid rounded';
-            img.style.cssText = 'width: 100%; height: 150px; object-fit: cover;';
-            imgCol.appendChild(img);
-            
-            const contentCol = document.createElement('div');
-            contentCol.className = 'col-md-9';
-            
-            const dateDiv = document.createElement('div');
-            dateDiv.className = 'text-muted small mb-2';
-            dateDiv.innerHTML = `<i class="bi bi-clock"></i> ${new Date(review.date).toLocaleString()}`;
-            contentCol.appendChild(dateDiv);
-            
-            const starsContainer = document.createElement('div');
-            starsContainer.className = 'mb-2';
-            Array.from({ length: 5 }, (_, i) => {
-                const star = document.createElement('span');
-                star.className = i < review.rating ? 'text-warning' : 'text-muted';
-                star.innerHTML = '★';
-                star.style.fontSize = '1.2rem';
-                if (i < review.rating) {
-                    star.classList.add('filled-star');
-                } else {
-                    star.classList.add('empty-star');
-                }
-                
-                starsContainer.appendChild(star);
-            });
-            contentCol.appendChild(starsContainer);
-            
-            if (review.comment) {
-                const commentP = document.createElement('p');
-                commentP.className = 'mb-0 text-secondary';
-                commentP.textContent = review.comment;
-                contentCol.appendChild(commentP);
+            if (reviewsOffset == 0) {
+                list.innerHTML = '';
             }
             
-            row.appendChild(imgCol);
-            row.appendChild(contentCol);
-            cardBody.appendChild(row);
-            reviewCard.appendChild(cardBody);
-            col.appendChild(reviewCard);
-            list.appendChild(col);
+            if (reviewsOffset == 0 && data.length === 0) {
+                list.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No reviews found.</div>';
+            }
+            
+            if (data.length < reviewsPerPage) {
+                loadMore.style.display = 'none';
+            } else {
+                loadMore.style.display = 'block';
+            }
+            
+            data.forEach(review => {
+                const col = document.createElement('div');
+                col.className = 'col-12';
+                
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'card border-0 shadow-sm art-piece-card cursor-pointer hover-lift';
+                reviewCard.dataset.artPieceId = review.artPieceId.value;
+                reviewCard.dataset.reviewId = review.reviewId.value;
+                
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body';
+                
+                const row = document.createElement('div');
+                row.className = 'row g-3';
+                
+                const imgCol = document.createElement('div');
+                imgCol.className = 'col-md-3';
+                const img = document.createElement('img');
+                img.src = review.imagePath;
+                img.className = 'img-fluid rounded';
+                img.style.cssText = 'width: 100%; height: 150px; object-fit: cover;';
+                imgCol.appendChild(img);
+                
+                const contentCol = document.createElement('div');
+                contentCol.className = 'col-md-9';
+                
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'text-muted small mb-2';
+                dateDiv.innerHTML = `<i class="bi bi-clock"></i> ${new Date(review.date).toLocaleString()}`;
+                contentCol.appendChild(dateDiv);
+                
+                const starsContainer = document.createElement('div');
+                starsContainer.className = 'mb-2';
+                Array.from({ length: 5 }, (_, i) => {
+                    const star = document.createElement('span');
+                    star.className = i < review.rating ? 'text-warning' : 'text-muted';
+                    star.innerHTML = '★';
+                    star.style.fontSize = '1.2rem';
+                    if (i < review.rating) {
+                        star.classList.add('filled-star');
+                    } else {
+                        star.classList.add('empty-star');
+                    }
+                    
+                    starsContainer.appendChild(star);
+                });
+                contentCol.appendChild(starsContainer);
+                
+                if (review.comment) {
+                    const commentP = document.createElement('p');
+                    commentP.className = 'mb-0 text-secondary';
+                    commentP.textContent = review.comment;
+                    contentCol.appendChild(commentP);
+                }
+                
+                row.appendChild(imgCol);
+                row.appendChild(contentCol);
+                cardBody.appendChild(row);
+                reviewCard.appendChild(cardBody);
+                col.appendChild(reviewCard);
+                list.appendChild(col);
+            });
+            
+            reviewsOffset += reviewsPerPage;
+        }
+
+        document.querySelector('#loadMoreReviews').addEventListener('click', function () {
+            loadReviews();
         });
-        
-        reviewsOffset += reviewsPerPage;
-    }
 
-    document.querySelector('#loadMoreReviews').addEventListener('click', function () {
         loadReviews();
-    });
 
-loadReviews();
+        await artPieceDetailsReady;
+        artPieceDetails.onReviewDeleted.push((reviewId) => {
+            const card = document.querySelector(`#reviewsList .art-piece-card[data-review-id="${reviewId}"]`);
+            if (card) {
+                card.remove();
+                if (document.querySelectorAll('#reviewsList .art-piece-card').length === 0) {
+                    document.querySelector('#reviewsList').innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No reviews found.</div>';
+                }
+                artPieceDetails.hide();
+            }
+        });
+    });
 </script>

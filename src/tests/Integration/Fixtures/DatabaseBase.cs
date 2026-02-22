@@ -221,10 +221,20 @@ public abstract class DatabaseTest : IDisposable
                 });
                 foreach (ArtPieceId artPieceId in artPiecesToLike)
                 {
+                        Review review = new()
+                        {
+                                Comment = "Some long comment here. Some long comment here. Some long comment here. Some long comment here. Some long comment here. Some long comment here. ",
+                                Rating = new Rating(5),
+                                ArtPieceId = artPieceId,
+                                ReviewerId = reviewerId,
+                        };
+                        await DbContext.AddAsync(review);
+
                         Like like = new()
                         {
                                 ArtPieceId = artPieceId,
                                 ReviewerId = reviewerId,
+                                ReviewId = review.Id,
                         };
                         await DbContext.AddAsync(like);
                 }

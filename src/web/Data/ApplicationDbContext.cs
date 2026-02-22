@@ -216,13 +216,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                         .OnDelete(DeleteBehavior.Cascade);
                 like.HasOne<Review>()
                         .WithOne()
-                        .HasForeignKey<Like>("ReviewId")
+                        .HasForeignKey<Like>(l => l.ReviewId)
                         .OnDelete(DeleteBehavior.Restrict);
 
                 var tag = builder.Entity<Tag>();
                 tag.HasKey(t => t.Id);
                 tag.Property(t => t.Id)
-                       .HasConversion(id => id.Value, guid => new TagId { Value = guid });
+                        .HasConversion(id => id.Value, guid => new TagId { Value = guid });
                 tag.Property(t => t.Name)
                         .IsRequired();
                 tag.HasMany<ArtPieceTag>()

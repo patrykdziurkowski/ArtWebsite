@@ -4,6 +4,7 @@ using web.Data;
 using web.Features.ArtPieces;
 using web.Features.Leaderboard.Reviewer;
 using web.Features.Missions;
+using web.Features.Reviews;
 
 namespace web.Features.Reviewers.LikeArtPiece;
 
@@ -25,11 +26,9 @@ public class LikeArtPieceCommand(
                         return Result.Fail("No reviewer profile found for this user id.");
                 }
 
-                if (await dbContext.Reviews.AnyAsync(
-                        r => r.ArtPieceId == artPieceId && r.ReviewerId == reviewer.Id) == false)
-                {
-                        throw new InvalidOperationException("Could not like an unreviewed art piece.");
-                }
+                Review reviewForThisArtPiece = await dbContext.Reviews.FirstOrDefaultAsync(
+                        r => r.ArtPieceId == artPieceId && r.ReviewerId == reviewer.Id)
+                        ?? throw new InvalidOperationException("Could not like an unreviewed art piece.");;
 
                 if (await dbContext.Likes.AnyAsync(
                         l => l.ArtPieceId == artPieceId && l.ReviewerId == reviewer.Id))
@@ -37,7 +36,7 @@ public class LikeArtPieceCommand(
                         throw new InvalidOperationException("Could not like an art piece that was already liked by this reviewer.");
                 }
 
-                Result likeResult = reviewer.LikeArtPiece(artPieceId);
+                Result likeResult = reviewer.LikeArtPiece(artPieceId, reviewForThisArtPiece.Id);
                 if (likeResult.IsFailed)
                 {
                         return likeResult;

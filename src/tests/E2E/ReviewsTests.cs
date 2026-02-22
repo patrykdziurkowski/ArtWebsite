@@ -221,7 +221,7 @@ public class ReviewsTests(WebDriverInitializer initializer, SharedPerTestClass s
         }
 
         [Fact, Order(11)]
-        public async Task SkippingArtPieces_LoadsADifferentOne()
+        public void SkippingArtPieces_LoadsADifferentOne()
         {
                 ResetTestContext();
                 CreateUserWithArtistProfile();

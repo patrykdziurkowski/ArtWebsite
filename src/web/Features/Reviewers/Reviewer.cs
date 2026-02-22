@@ -1,6 +1,7 @@
 using FluentResults;
 using web.Features.ArtPieces;
 using web.Features.Reviewers.UnlikeArtPiece;
+using web.Features.Reviews;
 using web.Features.Shared.domain;
 
 namespace web.Features.Reviewers;
@@ -32,7 +33,7 @@ public class Reviewer : AggregateRoot
                 }
         }
 
-        public Result LikeArtPiece(ArtPieceId artPieceId)
+        public Result LikeArtPiece(ArtPieceId artPieceId, ReviewId reviewId)
         {
                 if (_activeLikes.Count >= DAILY_LIKE_LIMIT)
                 {
@@ -45,6 +46,7 @@ public class Reviewer : AggregateRoot
                 _activeLikes.Add(new Like
                 {
                         ArtPieceId = artPieceId,
+                        ReviewId = reviewId,
                         ReviewerId = Id,
                 });
                 return Result.Ok();
