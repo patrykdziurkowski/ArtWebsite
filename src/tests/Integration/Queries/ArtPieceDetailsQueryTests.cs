@@ -19,7 +19,7 @@ public class ArtPieceDetailsQueryTests : DatabaseTest
         {
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
 
-                ArtPieceDto artPieceDto = await _query.ExecuteAsync(artPieceIds.First());
+                ArtPieceDto artPieceDto = await _query.ExecuteAsync(DbContext.Users.Single().Id, artPieceIds.First());
 
                 artPieceDto.ArtistName.Should().Be("ArtistName");
                 artPieceDto.ImagePath.Should().NotBeNullOrEmpty();

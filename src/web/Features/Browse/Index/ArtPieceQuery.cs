@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Artists;
@@ -9,10 +10,13 @@ namespace web.Features.Browse.Index;
 public class ArtPieceQuery(
         ArtPieceRepository artPieceRepository,
         ArtistRepository artistRepository,
-        ApplicationDbContext dbContext)
+        ApplicationDbContext dbContext,
+        UserManager<IdentityUser<Guid>> userManager)
 {
         public async Task<ArtPieceDto?> ExecuteAsync(Guid currentUserId)
         {
+                IdentityUser<Guid> currentUser = dbContext.Users.First(u => u.Id == currentUserId);
+
                 ArtPieceServed? artPieceServed = await dbContext.ArtPiecesServed
                         .FirstOrDefaultAsync(aps => aps.UserId == currentUserId);
 
@@ -41,6 +45,8 @@ public class ArtPieceQuery(
                                         ArtistId = lastArtPiece.ArtistId,
                                         ArtistName = artist.Name,
                                         ArtistUserId = artist.UserId,
+                                        CurrentUserIsOwner = artist.UserId == currentUserId,
+                                        CurrentUserIsAdmin = await userManager.IsInRoleAsync(currentUser, Constants.ADMIN_ROLE),
                                 };
                         }
                 }
@@ -71,6 +77,8 @@ public class ArtPieceQuery(
                         ProfilePicturePath = artistOwner.ProfilePicturePath,
                         ArtistName = artistOwner.Name,
                         ArtistUserId = artistOwner.UserId,
+                        CurrentUserIsOwner = artistOwner.UserId == currentUserId,
+                        CurrentUserIsAdmin = await userManager.IsInRoleAsync(currentUser, Constants.ADMIN_ROLE),
                 };
         }
 

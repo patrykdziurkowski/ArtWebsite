@@ -22,10 +22,10 @@
                                         <h5 id="art-piece-details-artist" class="mb-0 text-primary cursor-pointer"></h5>
                                         <small class="text-muted">Artist</small>
                                     </div>
-                                    <button id="edit-art-piece-button" class="btn btn-link text-secondary p-0">
+                                    <button id="edit-art-piece-button" class="btn btn-link text-secondary p-0 d-none">
                                         <i class="bi bi-pencil-square fs-5"></i>
                                     </button>
-                                    <button id="delete-art-piece-button" class="btn btn-link text-danger p-0 ms-2">
+                                    <button id="delete-art-piece-button" class="btn btn-link text-danger p-0 ms-2 d-none">
                                         <i class="bi bi-trash fs-5"></i>
                                     </button>
                                 </div>
@@ -105,6 +105,16 @@
                     document.getElementById('art-piece-details-artist-profile-picture').setAttribute("src", data.profilePicturePath);
                     document.getElementById('art-piece-details-artist').textContent = data.artistName;
                     document.getElementById('art-piece-details-artist').dataset.userId = data.artistUserId;
+
+                    const editButton = document.querySelector('#edit-art-piece-button');
+                    const deleteButton = document.querySelector('#delete-art-piece-button');
+                    if (data.currentUserIsOwner || data.currentUserIsAdmin) {
+                        editButton.classList.remove('d-none');
+                        deleteButton.classList.remove('d-none');
+                    } else {
+                        editButton.classList.add('d-none');
+                        deleteButton.classList.add('d-none');
+                    }
                     
                     const likeCountEl = document.getElementById('art-piece-details-like-count');
                     likeCountEl.innerHTML = `<i class="bi bi-heart-fill"></i> <span id="art-piece-details-like-number">${data.likeCount}</span>`;

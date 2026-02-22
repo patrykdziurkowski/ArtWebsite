@@ -52,7 +52,8 @@ public class ArtPieceApiController(
         [HttpGet("/api/artpieces/{artPieceId}")]
         public async Task<IActionResult> GetArtPiece(Guid artPieceId)
         {
-                ArtPieceDto artPiece = await artPieceDetailsQuery.ExecuteAsync(new ArtPieceId() { Value = artPieceId });
+                ArtPieceDto artPiece = await artPieceDetailsQuery.ExecuteAsync(
+                        GetUserId(), new ArtPieceId() { Value = artPieceId });
                 return Ok(artPiece);
         }
 

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using web.Data;
 using web.Features.Artists;
@@ -9,11 +10,14 @@ namespace web.Features.Browse.ByTag;
 public class ArtPieceByTagQuery(
         ArtPieceRepository artPieceRepository,
         ArtistRepository artistRepository,
-        ApplicationDbContext dbContext)
+        ApplicationDbContext dbContext,
+        UserManager<IdentityUser<Guid>> userManager)
 {
 
         public async Task<ArtPieceDto?> ExecuteAsync(Guid currentUserId, string tagName)
         {
+                IdentityUser<Guid> currentUser = dbContext.Users.First(u => u.Id == currentUserId);
+                
                 ReviewerId reviewerId = await dbContext.Reviewers
                         .Where(r => r.UserId == currentUserId)
                         .Select(r => r.Id)
@@ -49,6 +53,8 @@ public class ArtPieceByTagQuery(
                         ReviewCount = artPiece.ReviewCount,
                         ArtistName = artistOwner.Name,
                         ArtistUserId = artistOwner.UserId,
+                        CurrentUserIsOwner = artistOwner.UserId == currentUserId,
+                        CurrentUserIsAdmin = await userManager.IsInRoleAsync(currentUser, Constants.ADMIN_ROLE),
                 };
         }
 

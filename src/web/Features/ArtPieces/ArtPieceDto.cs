@@ -15,4 +15,6 @@ public record ArtPieceDto
         public required Guid ArtistUserId { get; init; }
         public required string ArtistName { get; init; }
         public required string ProfilePicturePath { get; init; }
+        public required bool CurrentUserIsOwner { get; init; }
+        public required bool CurrentUserIsAdmin { get; init; }
 }
