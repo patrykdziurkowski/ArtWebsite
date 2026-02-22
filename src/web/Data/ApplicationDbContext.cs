@@ -150,7 +150,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 boost.HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(b => b.ArtPieceId)
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                 var artPiece = builder.Entity<ArtPiece>();
                 artPiece.HasKey(a => a.Id);

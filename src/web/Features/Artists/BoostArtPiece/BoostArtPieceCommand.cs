@@ -43,7 +43,7 @@ public class BoostArtPieceCommand(
                 await missionManager.RecordProgressAsync(MissionType.BoostArt, currentUserId, now.Value);
 
                 ArtPiece boostedArtPiece = await dbContext.ArtPieces
-                        .SingleAsync(ap => ap.Id == currentArtist.ActiveBoost!.ArtPieceId);
+                        .SingleAsync(ap => ap.Id == currentArtist.ActiveBoost!.ArtPieceId!);
                 Boost boost = currentArtist.ActiveBoost!;
                 BoostDto boostDto = new()
                 {

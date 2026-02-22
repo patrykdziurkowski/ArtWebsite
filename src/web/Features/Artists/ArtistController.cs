@@ -48,7 +48,7 @@ public class ArtistController(
                         ProfilePicturePath = artist.ProfilePicturePath,
                         BoostedArtPiecePath = boostedArtPiece?.ImagePath,
                         BoostExpirationDate = artist.ActiveBoost?.ExpirationDate,
-                        BoostedArtPieceId = artist.ActiveBoost?.ArtPieceId.Value,
+                        BoostedArtPieceId = artist.ActiveBoost?.ArtPieceId?.Value,
                 };
                 return View(model);
         }
@@ -80,7 +80,7 @@ public class ArtistController(
                         ProfilePicturePath = artist.ProfilePicturePath,
                         BoostedArtPiecePath = boostedArtPiece?.ImagePath,
                         BoostExpirationDate = artist.ActiveBoost?.ExpirationDate,
-                        BoostedArtPieceId = artist.ActiveBoost?.ArtPieceId.Value,
+                        BoostedArtPieceId = artist.ActiveBoost?.ArtPieceId?.Value,
                 };
 
                 await missionManager.RecordProgressAsync(

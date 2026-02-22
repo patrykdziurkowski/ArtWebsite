@@ -90,8 +90,7 @@ public class ArtPieceRepository(ApplicationDbContext dbContext)
                                                 // Art piece boosted: 150 extra points if boosted, 0 otherwise
                                                 + (
                                                         (artPieceAndItsArtist.artist.ActiveBoost != null
-                                                        && artPieceAndItsArtist.artist.ActiveBoost.ArtPieceId
-                                                                == artPieceAndItsArtist.ap.Id)
+                                                                && artPieceAndItsArtist.ap.Id.Equals(artPieceAndItsArtist.artist.ActiveBoost.ArtPieceId))
                                                         ? 150
                                                         : 0
                                                 )

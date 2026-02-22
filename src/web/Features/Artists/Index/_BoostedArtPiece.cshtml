@@ -2,7 +2,7 @@
 @model ArtistProfileModel
 
 <div id="boosted-art-piece-container" class="mb-4">
-    @if (Model.BoostExpirationDate is not null)
+    @if (Model.BoostedArtPieceId is not null)
     {
         <div class="boost-wrapper" data-art-piece-id="@Model.BoostedArtPieceId">
             <div class="boost-ribbon">
