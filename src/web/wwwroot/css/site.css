@@ -131,13 +131,14 @@ header {
         position: sticky;
         top: 0;
         width: 100vw;
+        height: 60px;
         z-index: 1000;
 }
 
 .sidebar-fixed {
         position: sticky;
-        top: 56px;
-        height: calc(100vh - 56px);
+        top: 60px;
+        height: calc(100vh - 60px);
 }
 
 .site-name-highlight {

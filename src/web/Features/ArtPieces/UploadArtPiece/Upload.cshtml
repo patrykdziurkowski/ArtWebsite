@@ -1,77 +1,74 @@
 ﻿@using web.Features.ArtPieces.UploadArtPiece
 @model UploadArtPieceModel
 
-<div>
-    <div class="row justify-content-center h-100">
+<div class="row justify-content-center">
 
-        <div id="step-1" class="card border-0 shadow-sm mb-4">
-            <div class="card-body text-center p-5">
-                <h1 class="mb-4">Upload some art!</h1>
-                <div class="upload-area">
-                    <i class="bi bi-cloud-upload fs-1 text-primary mb-3 d-block"></i>
-                    <label for="image-input" class="btn btn-primary btn-lg">
-                        <i class="bi bi-image"></i> Choose an Image
-                    </label>
-                    <input type="file" class="d-none" id="image-input" name="Image" accept="image/*" />
-                    <p class="text-muted mt-3 mb-0">Select an image to get started</p>
-                </div>
+    <div id="step-1" class="card border-0 shadow-sm">
+        <div class="card-body text-center p-5">
+            <h1 class="mb-4">Upload some art!</h1>
+            <div class="upload-area">
+                <i class="bi bi-cloud-upload fs-1 text-primary mb-3 d-block"></i>
+                <label for="image-input" class="btn btn-primary btn-lg">
+                    <i class="bi bi-image"></i> Choose an Image
+                </label>
+                <input type="file" class="d-none" id="image-input" name="Image" accept="image/*" />
+                <p class="text-muted mt-3 mb-0">Select an image to get started</p>
             </div>
         </div>
+    </div>
 
-        <div id="step-2" style="display: none;" class="h-100">
-            <div class="card border-0 shadow-sm h-100 d-flex">
+    <div id="step-2" style="display: none;" class="h-100">
+        <div class="card border-0 shadow-sm h-100 d-flex">
+            <div class="card-header border-0 p-3">
+                <h4 class="mb-0">Edit Your Art</h4>
+            </div>
+            <div class="card-body p-0 flex-grow-1" style="overflow:hidden;">
+                <div id="image-editor-container"></div>
+            </div>
+            <div class="card-footer border-0 p-3 text-end">
+                <button id="apply-edits" class="btn btn-primary btn-lg">
+                    Apply Edits & Continue <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="step-3" style="display: none;">
+        <form id="upload-form" asp-action="Upload" method="POST" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            
+            <div class="card border-0 shadow-sm">
                 <div class="card-header border-0 p-3">
-                    <h4 class="mb-0">Edit Your Art</h4>
+                    <h4 class="mb-0">Almost Done!</h4>
                 </div>
-                <div class="card-body p-0 flex-grow-1" style="overflow:hidden;">
-                    <div id="image-editor-container"></div>
+                <div class="form-group d-none">
+                    <label for="Image">Choose an image</label>
+                    <input type="file" class="form-control" id="image-input-hidden" name="Image" accept="image/*" asp-for="Image" />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label for="description-input" class="form-label fw-semibold">
+                            Add a Description
+                        </label>
+                        <textarea class="form-control form-control-lg" 
+                                    id="description-input" 
+                                    name="Description" 
+                                    rows="4"
+                                    placeholder="Tell us about your art piece..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
                 </div>
                 <div class="card-footer border-0 p-3 text-end">
-                    <button id="apply-edits" class="btn btn-primary btn-lg">
-                        Apply Edits & Continue <i class="bi bi-arrow-right"></i>
+                    <button type="button" id="back-to-edit" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left"></i> Back to Edit
+                    </button>
+                    <button id="upload-submit" type="submit" class="btn btn-primary btn-lg">
+                        <i class="bi bi-upload"></i> Upload Art
                     </button>
                 </div>
             </div>
-        </div>
-
-        <div id="step-3" style="display: none;">
-            <form id="upload-form" asp-action="Upload" method="POST" enctype="multipart/form-data">
-                @Html.AntiForgeryToken()
-                
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header border-0 p-3">
-                        <h4 class="mb-0">Almost Done!</h4>
-                    </div>
-                    <div class="form-group d-none">
-                        <label for="Image">Choose an image</label>
-                        <input type="file" class="form-control" id="image-input-hidden" name="Image" accept="image/*" asp-for="Image" />
-                        <span asp-validation-for="Image" class="text-danger"></span>
-                    </div>
-                    <div class="card-body p-4">
-                        <div class="mb-4">
-                            <label for="description-input" class="form-label fw-semibold">
-                                Add a Description
-                            </label>
-                            <textarea class="form-control form-control-lg" 
-                                        id="description-input" 
-                                        name="Description" 
-                                        rows="4"
-                                        placeholder="Tell us about your art piece..."></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="card-footer border-0 p-3 text-end">
-                        <button type="button" id="back-to-edit" class="btn btn-outline-secondary me-2">
-                            <i class="bi bi-arrow-left"></i> Back to Edit
-                        </button>
-                        <button id="upload-submit" type="submit" class="btn btn-primary btn-lg">
-                            <i class="bi bi-upload"></i> Upload Art
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
+        </form>
     </div>
 </div>
 
@@ -96,8 +93,13 @@
         display: none;
     }
 
+    .row main {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
     main > div {
-        height: calc(100vh - 56px);
+        height: calc(100vh - 60px);
     }
 
     #canvas-holder {
