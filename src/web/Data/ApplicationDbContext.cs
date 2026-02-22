@@ -182,7 +182,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 review.HasOne<ArtPiece>()
                         .WithMany()
                         .HasForeignKey(r => r.ArtPieceId)
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                 var reviewer = builder.Entity<Reviewer>();
                 reviewer.HasKey(r => r.Id);
@@ -217,7 +217,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 like.HasOne<Review>()
                         .WithOne()
                         .HasForeignKey<Like>("ReviewId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                 var tag = builder.Entity<Tag>();
                 tag.HasKey(t => t.Id);
