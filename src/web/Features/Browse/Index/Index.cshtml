@@ -385,6 +385,10 @@
                     return;
                 }
 
+                reviewForm.reset();
+                document.querySelectorAll('input[name="Rating"]').forEach(radio => radio.checked = false);
+                document.querySelector('#reviewForm *[name="comment"] + span').innerText = '';
+
                 currentPoints += 10;
                 document.querySelector('#skip-button-points').innerText = currentPoints;
                 document.querySelector('#skipButton').disabled = currentPoints < 5;
