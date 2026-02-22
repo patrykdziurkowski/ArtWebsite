@@ -55,7 +55,8 @@ public class EditReviewerProfileCommandTests : DatabaseTest
                 Result result = await _command.ExecuteAsync(currentUserId, reviewerId1, "newName");
 
                 result.IsSuccess.Should().BeTrue();
-                (await DbContext.Reviewers.SingleAsync(r => r.Id == reviewerId1)).Name.Should().Be("newName");
+                DbContext.Reviewers.Single().Name.Should().Be("newName");
+                DbContext.Users.Single().UserName.Should().Be("newName");
         }
 
         [Fact]

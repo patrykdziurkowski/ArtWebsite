@@ -35,6 +35,14 @@ public class EditReviewerProfileCommand(
                         }
                 }
 
+                if (reviewer.Name != newName)
+                {
+                        IdentityUser<Guid> reviewerUser = await userManager.FindByIdAsync(reviewer.UserId.ToString())
+                                ?? throw new InvalidOperationException("No user found for reviewer with the given id.");
+                        reviewer.Name = newName;
+                        reviewerUser.UserName = newName;
+                }
+
                 if (newProfilePicture is not null)
                 {
                         string absoluteWebImagePath = await imageManager.UpdateReviewerProfilePictureAsync(
@@ -44,7 +52,6 @@ public class EditReviewerProfileCommand(
                         reviewer.ProfilePicturePath = absoluteWebImagePath;
                 }
 
-                reviewer.Name = newName;
                 await dbContext.SaveChangesAsync();
                 return Result.Ok();
         }
