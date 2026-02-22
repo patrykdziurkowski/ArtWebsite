@@ -24,7 +24,10 @@
                     @if (@Model.IsOwner || @Model.IsAdmin)
                     {
                         <div class="d-flex gap-2">
-                            <a asp-controller="ArtPiece" asp-action="Upload" class="btn btn-primary">Upload!</a>
+                            @if (@Model.IsOwner)
+                            {
+                                <a asp-controller="ArtPiece" asp-action="Upload" class="btn btn-primary">Upload!</a>
+                            }
                             <button id="deactivate-artist-popup" class="btn btn-danger" data-bs-toggle="modal"
                                     data-bs-target="#deleteModal">Delete Profile</button>
                         </div>

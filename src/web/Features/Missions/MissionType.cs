@@ -29,8 +29,8 @@ public static class MissionTypeHelpers
                 { MissionType.BoostArt, "Boost your art pieces" },
                 { MissionType.ReviewArt, "Review people's art pieces" },
                 { MissionType.LikeArt, "Like art pieces" },
-                { MissionType.VisitArtistsProfiles, "Visit unique artist's profiles" },
-                { MissionType.VisitReviewersProfiles, "Visit unique reviewer's profiles" },
+                { MissionType.VisitArtistsProfiles, "Visit unique artists' profiles" },
+                { MissionType.VisitReviewersProfiles, "Visit unique reviewers' profiles" },
         };
 
         public static MissionRecipient GetRecipient(this MissionType missionType) => missionType switch
