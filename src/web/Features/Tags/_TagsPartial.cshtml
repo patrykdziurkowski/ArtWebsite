@@ -111,6 +111,7 @@
                 const tagElement = [... document.querySelectorAll('.tag')].find(t => t.innerText === tag);
                 tagElement.classList.remove('bg-body-secondary');
                 tagElement.classList.add('bg-primary');
+                tagElement.classList.add('text-white');
             }
 
             async #setupSignalR() {

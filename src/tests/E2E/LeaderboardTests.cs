@@ -19,8 +19,7 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 artistName.Should().Be("SomeArtist");
 
                 Driver.FindElement(By.Id("btn-reviewers")).Click();
-                // includes existing admin
-                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 2)
+                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 1)
                         .Should().BeTrue();
                 Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr > td:nth-child(2)"))
                         .Any(e => e.Text == "SomeUser123")).Should().BeTrue();
@@ -55,8 +54,7 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 20)
                         .Should().BeTrue();
                 Driver.FindElement(By.Id("load-more-leaderboard")).Click();
-                // 21 users + 1 existing admin 
-                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 22)
+                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 21)
                         .Should().BeTrue();
         }
 
@@ -100,8 +98,7 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 {
                         var reviewerRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
                         var reviewerNames = reviewerRows.Select(r => r.FindElement(By.CssSelector("td:nth-child(2)")).Text).ToList();
-                        // includes 1 existing admin
-                        if (reviewerNames.Count != 3)
+                        if (reviewerNames.Count != 2)
                         {
                                 return false;
                         }

@@ -24,8 +24,8 @@ public class SearchBarTests(WebDriverInitializer initializer, SharedPerTestClass
                 var tags1 = GetTagsForArtPiece(artPieceIndex: 0);
                 var tags2 = GetTagsForArtPiece(artPieceIndex: 1);
 
-                var tagsUniqueForArtPiece1 = tags1.Except(tags2);
-                var tagsUniqueForArtPiece2 = tags2.Except(tags1);
+                List<string> tagsUniqueForArtPiece1 = [.. tags1.Except(tags2)];
+                List<string> tagsUniqueForArtPiece2 = [.. tags2.Except(tags1)];
 
                 Wait.Until(d => d.FindElement(By.ClassName("search-input"))).SendKeys(tagsUniqueForArtPiece1.First());
                 Wait.Until(d => d.FindElement(By.CssSelector(".search-results a"))).Click();
@@ -79,7 +79,7 @@ public class SearchBarTests(WebDriverInitializer initializer, SharedPerTestClass
                 artPiece.Click();
                 Wait.Until(d => d.FindElements(By.CssSelector(".tag")).Count > 0);
                 var tags = Driver.FindElements(By.CssSelector(".tag")).Select(e => e.Text).ToList();
-                Driver.FindElement(By.Id("details-back")).Click();
+                Wait.Until(d => d.FindElement(By.Id("details-back"))).Click();
                 return tags;
 
         }

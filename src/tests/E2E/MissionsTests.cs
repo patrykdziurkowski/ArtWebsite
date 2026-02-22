@@ -60,7 +60,7 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                 {
                         Driver.Navigate().Refresh();
                         return int.Parse(d.FindElement(By.Id("mission-progress")).Text) == 1;
-                }).Should().BeTrue();
+                });
         }
 
         [Fact, Order(2)]
@@ -80,7 +80,7 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                 {
                         Driver.Navigate().Refresh();
                         return d.FindElement(By.Id("mission-progress")).Text == missionType.GetMaxProgressCount().ToString();
-                }).Should().BeTrue();
+                });
 
                 int artistQuestPointValue = (missionType.GetRecipient() == MissionRecipient.Artist
                         || missionType.GetRecipient() == MissionRecipient.Both)
@@ -97,13 +97,18 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                                 .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
                                 .Select(p => int.Parse(p))
                                 .ToList();
-                        if (artistPoints.Count != 6)
-                        {
-                                return false;
-                        }
-
+                        return artistPoints.Count == 6;
+                });
+                Wait.Until(d =>
+                {
+                        var artistRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
+                        var artistPoints = artistRows
+                                .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
+                                .Select(p => int.Parse(p))
+                                .ToList();
                         return artistPoints.Any(a => a == _artistPoints + artistQuestPointValue);
-                }).Should().BeTrue();
+                });
+
                 Driver.FindElement(By.Id("btn-reviewers")).Click();
                 Wait.Until(d =>
                 {
@@ -113,14 +118,18 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                                 .Select(p => int.Parse(p))
                                 .ToList();
 
-                        // includes 1 existing admin
-                        if (reviewerPoints.Count != 7)
-                        {
-                                return false;
-                        }
+                        return reviewerPoints.Count == 6;
+                });
+                Wait.Until(d =>
+                {
+                        var reviewerRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
+                        var reviewerPoints = reviewerRows
+                                .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
+                                .Select(p => int.Parse(p))
+                                .ToList();
 
                         return reviewerPoints.Any(a => a == _reviewerPoints + reviewerQuestPointValue);
-                }).Should().BeTrue();
+                });
         }
 
         [Fact, Order(3)]
