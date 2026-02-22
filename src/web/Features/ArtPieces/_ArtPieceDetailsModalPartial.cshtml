@@ -85,56 +85,21 @@
 
 <script>
     class ArtPieceDetails {
-        onHidden = null;
-        onBack = null;
+        onHidden = [];
+        onBack = [];
+        onDeleted = [];
 
-        constructor(artPieceId) {
+        constructor() {
+            this.artPieceDetailsModal = new bootstrap.Modal(document.querySelector('#artPieceDetailsModal'));
+
             const imageViewer = ImageViewer.getInstance();
             const img = document.getElementById('artDetailsImage');
             img.addEventListener('click', () => {
                 imageViewer.open(img.src, img.alt);
             });
 
-            fetch(`/api/artpieces/${artPieceId}`)
-                .then(r => r.json())
-                .then(data => {
-                    this.imagePath = data.imagePath;
-                    this.description = data.description;
-                    document.getElementById('artDetailsImage').src = data.imagePath;
-                    document.getElementById('detailsDescription').textContent = data.description;
-                    document.getElementById('art-piece-details-artist-profile-picture').setAttribute("src", data.profilePicturePath);
-                    document.getElementById('art-piece-details-artist').textContent = data.artistName;
-                    document.getElementById('art-piece-details-artist').dataset.userId = data.artistUserId;
-
-                    const editButton = document.querySelector('#edit-art-piece-button');
-                    const deleteButton = document.querySelector('#delete-art-piece-button');
-                    if (data.currentUserIsOwner || data.currentUserIsAdmin) {
-                        editButton.classList.remove('d-none');
-                        deleteButton.classList.remove('d-none');
-                    } else {
-                        editButton.classList.add('d-none');
-                        deleteButton.classList.add('d-none');
-                    }
-                    
-                    const likeCountEl = document.getElementById('art-piece-details-like-count');
-                    likeCountEl.innerHTML = `<i class="bi bi-heart-fill"></i> <span id="art-piece-details-like-number">${data.likeCount}</span>`;
-
-                    const reviewCountEl = document.getElementById('art-piece-details-review-count');
-                    reviewCountEl.innerHTML = `<i class="bi bi-star-fill"></i> <span id="art-piece-details-review-number">${data.reviewCount}</span>`;
-                });
-
-            this.reviewsOffset = 0;
-            this.artPieceId = artPieceId;
-            this.artPieceDetailsModal = new bootstrap.Modal(document.querySelector('#artPieceDetailsModal'));
-
-            this.artPieceTags = new Tags(artPieceId, document.querySelector('#art-piece-about .art-piece-tags'));
-            this.artPieceTags.initialize();
-
-            this.#loadReviews(false);
-
             // note: this is registered here via event listener instead of using boostrap's data tags
             // because of issues when using both data-bs-dismiss alongside new bootstrap.Modal(...)
-            document.querySelector('#artPieceDetailsModal .btn-close').removeEventListener('click', () => this.hide());
             document.querySelector('#artPieceDetailsModal .btn-close').addEventListener('click', () => this.hide());
 
             document.querySelector('#edit-art-piece-button').addEventListener('click', async (e) => {
@@ -151,11 +116,11 @@
 
             document.getElementById('details-back').addEventListener('click', () => {
                 this.hide();
-                if (this.onBack !== null) this.onBack();
+                this.onBack.forEach(handler => handler());
             });
 
             this.artPieceDetailsModal._element.addEventListener('hidden.bs.modal', () => {
-                if (this.onHidden !== null) this.onHidden();
+                this.onHidden.forEach(handler => handler());
             });
 
             document.getElementById('artReviewsContainer').addEventListener('click', async (e) => {
@@ -166,7 +131,6 @@
             });
 
             const artistName = document.getElementById('art-piece-details-artist');
-            artistName.removeEventListener('click', e => this.#openUserDetails(e, artistName, true));
             artistName.addEventListener('click', e => this.#openUserDetails(e, artistName, true));
         }
 
@@ -174,7 +138,42 @@
             return this.artPieceDetailsModal._element.classList.contains('show');
         }
 
-        show() {
+        async show(artPieceId) {
+            this.artPieceId = artPieceId;
+            this.reviewsOffset = 0;
+
+            const response = await fetch(`/api/artpieces/${artPieceId}`);
+            const data = await response.json();
+
+            this.imagePath = data.imagePath;
+            this.description = data.description;
+            document.getElementById('artDetailsImage').src = data.imagePath;
+            document.getElementById('detailsDescription').textContent = data.description;
+            document.getElementById('art-piece-details-artist-profile-picture').setAttribute("src", data.profilePicturePath);
+            document.getElementById('art-piece-details-artist').textContent = data.artistName;
+            document.getElementById('art-piece-details-artist').dataset.userId = data.artistUserId;
+
+            const editButton = document.querySelector('#edit-art-piece-button');
+            const deleteButton = document.querySelector('#delete-art-piece-button');
+            if (data.currentUserIsOwner || data.currentUserIsAdmin) {
+                editButton.classList.remove('d-none');
+                deleteButton.classList.remove('d-none');
+            } else {
+                editButton.classList.add('d-none');
+                deleteButton.classList.add('d-none');
+            }
+
+            const likeCountEl = document.getElementById('art-piece-details-like-count');
+            likeCountEl.innerHTML = `<i class="bi bi-heart-fill"></i> <span id="art-piece-details-like-number">${data.likeCount}</span>`;
+
+            const reviewCountEl = document.getElementById('art-piece-details-review-count');
+            reviewCountEl.innerHTML = `<i class="bi bi-star-fill"></i> <span id="art-piece-details-review-number">${data.reviewCount}</span>`;
+
+            this.artPieceTags = new Tags(artPieceId, document.querySelector('#art-piece-about .art-piece-tags'));
+            await this.artPieceTags.initialize();
+
+            await this.#loadReviews(false);
+
             this.artPieceDetailsModal.show();
         }
 
@@ -417,6 +416,8 @@
                 if (artPieceCard) {
                     artPieceCard.remove();
                 }
+
+                this.onDeleted.forEach(handler => handler(this.artPieceId));
             } else {
                 alert('Failed to delete the art piece.');
             }

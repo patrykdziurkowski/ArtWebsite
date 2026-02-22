@@ -75,9 +75,8 @@
         let offset = 0;
         const artPiecesPerPage = 5;
 
-        let artPieceDetails = null;
         const container = document.querySelector('#artPiecesList');
-        container.addEventListener('click', (e) => {
+        container.addEventListener('click', async (e) => {
             const element = e.target;
             const artPieceElement = element.closest('.art-piece-card');
             if (!artPieceElement) return;
@@ -89,8 +88,15 @@
                 throw new Error('Expected art piece id not to be null for clicked review/like element.');
             }
 
-            const artPieceDetails = new ArtPieceDetails(artPieceId);
-            artPieceDetails.show();
+            await artPieceDetailsReady;
+            await artPieceDetails.show(artPieceId);
+        });
+
+        await artPieceDetailsReady;
+        artPieceDetails.onDeleted.push((artPieceId) => {
+            if (container.children.length === 0) {
+                container.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-image me-2"></i>No art pieces found.</div>';
+            }
         });
 
         async function fetchArtPieces() {

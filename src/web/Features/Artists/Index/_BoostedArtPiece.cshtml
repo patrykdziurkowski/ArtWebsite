@@ -21,7 +21,7 @@
                     <div class="card-body d-flex justify-content-between align-items-center">
                         <small class="boost-expiration text-muted">
                             <i class="bi bi-clock me-1"></i>
-                            Expires @Model.BoostExpirationDate.Value.ToLocalTime().ToString("MMM dd, yyyy h:mm tt")
+                            Expires @Model.BoostExpirationDate!.Value.ToLocalTime().ToString("MMM dd, yyyy h:mm tt")
                         </small>
 
                         <span class="boost-badge">
@@ -109,16 +109,23 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', async () => {
-        let artPieceDetails = null;
         const container = document.querySelector('#boosted-art-piece-container');
         const boostWrapper = container.querySelector('.boost-wrapper');
         if (boostWrapper) {
-            container.addEventListener('click', (e) => {
+            container.addEventListener('click', async (e) => {
                 const artPieceId = boostWrapper.dataset.artPieceId;
-                artPieceDetails = new ArtPieceDetails(artPieceId);
-                artPieceDetails.show();
+                await artPieceDetailsReady;
+                await artPieceDetails.show(artPieceId);
             });
         }
+
+        await artPieceDetailsReady;
+        artPieceDetails.onDeleted.push((artPieceId) => {
+            const boostWrapper = container.querySelector('.boost-wrapper');
+            if (boostWrapper && boostWrapper.dataset.artPieceId === artPieceId) {
+                boostWrapper.remove();
+            }
+        });
     });
 
     function boostArtPiece(artPieceId) {
@@ -177,9 +184,9 @@
                 `;
 
                 const wrapper = container.querySelector('.boost-wrapper');
-                wrapper.addEventListener('click', () => {
-                    const artPieceDetails = new ArtPieceDetails(boost.artPieceId.value);
-                    artPieceDetails.show();
+                wrapper.addEventListener('click', async () => {
+                    await artPieceDetailsReady;
+                    await artPieceDetails.show(boost.artPieceId.value);
                 });
 
                 document.querySelectorAll(".boost-btn").forEach(b => b.remove());

@@ -87,9 +87,25 @@
         </div>
     </div>
 
+    <script>
+        document.querySelector("#toggleSidebar").addEventListener("click", function () {
+            document.getElementById("sidebar").classList.toggle("show");
+        });
+
+        let artPieceDetails;
+        const artPieceDetailsReady = new Promise((resolve) => {
+            document.addEventListener('DOMContentLoaded', () => {
+                artPieceDetails = new ArtPieceDetails();
+                resolve(artPieceDetails);
+            });
+        });
+    </script>
+
     <partial name="../UserDetails/_UserDetailsPartial" />
 
     <partial name="../Shared/_ImageViewerPartial" />
+    
+    <partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -108,11 +124,7 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.querySelector("#toggleSidebar").addEventListener("click", function () {
-            document.getElementById("sidebar").classList.toggle("show");
-        });
-    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 

@@ -55,8 +55,6 @@
     </div>
 </div>
 
-<partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
-
 <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -126,9 +124,8 @@
             document.querySelector('#reviewerJoinDate').innerText = new Date(
                 '@Html.Raw(Model.JoinDate.ToString("o"))').toLocaleString();
 
-            let artPieceDetails = null;
             for (const container of document.querySelectorAll('#likesList, #reviewsList')) {
-                container.addEventListener('click', (e) => {
+                container.addEventListener('click', async (e) => {
                     const element = e.target;
                     const artPieceElement = element.closest('.art-piece-card');
                     if (!artPieceElement) return;
@@ -138,8 +135,8 @@
                         throw new Error('Expected art piece id not to be null for clicked review/like element.');
                     }
 
-                    const artPieceDetails = new ArtPieceDetails(artPieceId);
-                    artPieceDetails.show();
+                    await artPieceDetailsReady;
+                    await artPieceDetails.show(artPieceId);
                 });
             }
 

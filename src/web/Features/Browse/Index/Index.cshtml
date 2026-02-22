@@ -123,8 +123,6 @@
     </div>
 </div>
 
-<partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
-
 <style>
     .rating {
         font-size: 2rem;
@@ -195,7 +193,6 @@
 
             let artPieceTags = null;
             let artPieceId;
-            let artPieceDetails = null;
             let reviewTimeout = null;
             let isLiked = false;
             let currentPoints = @Model.CurrentReviewerActivePoints;
@@ -238,24 +235,24 @@
                 await loadArtPiece();
             }
 
-            function showDetails() {
+            async function showDetails() {
                 postReviewModal.hide();
-                artPieceDetails.show();
+                await artPieceDetailsReady;
+                await artPieceDetails.show(artPieceId);
             }
 
             function artPieceReviewed() {
                 reviewModal.hide();
                 postReviewModal.show();
 
-                artPieceDetails = new ArtPieceDetails(artPieceId);
-                artPieceDetails.onBack = () => {
+                artPieceDetails.onBack.push(() => {
                     postReviewModal.show();
-                };
-                artPieceDetails.onHidden = async () => {
+                });
+                artPieceDetails.onHidden.push(async () => {
                     if (!postReviewModal._element.classList.contains('show')) {
                         await loadArtPiece();
                     }
-                };
+                });
 
                 postReviewModal._element.addEventListener('hidden.bs.modal', async () => {
                     if (!artPieceDetails.isShown) {
