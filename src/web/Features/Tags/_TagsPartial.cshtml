@@ -22,25 +22,33 @@
         -webkit-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
-        scrollbar-width: none;
+    }
+
+    .tags-container-wrapper {
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
     }
 
     .tags-container-wrapper:hover {
-        scrollbar-width: thin;
+        scrollbar-color: var(--bs-secondary) transparent;
     }
 
     .tags-container-wrapper::-webkit-scrollbar {
         height: 8px;
-        opacity: 0;
+        width: 8px;
     }
 
-    .tags-container-wrapper:hover::-webkit-scrollbar {
-        opacity: 1;
+    .tags-container-wrapper::-webkit-scrollbar-track {
+        background: transparent;
     }
 
     .tags-container-wrapper::-webkit-scrollbar-thumb {
-        background: var(--bs-secondary-bg);
+        background: transparent;
         border-radius: 4px;
+    }
+
+    .tags-container-wrapper:hover::-webkit-scrollbar-thumb {
+        background: var(--bs-secondary-bg);
     }
 
     .tags-container-wrapper:active {
