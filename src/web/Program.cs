@@ -38,6 +38,7 @@ using web.Features.Search;
 using web.Features.Shared;
 using web.Features.Suspensions;
 using web.Features.Tags;
+using web.Features.Tags.UnassignTag;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
@@ -131,6 +132,7 @@ services.AddTransient<ReviewerLeaderboardQuery>();
 services.AddTransient<ArtPieceDetailsQuery>();
 services.AddTransient<TodaysMissionQuery>();
 services.AddTransient<ImageManager>();
+services.AddTransient<UnassignTagCommand>();
 services.AddTransient<ArtPieceReviewsQuery>();
 services.AddTransient<UserReviewerQuery>();
 services.AddTransient<ReviewerQuery>();

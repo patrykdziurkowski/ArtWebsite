@@ -13,7 +13,7 @@ namespace tests.Integration.Fixtures;
 public sealed class DatabaseTestContext : WebApplicationFactory<Program>, IDisposable
 {
         private const string DB_TEST_PASSWORD = "exampleP@ssword123";
-        private const string ROOT_USERNAME = "RootUser";
+        public const string ROOT_USERNAME = "RootUser";
         private const string ROOT_PASSWORD = "RootP@ss123";
         private const string ROOT_EMAIL = "root@email.com";
         private const string REVIEW_COOLDOWN_SECONDS = "10";
