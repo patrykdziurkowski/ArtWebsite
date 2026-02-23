@@ -170,7 +170,10 @@
             const reviewCountEl = document.getElementById('art-piece-details-review-count');
             reviewCountEl.innerHTML = `<i class="bi bi-star-fill"></i> <span id="art-piece-details-review-number">${data.reviewCount}</span>`;
 
-            this.artPieceTags = new Tags(artPieceId, document.querySelector('#art-piece-about .art-piece-tags'));
+            this.artPieceTags = new Tags(
+                artPieceId,
+                document.querySelector('#art-piece-about .art-piece-tags'),
+                data.currentUserIsOwner || data.currentUserIsAdmin);
             await this.artPieceTags.initialize();
 
             await this.#loadReviews(false);

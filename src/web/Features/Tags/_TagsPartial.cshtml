@@ -62,11 +62,45 @@
         cursor: pointer;
         transition: all 0.2s ease;
         flex-shrink: 0;
+        position: relative;
     }
 
-    .tag:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    .tag-remove {
+        position: absolute;
+        right: -0.25em;
+        top: -0.25em;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        cursor: pointer;
+        font-weight: bold;
+        color: var(--bs-danger);
+        background: var(--bs-body-bg);
+        border-radius: 50%;
+        width: 1em;
+        height: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5em;
+        line-height: 1;
+    }
+
+    .tag:hover .tag-remove {
+        opacity: 1;
+    }
+
+    .tag-add {
+        border: 2px dashed var(--bs-secondary);
+        background: transparent !important;
+        padding: 0.5rem 1rem;
+    }
+
+    .tag-input {
+        border: none;
+        background: transparent;
+        outline: none;
+        width: auto;
+        padding: 0;
     }
 </style>
 
@@ -77,11 +111,12 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         class Tags {
-            constructor(artPieceId, containerElement) {
+            constructor(artPieceId, containerElement, canEditTags = false) {
                 this.artPieceId = artPieceId;
                 this.containerElement = containerElement;
                 this.tagsContainer = containerElement.querySelector('.tags-container');
                 this.connection = null;
+                this.canEditTags = canEditTags;
 
                 this.tagsContainer.innerHTML = '';
             }
@@ -108,7 +143,13 @@
             }
 
             highlight(tag) {
-                const tagElement = [... document.querySelectorAll('.tag')].find(t => t.innerText === tag);
+                this.highlightedTag = tag;
+
+                const tagElement = [...document.querySelectorAll('.tag')].find(t => 
+                    [...t.childNodes]
+                        .filter(node => node.nodeType === 3)
+                        .map(node => node.textContent)
+                        .join('').trim() === tag);
                 tagElement.classList.remove('bg-body-secondary');
                 tagElement.classList.add('bg-primary');
                 tagElement.classList.add('text-white');
@@ -151,13 +192,32 @@
 
             #renderTags(tags) {
                 this.tagsContainer.innerHTML = '';
+                
                 tags.forEach(tag => {
                     const span = document.createElement('span');
                     span.classList.add('tag', 'bg-body-secondary');
                     span.textContent = tag;
+                    
+                    if (this.canEditTags) {
+                        const removeBtn = document.createElement('span');
+                        removeBtn.classList.add('tag-remove');
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.onclick = async (e) => {
+                            e.stopPropagation();
+                            await this.#deleteTag(tag);
+                        };
+                        span.appendChild(removeBtn);
+                    }
+                    
                     span.onclick = () => this.selectTag(tag);
                     this.tagsContainer.appendChild(span);
                 });
+                
+                if (this.canEditTags) {
+                    this.#renderAddTagButton();
+                }
+
+                if (this.highlightedTag) this.highlight(this.highlightedTag);
             }
 
             #setupDragScroll() {
@@ -168,6 +228,10 @@
                 let hasMoved = false;
 
                 wrapper.addEventListener('mousedown', (e) => {
+                    if (e.target.classList.contains('tag-input')) {
+                        return;
+                    }
+                    
                     isDown = true;
                     hasMoved = false;
                     startX = e.pageX - wrapper.offsetLeft;
@@ -195,6 +259,96 @@
                         e.stopPropagation();
                     }
                 }, true);
+            }
+
+            #renderAddTagButton() {
+                 if (this.tagsContainer.querySelector('.tag-add')) {
+                    return;
+                }
+
+                const addTag = document.createElement('span');
+                addTag.classList.add('tag', 'tag-add', 'bg-body-secondary');
+                addTag.innerHTML = '<i class="bi bi-plus"></i>';
+                addTag.onclick = () => this.#showTagInput(addTag);
+                this.tagsContainer.prepend(addTag);
+            }
+
+            #showTagInput(addTagElement) {
+                const input = document.createElement('span');
+                input.contentEditable = true;
+                input.classList.add('tag-input');
+                
+                addTagElement.innerHTML = '';
+                addTagElement.appendChild(input);
+                input.focus();
+                
+                const handleSubmit = async () => {
+                    const tagName = input.textContent.trim();
+                    if (tagName.length >= 2 && /^[a-zA-Z0-9]+( [a-zA-Z0-9]+)*$/.test(tagName)) {
+                        await this.#createTag(tagName);
+                    } else {
+                        alert('Tag must be 2-16 characters and contain only alphanumeric characters and spaces');
+                    }
+                };
+                
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleSubmit();
+                    }
+                    if (input.textContent.length >= 16) {
+                        e.preventDefault();
+                    }
+                });
+                
+                input.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        addTagElement.remove();
+                        this.#renderAddTagButton();
+                    }, 200);
+                });
+            }
+
+            async #createTag(tagName) {
+                try {
+                    const response = await fetch(`/api/artpieces/${this.artPieceId}/tags?tagName=${encodeURIComponent(tagName)}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        await this.#loadTags();
+                    } else {
+                        alert('Failed to create tag');
+                    }
+                } catch (error) {
+                    console.error('Error creating tag:', error);
+                    alert('Failed to create tag');
+                }
+            }
+
+            async #deleteTag(tagName) {
+                if (!confirm(`Remove tag "${tagName}"?`)) return;
+                
+                try {
+                    const response = await fetch(`/api/artpieces/${this.artPieceId}/tags/${encodeURIComponent(tagName)}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        await this.#loadTags();
+                    } else {
+                        alert('Failed to delete tag');
+                    }
+                } catch (error) {
+                    console.error('Error deleting tag:', error);
+                    alert('Failed to delete tag');
+                }
             }
 
         }
