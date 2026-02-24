@@ -23,11 +23,10 @@ public class UnlikeArtPieceCommandTests : DatabaseTest
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 ArtPieceId artPieceToLike = artPieceIds.First();
                 Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
-                DbContext.Likes.Add(new()
+                DbContext.Likes.Add(new(DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(16)))
                 {
                         ArtPieceId = artPieceToLike,
                         ReviewerId = reviewer.Id,
-                        Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(16)),
                         ReviewId = DbContext.Reviews.First().Id,
                 });
                 await DbContext.SaveChangesAsync();
@@ -57,11 +56,10 @@ public class UnlikeArtPieceCommandTests : DatabaseTest
                 List<ArtPieceId> artPieceIds = await CreateArtistUserWithArtPieces();
                 ArtPieceId artPieceToLike = artPieceIds.First();
                 Reviewer reviewer = await CreateReviewerWithReviewsForArtPieces(artPieceIds);
-                DbContext.Likes.Add(new()
+                DbContext.Likes.Add(new(DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(14)))
                 {
                         ArtPieceId = artPieceToLike,
                         ReviewerId = reviewer.Id,
-                        Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(14)),
                         ReviewId = DbContext.Reviews.First().Id,
                 });
                 await DbContext.SaveChangesAsync();

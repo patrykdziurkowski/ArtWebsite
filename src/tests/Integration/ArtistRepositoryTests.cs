@@ -54,12 +54,10 @@ public class ArtistRepositoryTests : DatabaseTest
         {
                 ArtPieceId artPieceId = (await CreateArtistUserWithArtPieces()).First();
                 Artist? artist = await _artistRepository.GetByNameAsync("ArtistName");
-                Boost boost = new()
+                Boost boost = new(DateTimeOffset.UtcNow.AddDays(-5))
                 {
                         ArtistId = artist!.Id,
                         ArtPieceId = artPieceId,
-                        Date = DateTimeOffset.UtcNow.AddDays(-5),
-                        ExpirationDate = DateTimeOffset.UtcNow.AddDays(-4),
                 };
                 DbContext.Add(boost);
                 await DbContext.SaveChangesAsync();
@@ -78,11 +76,9 @@ public class ArtistRepositoryTests : DatabaseTest
                 {
                         ArtistId = artist!.Id,
                         ArtPieceId = artPieceId,
-                        Date = DateTimeOffset.UtcNow.AddDays(-5),
-                        ExpirationDate = DateTimeOffset.UtcNow.AddDays(-4),
                 };
                 DbContext.Add(boost);
-                Boost boost2 = new()
+                Boost boost2 = new(DateTimeOffset.UtcNow.AddDays(-5))
                 {
                         ArtistId = artist!.Id,
                         ArtPieceId = artPieceId,

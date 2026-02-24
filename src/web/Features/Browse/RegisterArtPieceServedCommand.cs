@@ -20,6 +20,7 @@ public class RegisterArtPieceServedCommand(ApplicationDbContext dbContext)
                         {
                                 UserId = currentUserId,
                                 ArtPieceId = artPieceId,
+                                Date = date.Value,
                         };
                         await dbContext.AddAsync(artPieceServed);
                 }

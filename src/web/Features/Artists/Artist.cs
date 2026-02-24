@@ -22,8 +22,10 @@ public class Artist : AggregateRoot
         }
         public required Guid UserId { get; init; }
 
-        public Result BoostArtPiece(ArtPieceId artPieceId, ArtistId artPieceArtistId)
+        public Result BoostArtPiece(ArtPieceId artPieceId, ArtistId artPieceArtistId, DateTimeOffset? now = null)
         {
+                now ??= DateTimeOffset.UtcNow;
+
                 if (artPieceArtistId != Id)
                 {
                         return Result.Fail("You may not boost another artist's art piece.");
@@ -34,7 +36,7 @@ public class Artist : AggregateRoot
                         return Result.Fail("An art piece is already boosted.");
                 }
 
-                _activeBoost = new()
+                _activeBoost = new(now.Value)
                 {
                         ArtistId = Id,
                         ArtPieceId = artPieceId,

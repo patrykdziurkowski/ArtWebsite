@@ -36,6 +36,7 @@
     <Folder Include="Features/Tags/UnassignTag/" />
     <Folder Include="wwwroot/img/" />
     <Folder Include="wwwroot/js/" />
+    <Folder Include="Data/Demo" />
   </ItemGroup>
 
 </Project>

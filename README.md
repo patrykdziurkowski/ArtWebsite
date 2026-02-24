@@ -27,6 +27,7 @@ Unlike in the deployment scenario, tests are run on the host's machine and requi
 
 ### Local development
 * `SELENIUM_HEADLESS` - (optional) set this to false to have the browser window open when running Selenium tests. Useful for debugging.
+* `SEED_DEMO_DATA` - (optional) set this to true to fill the database with some sample data once the app is started for the first time. Set to false by default. The data is not seeded if the app is not in the development configuration.
 
 ### Deployment
 * `SERVER_DOMAIN` - application's domain name (i.e. example.com). Defaults to localhost for local deployment.

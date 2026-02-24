@@ -35,7 +35,7 @@ public class ReviewArtPieceCommand(
 
                 if (now.Value.Subtract(artPieceServed.Date) < reviewCooldown)
                 {
-                        throw new InvalidOperationException("Attempted to review an art piece too early!");
+                        throw new InvalidOperationException($"Attempted to review an art piece too early! Served: {artPieceServed.Date}, now: {now.Value}, cooldown: {reviewCooldown}.");
                 }
 
                 Review review = new()
@@ -44,6 +44,7 @@ public class ReviewArtPieceCommand(
                         Rating = new Rating(rating),
                         ArtPieceId = artPieceId,
                         ReviewerId = reviewer.Id,
+                        Date = now.Value,
                 };
 
                 reviewer.Points += POINTS_PER_REVIEW;
@@ -52,6 +53,7 @@ public class ReviewArtPieceCommand(
                 {
                         ReviewerId = reviewer.Id,
                         PointValue = POINTS_PER_REVIEW,
+                        DateAwarded = now.Value,
                 });
 
                 ArtPiece artPieceToReview = dbContext.ArtPieces.First(a => a.Id == artPieceId);

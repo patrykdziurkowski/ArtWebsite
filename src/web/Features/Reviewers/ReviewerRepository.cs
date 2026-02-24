@@ -22,6 +22,7 @@ public class ReviewerRepository(ApplicationDbContext dbContext)
         public async Task<Reviewer?> GetByIdAsync(ReviewerId reviewerId)
         {
                 Reviewer? reviewer = await dbContext.Reviewers
+                        .Include(r => r.ActiveLikes.Where(l => l.ExpirationDate >= DateTimeOffset.UtcNow))
                         .FirstOrDefaultAsync(reviewer => reviewer.Id == reviewerId);
                 if (reviewer is null)
                 {
@@ -31,10 +32,6 @@ public class ReviewerRepository(ApplicationDbContext dbContext)
                 reviewer.ReviewCount = dbContext.Reviews
                         .Where(r => r.ReviewerId == reviewer.Id)
                         .Count();
-                reviewer.ActiveLikes = await dbContext.Likes
-                        .Where(l => l.ExpirationDate >= DateTimeOffset.UtcNow
-                                && l.ReviewerId == reviewer.Id)
-                        .ToListAsync();
                 return reviewer;
         }
 

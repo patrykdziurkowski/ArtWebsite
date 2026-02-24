@@ -36,7 +36,7 @@ public class LikeArtPieceCommand(
                         throw new InvalidOperationException("Could not like an art piece that was already liked by this reviewer.");
                 }
 
-                Result likeResult = reviewer.LikeArtPiece(artPieceId, reviewForThisArtPiece.Id);
+                Result likeResult = reviewer.LikeArtPiece(artPieceId, reviewForThisArtPiece.Id, now);
                 if (likeResult.IsFailed)
                 {
                         return likeResult;
@@ -46,6 +46,7 @@ public class LikeArtPieceCommand(
                 {
                         ReviewerId = reviewer.Id,
                         PointValue = 15,
+                        DateAwarded = reviewer.ActiveLikes.Last().Date,
                 });
 
                 ArtPiece likedArtPiece = await dbContext.ArtPieces.FirstAsync(ap => ap.Id == artPieceId);

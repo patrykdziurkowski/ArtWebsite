@@ -26,7 +26,7 @@ public class BoostArtPieceCommand(
                         .SingleOrDefaultAsync(a => a.Id == artPieceId)
                                 ?? throw new InvalidOperationException("Such art piece doesn't exist!");
 
-                Result result = currentArtist.BoostArtPiece(artPieceId, artPiece.ArtistId);
+                Result result = currentArtist.BoostArtPiece(artPieceId, artPiece.ArtistId, now);
                 if (result.IsFailed)
                 {
                         return result;
@@ -36,6 +36,7 @@ public class BoostArtPieceCommand(
                 {
                         ArtistId = currentArtist.Id,
                         PointValue = 20,
+                        DateAwarded = currentArtist.ActiveBoost!.Date,
                 });
 
                 await artistRepository.SaveChangesAsync(currentArtist);

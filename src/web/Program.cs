@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using web;
 using web.Data;
+using web.Data.Demo;
 using web.Features.Artists;
 using web.Features.Artists.BoostArtPiece;
 using web.Features.Artists.DeactivateArtist;
@@ -57,6 +58,11 @@ string rootEmail = builder.Configuration["ROOT_EMAIL"]
         ?? throw new InvalidOperationException("Root user does not have an email set.");
 string rootPassword = builder.Configuration["ROOT_PASSWORD"]
         ?? throw new InvalidOperationException("Root user does not have a password set.");
+bool seedDemoDataParsed = bool.TryParse(builder.Configuration["SEED_DEMO_DATA"], out bool seedDataRequested);
+if (!seedDemoDataParsed)
+{
+        seedDataRequested = false;
+}
 
 services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
@@ -157,6 +163,7 @@ services.AddHostedService<ImageProcessor>();
 services.AddTransient<IMissionGenerator, MissionGenerator>();
 services.AddTransient<MissionManager>();
 
+services.AddTransient<DemoDataSeeder>();
 services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
 
 var app = builder.Build();
@@ -178,7 +185,14 @@ else
 using (IServiceScope scope = app.Services.CreateScope())
 {
         await CreateRolesIfNotPresentAsync(scope);
-        await CreateRootUserIfNotPresentAsync(rootUserName, rootPassword, rootEmail, scope);
+        bool rootUserCreated = await CreateRootUserIfNotPresentAsync(rootUserName, rootPassword, rootEmail, scope);
+        bool firstTimeStartup = rootUserCreated;
+
+        if (firstTimeStartup && app.Environment.IsDevelopment() && seedDataRequested)
+        {
+                DemoDataSeeder demoDataSeeder = scope.ServiceProvider.GetRequiredService<DemoDataSeeder>();
+                await demoDataSeeder.ExecuteAsync();
+        }
 }
 
 app.UseStaticFiles();
@@ -220,7 +234,7 @@ static async Task CreateRolesIfNotPresentAsync(IServiceScope scope)
         }
 }
 
-static async Task CreateRootUserIfNotPresentAsync(string rootUserName, string rootPassword, string rootEmail, IServiceScope scope)
+static async Task<bool> CreateRootUserIfNotPresentAsync(string rootUserName, string rootPassword, string rootEmail, IServiceScope scope)
 {
         UserManager<IdentityUser<Guid>> userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser<Guid>>>();
         ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -250,6 +264,12 @@ static async Task CreateRootUserIfNotPresentAsync(string rootUserName, string ro
                 {
                         throw new InvalidOperationException("Unable to add the root user to the administrator role: " + string.Join(',', roleResult.Errors.Select(e => e.Description)));
                 }
+
+                return true;
+        }
+        else
+        {
+                return false;
         }
 }
 

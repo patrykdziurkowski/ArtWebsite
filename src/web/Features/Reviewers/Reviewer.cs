@@ -33,8 +33,10 @@ public class Reviewer : AggregateRoot
                 }
         }
 
-        public Result LikeArtPiece(ArtPieceId artPieceId, ReviewId reviewId)
+        public Result LikeArtPiece(ArtPieceId artPieceId, ReviewId reviewId, DateTimeOffset? now = null)
         {
+                now ??= DateTimeOffset.UtcNow;
+
                 if (_activeLikes.Count >= DAILY_LIKE_LIMIT)
                 {
                         return Result.Fail("Cannot add another like. The limit has been reached.");
@@ -43,11 +45,11 @@ public class Reviewer : AggregateRoot
                 Points += 15;
                 ActivePoints += 15;
 
-                _activeLikes.Add(new Like
+                _activeLikes.Add(new Like(now)
                 {
+                        ReviewerId = Id,
                         ArtPieceId = artPieceId,
                         ReviewId = reviewId,
-                        ReviewerId = Id,
                 });
                 return Result.Ok();
         }

@@ -35,6 +35,7 @@ public class UploadArtPieceCommand(
                         Description = description,
                         ImagePath = absoluteFileWebPath,
                         ArtistId = artist.Id,
+                        UploadDate = now.Value,
                 };
 
                 artist.Points += POINTS_PER_UPLOAD;
@@ -42,6 +43,7 @@ public class UploadArtPieceCommand(
                 {
                         ArtistId = artist.Id,
                         PointValue = POINTS_PER_UPLOAD,
+                        DateAwarded = now.Value,
                 });
 
                 await dbContext.ArtPieces.AddAsync(artPiece);

@@ -97,7 +97,7 @@ public class ReviewerTests
                                 new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                                 new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                                 new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
-                                new Like { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId(), ReviewId = new ReviewId(), ExpirationDate = DateTimeOffset.MinValue},
+                                new Like(date: DateTimeOffset.MinValue) { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                         ],
                 };
 
@@ -121,7 +121,7 @@ public class ReviewerTests
                                 new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                                 new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                                 new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
-                                new Like { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId(), ReviewId = new ReviewId() , Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(16))},
+                                new Like(date: DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(16))) { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                         ],
                 };
 
@@ -145,7 +145,7 @@ public class ReviewerTests
                                 new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                                 new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                                 new Like { ArtPieceId = new ArtPieceId(), ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
-                                new Like { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId(), ReviewId = new ReviewId(), Date = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(14))},
+                                new Like(date: DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(14))) { ArtPieceId = artPieceToUnlike, ReviewerId = new ReviewerId(), ReviewId = new ReviewId() },
                         ],
                         Points = 15,
                         ActivePoints = 15,
