@@ -62,7 +62,7 @@
             </div>
             <div class="modal-footer border-0 justify-content-center gap-2 pt-0">
                 <button id="likeArtPiece" class="btn btn-outline-danger">
-                    <i class="bi bi-heart"></i> Like
+                    <i class="bi bi-heart"></i> Like @Model.ArtPiecesLikedToday/5
                 </button>
                 <button id="nextArtPiece" class="btn btn-primary">
                     <i class="bi bi-arrow-right"></i> Next
@@ -193,6 +193,7 @@
             const params = new URLSearchParams(window.location.search);
             const tagParameter = params.get('tag');
 
+            let artPiecesLikedToday = @Model.ArtPiecesLikedToday;
             let artPieceTags = null;
             let artPieceId;
             let reviewTimeout = null;
@@ -211,6 +212,10 @@
 
             const toggleDescriptionBtn = document.getElementById('toggleDescription');
             const descriptionOverlay = document.getElementById('descriptionOverlay');
+
+            if (artPiecesLikedToday === 5) {
+                likeButton.disabled = true;
+            }
 
             toggleDescriptionBtn.addEventListener('click', () => {
                 descriptionOverlay.classList.toggle('d-none');
@@ -340,12 +345,15 @@
                     });
 
                     if (!response.ok) {
-                        console.error('Failed to unlike the art piece', response.statusText);
+                        console.error('Failed to unlike the art piece', response);
                         return;
                     }
 
-                    likeButton.innerHTML = '<i class="bi bi-heart"></i> Like';
+                    likeButton.innerHTML = `<i class="bi bi-heart"></i> Like ${--artPiecesLikedToday}/5`;
                     isLiked = false;
+                    if (artPiecesLikedToday === 5) {
+                        likeButton.disabled = true;
+                    }
                 } else {
                     const response = await fetch(`/api/artpieces/${artPieceId}/like`, {
                         method: 'POST',
@@ -355,11 +363,11 @@
                     });
 
                     if (!response.ok) {
-                        console.error('Failed to like the art piece', response.statusText);
+                        console.error('Failed to like the art piece', response);
                         return;
                     }
 
-                    likeButton.innerHTML = '<i class="bi bi-heart-fill"></i> Unlike';
+                    likeButton.innerHTML = `<i class="bi bi-heart-fill"></i> Unlike ${++artPiecesLikedToday}/5`;
                     isLiked = true;
                 }
             }
@@ -390,6 +398,8 @@
                 reviewForm.reset();
                 document.querySelectorAll('input[name="Rating"]').forEach(radio => radio.checked = false);
                 document.querySelector('#reviewForm *[name="comment"] + span').innerText = '';
+                likeButton.innerHTML = `<i class="bi bi-heart"></i> Like ${artPiecesLikedToday}/5`;
+                isLiked = false;
 
                 currentPoints += 10;
                 document.querySelector('#skip-button-points').innerText = currentPoints;

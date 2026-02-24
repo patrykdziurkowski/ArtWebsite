@@ -88,6 +88,18 @@
     </div>
 
     <script>
+        const csrfToken = '@csrfToken';
+        const originalFetch = window.fetch;
+        window.fetch = (url, options = {}) => {
+            return originalFetch(url, {
+                ...options,
+                headers: {
+                    ...options.headers,
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            });
+        };
+
         document.querySelector("#toggleSidebar").addEventListener("click", function () {
             document.getElementById("sidebar").classList.toggle("show");
         });
@@ -106,21 +118,6 @@
     <partial name="../Shared/_ImageViewerPartial" />
     
     <partial name="../ArtPieces/_ArtPieceDetailsModalPartial" />
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const originalFetch = window.fetch;
-            window.fetch = (url, options = {}) => {
-                return originalFetch(url, {
-                    ...options,
-                    headers: {
-                        ...options.headers,
-                        'X-CSRF-TOKEN': '@csrfToken'
-                    }
-                });
-            };
-        });
-    </script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

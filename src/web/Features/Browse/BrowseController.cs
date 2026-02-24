@@ -1,25 +1,21 @@
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using web.Data;
 using web.Features.Reviewers;
 
 namespace web.Features.Browse;
 
 [Authorize]
-public class BrowseController(ApplicationDbContext dbContext) : Controller
+public class BrowseController(ReviewerRepository reviewerRepository) : Controller
 {
         public async Task<ActionResult> Index()
         {
-                int currentReviewerActivePoints = await dbContext.Reviewers
-                        .Where(r => r.UserId == GetUserId())
-                        .Select(r => r.ActivePoints)
-                        .FirstAsync();
+                Reviewer? currentReviewer = await reviewerRepository.GetByIdAsync(GetUserId())
+                        ?? throw new InvalidOperationException("Could not find a reviewer profile for this user.");
                 return View(new BrowseModel()
                 {
-                        CurrentReviewerActivePoints = currentReviewerActivePoints
+                        ArtPiecesLikedToday = currentReviewer.ActiveLikes.Count(),
+                        CurrentReviewerActivePoints = currentReviewer.ActivePoints,
                 });
         }
 
