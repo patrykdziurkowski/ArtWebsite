@@ -150,6 +150,25 @@ header {
         color: var(--bs-primary);
 }
 
+#sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#sidebar-backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+
 @media (min-width: 1200px) {    
     .d-xl-block.sidebar-fixed {
         width: 25%;
@@ -168,7 +187,7 @@ header {
         }
 }
 
-#sidebar {
+#sidebar > nav {
         height: 100%;
 }
 
@@ -220,6 +239,16 @@ header {
 @media (max-width: 1140px) {
         #sidebar {
                 transform: translateX(-200%);
+                position: fixed;
+                width: 50%;
+                height: 100%;
+                left: 0;
+                top: 0;
+                z-index: 100;
+        }
+
+        #sidebar > nav > div:first-child {
+                margin-top: 60px;
         }
 
         #sidebar.show {
@@ -227,8 +256,7 @@ header {
         }
 
         #toggleSidebar {
-                top: 50px;
-                right: 50px;
+                margin-right: 1em;
         }
 }
 

@@ -20,18 +20,20 @@
 
 <body>
     <div class="d-flex flex-column">
-        <header class="bg-body">
-            <div class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow">
+        <header class="bg-body border-bottom d-flex align-items-center">
+            <div class="navbar navbar-expand-sm navbar-toggleable-sm box-shadow w-100">
                 <div class="container-fluid d-flex align-items-center">
                     <div class="d-flex align-items-center" style="flex: 1;">
-                        <button class="btn btn-primary d-md-none position-fixed" id="toggleSidebar">☰</button>
+                        <button class="btn btn-outline-secondary d-md-none" id="toggleSidebar">☰</button>
                         <a class="navbar-brand" asp-controller="Home" asp-action="Index">criti<span class="site-name-highlight">cue</span></a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                             data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false"
                             aria-label="Toggle navigation">
                             <span class="navbar-toggler-icon"></span>
                         </button>
-                        <partial name="../Authentication/_LoginPartial" />
+                        <div class="d-none d-md-flex">
+                            <partial name="../Authentication/_LoginPartial" />
+                        </div>
                     </div>
 
                     @if (User.Identity?.IsAuthenticated == true && (Context.Items["IsSuspended"] as bool?) == false)
@@ -50,42 +52,53 @@
 
         <div class="container">
             <div class="row" style="min-height: calc(100vh - 60px);">
-                <div class="col-lg-3 bg-body-secondary sidebar-fixed">
-                    <nav class="d-flex flex-column justify-content-between p-3" id="sidebar">
-                        <ul class="nav nav-pills flex-column">
-                            @if (User.Identity?.IsAuthenticated == true)
-                            {
-                                <li class="nav-item">
-                                    <a asp-controller="Home" asp-action="Index" class="nav-link">Home</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a asp-controller="Browse" asp-action="Index" class="nav-link">Browse</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a asp-controller="Reviewer" asp-action="Index" class="nav-link">Reviewer</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a asp-controller="Artist" asp-action="Index" class="nav-link">Artist</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a asp-controller="Leaderboard" asp-action="Index" class="nav-link">Leaderboard</a>
-                                </li>
-                            }
-                        </ul>
+                <div id="sidebar" class="col-lg-3 bg-body-secondary sidebar-fixed">
+                    <nav class="d-flex flex-column justify-content-between p-3">
+                        <div>
+                            <div class="d-flex d-md-none">
+                                <partial name="../Authentication/_LoginPartial" />
+                            </div>
+                            <hr class="d-block d-md-none">
+                            <div class="d-block d-md-none">
+                                <partial name="../Missions/_DailyMissionPartial" />    
+                            </div>
+                            <ul class="nav nav-pills flex-column">
+                                @if (User.Identity?.IsAuthenticated == true)
+                                {
+                                    <li class="nav-item">
+                                        <a asp-controller="Home" asp-action="Index" class="nav-link">Home</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Browse" asp-action="Index" class="nav-link">Browse</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Reviewer" asp-action="Index" class="nav-link">Reviewer</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Artist" asp-action="Index" class="nav-link">Artist</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a asp-controller="Leaderboard" asp-action="Index" class="nav-link">Leaderboard</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
                         <div class="border-top text-muted">&copy; 2026 - criticue</div>
                     </nav>
                 </div>
 
-                <main role="main" class="px-3 py-2 col-lg-9 col-xl-6">
+                <main role="main" class="p-3 col-lg-9 col-xl-6">
                     @RenderBody()
                 </main>
 
-                <div class="col-3 bg-body-secondary sidebar-fixed p-4">
+                <div class="d-none d-md-block col-3 bg-body-secondary sidebar-fixed p-4">
                     <partial name="../Missions/_DailyMissionPartial" />
                 </div>
             </div>
         </div>
     </div>
+
+    <div id="sidebar-backdrop"></div>
 
     <script>
         const csrfToken = '@csrfToken';
@@ -102,6 +115,12 @@
 
         document.querySelector("#toggleSidebar").addEventListener("click", function () {
             document.getElementById("sidebar").classList.toggle("show");
+            document.getElementById("sidebar-backdrop").classList.toggle("show");
+        });
+
+        document.getElementById("sidebar-backdrop").addEventListener("click", function () {
+            document.getElementById("sidebar").classList.remove("show");
+            this.classList.remove("show");
         });
 
         let artPieceDetails;

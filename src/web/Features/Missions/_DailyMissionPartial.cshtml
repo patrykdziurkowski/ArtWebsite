@@ -1,60 +1,58 @@
 @{
     int hoursLeft = (int)Math.Ceiling((DateTimeOffset.UtcNow.Date.AddDays(1) - DateTimeOffset.UtcNow).TotalHours);
 }
-
 @if (User.Identity?.IsAuthenticated == true && (Context.Items["IsSuspended"] as bool?) == false)
 {
-     <div id="daily-quest-card" class="card text-white bg-success mb-3 loading-gradient mx-auto" style="max-width: 18rem;">
-        <div class="card-header">Today's mission:</div>
-        <div class="card-body">
-            <h5 id="mission-title" class="card-title">Loading...</h5>
-        </div>
-        <div class="card-footer">
-            <h6 class="small mb-0" style="opacity:0.5;">Expires in @hoursLeft @(hoursLeft == 1 ? "hour" : "hours")</h6>
-        </div>
+<div class="daily-quest-card card text-white bg-success mb-3 loading-gradient mx-auto" style="max-width: 18rem;">
+    <div class="card-header">Today's mission:</div>
+    <div class="card-body">
+        <h5 class="mission-title card-title">Loading...</h5>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const response = await fetch('/api/mission');
-                if (!response.ok) {
-                    throw new Error('Network response was not OK.');
-                }
-                const dto = await response.json();
-
-                const missionTitle = document.getElementById('mission-title');
-                missionTitle.textContent = '';
-
-                const currentProgressSpan = document.createElement('span');
-                currentProgressSpan.id = 'mission-progress';
-                currentProgressSpan.textContent = dto.currentProgress;
-                missionTitle.appendChild(currentProgressSpan);
-
-                missionTitle.appendChild(document.createTextNode('/'));
-
-                const maxProgressSpan = document.createElement('span');
-                maxProgressSpan.id = 'mission-max-progress';
-                maxProgressSpan.textContent = dto.maxProgress;
-                missionTitle.appendChild(maxProgressSpan);
-
-                missionTitle.appendChild(document.createTextNode(' '));
-
-                const descriptionSpan = document.createElement('span');
-                descriptionSpan.id = 'mission-description';
-                descriptionSpan.textContent = dto.description;
-                missionTitle.appendChild(descriptionSpan);
-                
-                missionTitle.style.textDecoration = (dto.currentProgress == dto.maxProgress)
-                    ? 'line-through'
-                    : '';
-            } catch (error) {
-                console.error('Error fetching the mission:', error);
-                document.getElementById('mission-title').innerText = 'Failed to load mission';
+    <div class="card-footer">
+        <h6 class="small mb-0" style="opacity:0.5;">Expires in @hoursLeft @(hoursLeft == 1 ? "hour" : "hours")</h6>
+    </div>
+</div>
+<script>
+    (async () => {
+        const card = document.currentScript.previousElementSibling;
+        
+        try {
+            const response = await fetch('/api/mission');
+            if (!response.ok) {
+                throw new Error('Network response was not OK.');
             }
-
-            document.querySelector('#daily-quest-card').classList.remove('loading-gradient');
-        });
-    </script>
+            const dto = await response.json();
+            const missionTitle = card.querySelector('.mission-title');
+            missionTitle.textContent = '';
+            
+            const currentProgressSpan = document.createElement('span');
+            currentProgressSpan.className = 'mission-progress';
+            currentProgressSpan.textContent = dto.currentProgress;
+            missionTitle.appendChild(currentProgressSpan);
+            
+            missionTitle.appendChild(document.createTextNode('/'));
+            
+            const maxProgressSpan = document.createElement('span');
+            maxProgressSpan.className = 'mission-max-progress';
+            maxProgressSpan.textContent = dto.maxProgress;
+            missionTitle.appendChild(maxProgressSpan);
+            
+            missionTitle.appendChild(document.createTextNode(' '));
+            
+            const descriptionSpan = document.createElement('span');
+            descriptionSpan.className = 'mission-description';
+            descriptionSpan.textContent = dto.description;
+            missionTitle.appendChild(descriptionSpan);
+            
+            missionTitle.style.textDecoration = (dto.currentProgress == dto.maxProgress)
+                ? 'line-through'
+                : '';
+        } catch (error) {
+            console.error('Error fetching the mission:', error);
+            card.querySelector('.mission-title').innerText = 'Failed to load mission';
+        }
+        
+        card.classList.remove('loading-gradient');
+    })();
+</script>
 }
-

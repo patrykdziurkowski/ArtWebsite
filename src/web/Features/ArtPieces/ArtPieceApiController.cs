@@ -30,16 +30,10 @@ public class ArtPieceApiController(
         public async Task<IActionResult> GetNextArtPiece([FromQuery] string? tag)
         {
                 Guid currentUserId = GetUserId();
-                ArtPieceDto? artPiece;
-                if (tag is null)
-                {
-                        artPiece = await artPieceQuery.ExecuteAsync(currentUserId);
-                        await registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPiece?.Id);
-                }
-                else
-                {
-                        artPiece = await artPiecesByTagQuery.ExecuteAsync(currentUserId, tag);
-                }
+                ArtPieceDto? artPiece = (tag is not null)
+                        ? await artPiecesByTagQuery.ExecuteAsync(currentUserId, tag)
+                        : await artPieceQuery.ExecuteAsync(currentUserId);
+                await registerArtPieceServedCommand.ExecuteAsync(currentUserId, artPiece?.Id);
 
                 if (artPiece is null)
                 {
