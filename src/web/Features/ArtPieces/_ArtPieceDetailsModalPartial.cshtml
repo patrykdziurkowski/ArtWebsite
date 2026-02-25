@@ -530,6 +530,16 @@
                 container.appendChild(reviewCard);
             });
 
+            if (reviews.length === 0 && this.reviewsOffset === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'text-center py-5 text-muted';
+                emptyState.innerHTML = `
+                    <i class="bi bi-chat-left-dots fs-1 mb-3 d-block"></i>
+                    <p class="mb-0">No reviews yet. Be the first to share your thoughts!</p>
+                `;
+                container.appendChild(emptyState);
+            }
+
             if (reviews.length > 0) this.reviewsOffset += reviews.length;
 
             const loadMoreButton = document.getElementById('details-load-more-reviews');

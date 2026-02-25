@@ -11,8 +11,11 @@
                 <label for="image-input" class="btn btn-primary btn-lg">
                     <i class="bi bi-image"></i> Choose an Image
                 </label>
+                <button type="button" id="blank-canvas-btn" class="btn btn-outline-secondary btn-lg ms-2">
+                    <i class="bi bi-file-earmark-plus"></i> New
+                </button>
                 <input type="file" class="d-none" id="image-input" name="Image" accept="image/*" />
-                <p class="text-muted mt-3 mb-0">Select an image to get started</p>
+                <p class="text-muted mt-3 mb-0">Select an image or start with a blank canvas</p>
             </div>
         </div>
     </div>
@@ -332,6 +335,22 @@
                     reader.readAsDataURL(file);
                 }
             };
+
+            document.getElementById('blank-canvas-btn').onclick = () => {
+                const canvas = imgEditor.canvas;
+                
+                document.querySelector('#input-height').value = 720;
+                $(document.querySelector('#input-height')).change();
+                document.querySelector('#input-width').value = 1280;
+                $(document.querySelector('#input-width')).change();
+
+                canvas.backgroundColor = 'white';
+                canvas.renderAll();
+
+                validImageLoaded = true;
+                step1.style.display = 'none';
+                step2.style.display = 'block';
+            };
             
             document.getElementById('apply-edits').onclick = () => {
                 step2.style.display = 'none';
@@ -348,9 +367,9 @@
 
                 const fileInput = document.querySelector('#image-input');
                 const file = fileInput.files[0];
-                if (!validImageLoaded || !file || !file.type.startsWith('image/')) {
-                    // send it immediately to be rejected by server side validation
-                    e.target.submit();
+                
+                if (!validImageLoaded) {
+                    alert('Please upload an image or create a blank canvas first');
                     return;
                 }
 
