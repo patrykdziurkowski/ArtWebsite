@@ -16,9 +16,9 @@ namespace web.Features.Authentication;
 public class ForgotPasswordModel : PageModel
 {
         private readonly UserManager<IdentityUser<Guid>> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSender<IdentityUser<Guid>> _emailSender;
 
-        public ForgotPasswordModel(UserManager<IdentityUser<Guid>> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(UserManager<IdentityUser<Guid>> userManager, IEmailSender<IdentityUser<Guid>> emailSender)
         {
                 _userManager = userManager;
                 _emailSender = emailSender;
@@ -67,10 +67,7 @@ public class ForgotPasswordModel : PageModel
                             values: new { area = "", code },
                             protocol: Request.Scheme);
 
-                        await _emailSender.SendEmailAsync(
-                            Input.Email,
-                            "Reset Password",
-                            $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                        await _emailSender.SendPasswordResetLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
 
                         return RedirectToPage("./ForgotPasswordConfirmation");
                 }

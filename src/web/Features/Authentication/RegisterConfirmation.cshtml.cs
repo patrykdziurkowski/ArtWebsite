@@ -5,7 +5,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
@@ -16,9 +15,9 @@ namespace web.Features.Authentication;
 public class RegisterConfirmationModel : PageModel
 {
         private readonly UserManager<IdentityUser<Guid>> _userManager;
-        private readonly IEmailSender _sender;
+        private readonly IEmailSender<IdentityUser<Guid>> _sender;
 
-        public RegisterConfirmationModel(UserManager<IdentityUser<Guid>> userManager, IEmailSender sender)
+        public RegisterConfirmationModel(UserManager<IdentityUser<Guid>> userManager, IEmailSender<IdentityUser<Guid>> sender)
         {
                 _userManager = userManager;
                 _sender = sender;
@@ -57,8 +56,9 @@ public class RegisterConfirmationModel : PageModel
                 }
 
                 Email = email;
-                // Once you add a real email sender, you should remove this code that lets you confirm the account
-                DisplayConfirmAccountLink = true;
+
+                // Display a manual confirmation link if no actual email sender is setup
+                DisplayConfirmAccountLink = _sender is NoOpEmailSender;
                 if (DisplayConfirmAccountLink)
                 {
                         var userId = await _userManager.GetUserIdAsync(user);

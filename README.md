@@ -32,3 +32,10 @@ Unlike in the deployment scenario, tests are run on the host's machine and requi
 ### Deployment
 * `SERVER_DOMAIN` - application's domain name (i.e. example.com). Defaults to localhost for local deployment.
 * `WEB_MODULE_ADDRESS` - the internal address of the web server. Used to redirect HTTPS traffic to it. Defaults to web:8080 which is the docker container name.
+* `EMAILSETTINGS__SMTPHOST` - the SMTP host to be used, i.e. the adress of the outgoing email's server (such as `smtp.gmail.com`)
+* `EMAILSETTINGS__SMTPPORT` - the port of the email client.
+* `EMAILSETTINGS__SENDEREMAIL` - the email from which emails are to be sent by the server.
+* `EMAILSETTINGS__SENDERNAME` - the name which identifies the email server.
+* `EMAILSETTINGS__USERNAME` - the username of the email from which emails are to be sent by the server.
+* `EMAILSETTINGS__PASSWORD` - the password of the email from which emails are to be sent by the server. Depending on the email provider, this might have to be a specially-generated password ("app password" on gmail).
+* `EMAILSETTINGS__USESSL` - whether SSL is to be used when sending emails. Leave it as `true`.

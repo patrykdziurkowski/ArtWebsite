@@ -18,9 +18,9 @@ namespace web.Features.Authentication;
 public class ResendEmailConfirmationModel : PageModel
 {
         private readonly UserManager<IdentityUser<Guid>> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSender<IdentityUser<Guid>> _emailSender;
 
-        public ResendEmailConfirmationModel(UserManager<IdentityUser<Guid>> userManager, IEmailSender emailSender)
+        public ResendEmailConfirmationModel(UserManager<IdentityUser<Guid>> userManager, IEmailSender<IdentityUser<Guid>> emailSender)
         {
                 _userManager = userManager;
                 _emailSender = emailSender;
@@ -70,14 +70,12 @@ public class ResendEmailConfirmationModel : PageModel
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(
-                    "/Account/ConfirmEmail",
+                    "/ConfirmEmail",
                     pageHandler: null,
                     values: new { userId = userId, code = code },
                     protocol: Request.Scheme);
-                await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    
+                await _emailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
 
                 ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
                 return Page();

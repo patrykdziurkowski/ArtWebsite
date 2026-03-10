@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +16,7 @@ using web.Features.ArtPieces.DeleteArtPiece;
 using web.Features.ArtPieces.EditArtPiece;
 using web.Features.ArtPieces.LoadArtPieces;
 using web.Features.ArtPieces.UploadArtPiece;
+using web.Features.Authentication;
 using web.Features.Browse;
 using web.Features.Browse.ByTag;
 using web.Features.Browse.Index;
@@ -164,7 +164,17 @@ services.AddTransient<IMissionGenerator, MissionGenerator>();
 services.AddTransient<MissionManager>();
 
 services.AddTransient<DemoDataSeeder>();
-services.AddTransient<IEmailSender, NoOpEmailSender>(); // This doesn't actually send an email.
+
+if (builder.Environment.IsDevelopment())
+{
+        // This doesn't actually send an email.
+        services.AddTransient<IEmailSender<IdentityUser<Guid>>, NoOpEmailSender>();
+}
+else
+{
+        services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+        services.AddTransient<IEmailSender<IdentityUser<Guid>>, EmailSender>();  
+}
 
 var app = builder.Build();
 if (app.Environment.IsDevelopment())

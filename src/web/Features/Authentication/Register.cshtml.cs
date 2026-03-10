@@ -25,14 +25,14 @@ public class RegisterModel : PageModel
         private readonly IUserEmailStore<IdentityUser<Guid>> _emailStore;
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailSender<IdentityUser<Guid>> _emailSender;
 
         public RegisterModel(
             UserManager<IdentityUser<Guid>> userManager,
             IUserStore<IdentityUser<Guid>> userStore,
             SignInManager<IdentityUser<Guid>> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender,
+            IEmailSender<IdentityUser<Guid>> emailSender,
             ApplicationDbContext dbContext)
         {
                 _userManager = userManager;
@@ -160,13 +160,12 @@ public class RegisterModel : PageModel
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
+                        "/ConfirmEmail",
                         pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                        values: new { area = "", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                await _emailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
 
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
