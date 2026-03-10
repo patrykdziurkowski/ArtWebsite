@@ -24,8 +24,7 @@ public class MissionManager(
                 int maxMissionProgressCount = missionType.GetMaxProgressCount();
                 MissionProgress? missionProgress = await dbContext.MissionProgresses
                         .FirstOrDefaultAsync(mp => mp.UserId == userId);
-                if (missionProgress is not null
-                        && missionProgress.Date.Date != now.Date)
+                if (missionProgress is not null && missionProgress.Date.Date != now.Date)
                 {
                         dbContext.MissionProgresses.Remove(missionProgress);
                         missionProgress = null;

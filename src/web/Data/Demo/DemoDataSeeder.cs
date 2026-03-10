@@ -173,7 +173,12 @@ public class DemoDataSeeder(
         List<ArtPieceId> reviewedArtPieceIds = [];
         string reviewerName = _reviewerNames[index];
 
-        IdentityUser<Guid> user = new(reviewerName);
+        IdentityUser<Guid> user = new(reviewerName)
+        {
+            Email = $"reviewer{index}@criticue.com",
+            NormalizedEmail = $"reviewer{index}@criticue.com",
+            EmailConfirmed = true,
+        };
         await userManager.CreateAsync(user, "Password123!");
         
         dbContext.Reviewers.Add(new Reviewer

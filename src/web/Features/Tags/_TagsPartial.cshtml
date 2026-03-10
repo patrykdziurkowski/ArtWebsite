@@ -157,6 +157,9 @@
                         .filter(node => node.nodeType === 3)
                         .map(node => node.textContent)
                         .join('').trim() === tag);
+                
+                if (!tagElement) return;
+                
                 tagElement.classList.remove('bg-body-secondary');
                 tagElement.classList.add('bg-primary');
                 tagElement.classList.add('text-white');
