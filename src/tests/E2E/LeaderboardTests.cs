@@ -1,6 +1,7 @@
 using FluentAssertions;
 using OpenQA.Selenium;
 using tests.E2E.Fixtures;
+using web.Features.Artists;
 using Xunit.Extensions.Ordering;
 
 namespace tests.E2E;
@@ -44,16 +45,23 @@ public class LeaderboardTests(WebDriverInitializer initializer, SharedPerTestCla
                 }
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
-                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 20)
-                        .Should().BeTrue();
-                Driver.FindElement(By.Id("load-more-leaderboard")).Click();
+                Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 20).Should().BeTrue();
+                IWebElement loadMore = Driver.FindElement(By.Id("load-more-leaderboard"));
+                    
+                ScrollIntoView(loadMore);
+                loadMore.Click();
                 Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 21)
                         .Should().BeTrue();
 
-                Driver.FindElement(By.Id("btn-reviewers")).Click();
+                IWebElement reviewers = Driver.FindElement(By.Id("btn-reviewers"));
+                ScrollIntoView(reviewers);
+                reviewers.Click();
                 Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 20)
                         .Should().BeTrue();
-                Driver.FindElement(By.Id("load-more-leaderboard")).Click();
+
+                IWebElement artists = Driver.FindElement(By.Id("load-more-leaderboard"));
+                ScrollIntoView(artists);
+                artists.Click();
                 Wait.Until(d => d.FindElements(By.CssSelector("#leaderboard-body > tr")).Count == 21)
                         .Should().BeTrue();
         }

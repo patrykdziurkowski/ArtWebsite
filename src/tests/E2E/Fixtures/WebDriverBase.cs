@@ -27,6 +27,7 @@ public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDispos
                 {
                         shared.SetupCompleted = true;
                         ResetTestContext();
+                        Driver.Manage().Window.FullScreen();
                 }
         }
 

@@ -172,9 +172,10 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
 
                 Wait.Until(d => d.FindElement(By.ClassName("review-reviewer-name"))).Click();
-                Wait.Until(d => d.FindElement(By.Id("user-details-suspend-button"))).Click();
-                Wait.Until(d => d.FindElement(By.Id("user-details-reason"))).SendKeys("Some suspension reason.");
-                Driver.FindElement(By.Id("user-details-suspend-submit")).Click();
+                IWebElement popover = Wait.Until(d => d.FindElements(By.ClassName("popover")).FirstOrDefault(e => e.Displayed));
+                popover.FindElement(By.Id("user-details-suspend-button")).Click();
+                popover.FindElement(By.Id("user-details-reason")).SendKeys("Some suspension reason.");
+                popover.FindElement(By.Id("user-details-suspend-submit")).Click();
 
                 Logout();
                 Login("john@smith.com", "Ex@mpl3");
@@ -196,9 +197,10 @@ public class AdminTests(WebDriverInitializer initializer, SharedPerTestClass sha
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
 
                 Wait.Until(d => d.FindElement(By.Id("art-piece-details-artist"))).Click();
-                Wait.Until(d => d.FindElement(By.Id("user-details-suspend-button"))).Click();
-                Wait.Until(d => d.FindElement(By.Id("user-details-reason"))).SendKeys("Some suspension reason.");
-                Driver.FindElement(By.Id("user-details-suspend-submit")).Click();
+                IWebElement popover = Wait.Until(d => d.FindElements(By.ClassName("popover")).FirstOrDefault(e => e.Displayed));
+                popover.FindElement(By.Id("user-details-suspend-button")).Click();
+                popover.FindElement(By.Id("user-details-reason")).SendKeys("Some suspension reason.");
+                popover.FindElement(By.Id("user-details-suspend-submit")).Click();
 
                 Logout();
                 Login("john@smith.com", "Ex@mpl3");

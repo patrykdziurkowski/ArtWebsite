@@ -1,10 +1,13 @@
 using FluentAssertions;
 using FluentResults;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NSubstitute;
 using tests.Integration.Fixtures;
 using web;
+using web.Features.Images;
 using web.Features.Reviewers;
 using web.Features.Reviewers.EditReviewerProfile;
 
@@ -16,7 +19,22 @@ public class EditReviewerProfileCommandTests : DatabaseTest
 
         public EditReviewerProfileCommandTests(DatabaseTestContext databaseContext) : base(databaseContext)
         {
-                _command = Scope.ServiceProvider.GetRequiredService<EditReviewerProfileCommand>();
+                SignInManager<IdentityUser<Guid>> mockSignInManager = Substitute.For<SignInManager<IdentityUser<Guid>>>(
+                        UserManager,
+                        Substitute.For<IHttpContextAccessor>(),
+                        Substitute.For<IUserClaimsPrincipalFactory<IdentityUser<Guid>>>(),
+                        null, null, null, null);
+
+                        mockSignInManager
+                        .RefreshSignInAsync(Arg.Any<IdentityUser<Guid>>())
+                        .Returns(Task.CompletedTask);
+                        
+                _command = new(
+                        DbContext,
+                        UserManager,
+                        mockSignInManager,
+                        Scope.ServiceProvider.GetRequiredService<ImageManager>(),
+                        Scope.ServiceProvider.GetRequiredService<ReviewerRepository>());
         }
 
         [Fact]

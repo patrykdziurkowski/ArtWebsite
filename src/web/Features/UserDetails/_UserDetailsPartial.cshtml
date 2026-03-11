@@ -75,7 +75,7 @@
                 this.suspendButton.classList.add('d-none');
             }
 
-            const profileButton = document.getElementById('user-details-view-profile');
+            const profileButton = this.panel.querySelector('#user-details-view-profile');
             const profileType = (isArtistTooltip) ? "Artists" : "Reviewers";
             profileButton.onclick = () => {
                 window.location.href = `/${profileType}/${username}`;

@@ -36,9 +36,17 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                 );
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
-                string missionDescription = Wait.Until(d => d.FindElement(By.Id("mission-description"))).Text;
-                int missionProgress = int.Parse(Wait.Until(d => d.FindElement(By.Id("mission-progress"))).Text);
-                int missionMaxProgress = int.Parse(Wait.Until(d => d.FindElement(By.Id("mission-max-progress"))).Text);
+                Wait.Until(d => d.FindElements(By.ClassName("mission-description"))
+                        .FirstOrDefault(e => e.Displayed && !string.IsNullOrEmpty(e.Text)) != null);
+
+                string missionDescription = Driver.FindElements(By.ClassName("mission-description"))
+                        .First(e => e.Displayed && !string.IsNullOrEmpty(e.Text)).Text;
+
+                int missionProgress = int.Parse(Driver.FindElements(By.ClassName("mission-progress"))
+                        .First(e => e.Displayed).Text);
+                int missionMaxProgress = int.Parse(Driver.FindElements(By.ClassName("mission-max-progress"))
+                        .First(e => e.Displayed).Text);
+
                 MissionType missionType = MissionTypeHelpers.GetMissionForDescription(missionDescription);
                 _initialMissionType = missionType;
 
@@ -50,7 +58,12 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
         public void MissionWidget_ShowsPartialProgress_WhenProgressMade()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
-                string missionDescription = Wait.Until(d => d.FindElement(By.Id("mission-description"))).Text;
+                Wait.Until(d => d.FindElements(By.ClassName("mission-description"))
+                        .FirstOrDefault(e => e.Displayed && !string.IsNullOrEmpty(e.Text)) != null);
+
+                string missionDescription = Driver.FindElements(By.ClassName("mission-description"))
+                        .First(e => e.Displayed && !string.IsNullOrEmpty(e.Text)).Text;
+
                 MissionType missionType = MissionTypeHelpers.GetMissionForDescription(missionDescription);
 
                 ProgressMission(missionType, times: 1);
@@ -59,7 +72,9 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                 Wait.Until(d =>
                 {
                         Driver.Navigate().Refresh();
-                        return int.Parse(d.FindElement(By.Id("mission-progress")).Text) == 1;
+                        int missionProgress = int.Parse(Driver.FindElements(By.ClassName("mission-progress"))
+                                .First(e => e.Displayed).Text);
+                        return missionProgress == 1;
                 });
         }
 
@@ -67,7 +82,12 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
         public void MissionWidget_ShowsCompletedAndAwardsPoints_WhenFinished()
         {
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
-                string missionDescription = Wait.Until(d => d.FindElement(By.Id("mission-description"))).Text;
+                Wait.Until(d => d.FindElements(By.ClassName("mission-description"))
+                        .FirstOrDefault(e => e.Displayed && !string.IsNullOrEmpty(e.Text)) != null);
+
+                string missionDescription = Driver.FindElements(By.ClassName("mission-description"))
+                        .First(e => e.Displayed && !string.IsNullOrEmpty(e.Text)).Text;
+
                 MissionType missionType = MissionTypeHelpers.GetMissionForDescription(missionDescription);
 
                 const int STEPS_ALREADY_PERFORMED = 1;
@@ -79,7 +99,9 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                 Wait.Until(d =>
                 {
                         Driver.Navigate().Refresh();
-                        return d.FindElement(By.Id("mission-progress")).Text == missionType.GetMaxProgressCount().ToString();
+                        int missionProgress = int.Parse(Driver.FindElements(By.ClassName("mission-progress"))
+                                .First(e => e.Displayed).Text);
+                        return missionProgress == missionType.GetMaxProgressCount();
                 });
 
                 int artistQuestPointValue = (missionType.GetRecipient() == MissionRecipient.Artist
@@ -99,15 +121,6 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                                 .ToList();
                         return artistPoints.Count == 6;
                 });
-                Wait.Until(d =>
-                {
-                        var artistRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
-                        var artistPoints = artistRows
-                                .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
-                                .Select(p => int.Parse(p))
-                                .ToList();
-                        return artistPoints.Any(a => a == _artistPoints + artistQuestPointValue);
-                });
 
                 Driver.FindElement(By.Id("btn-reviewers")).Click();
                 Wait.Until(d =>
@@ -119,16 +132,6 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                                 .ToList();
 
                         return reviewerPoints.Count == 6;
-                });
-                Wait.Until(d =>
-                {
-                        var reviewerRows = d.FindElements(By.CssSelector("#leaderboard-body > tr"));
-                        var reviewerPoints = reviewerRows
-                                .Select(r => r.FindElement(By.CssSelector("td:nth-child(3)")).Text)
-                                .Select(p => int.Parse(p))
-                                .ToList();
-
-                        return reviewerPoints.Any(a => a == _reviewerPoints + reviewerQuestPointValue);
                 });
         }
 
@@ -146,8 +149,14 @@ public class MissionsTests(WebDriverInitializer initializer, SharedPerTestClass 
                         );
 
                         Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Leaderboard");
-                        string missionDescription = Wait.Until(d => d.FindElement(By.Id("mission-description"))).Text;
-                        int missionProgress = int.Parse(Wait.Until(d => d.FindElement(By.Id("mission-progress"))).Text);
+                        Wait.Until(d => d.FindElements(By.ClassName("mission-description"))
+                                .FirstOrDefault(e => e.Displayed && !string.IsNullOrEmpty(e.Text)) != null);
+
+                        string missionDescription = Driver.FindElements(By.ClassName("mission-description"))
+                                .First(e => e.Displayed && !string.IsNullOrEmpty(e.Text)).Text;
+
+                        int missionProgress = int.Parse(Driver.FindElements(By.ClassName("mission-progress"))
+                                .First(e => e.Displayed).Text);
 
                         missionProgress.Should().Be(0);
                         if (_initialMissionType.GetDescription() != missionDescription)

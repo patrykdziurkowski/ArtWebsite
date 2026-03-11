@@ -12,6 +12,8 @@ public class SearchBarTests(WebDriverInitializer initializer, SharedPerTestClass
         public void TopSearchBar_AllowsSearchingForTags_WithFiltering()
         {
                 CreateUserWithArtistProfile();
+                Logout();
+
                 CreateUserWithArtistProfile(
                         userName: "userUser",
                         email: "user@user.com",
@@ -77,8 +79,20 @@ public class SearchBarTests(WebDriverInitializer initializer, SharedPerTestClass
                 var artPiece = artPieces[artPieceIndex];
                 ScrollIntoView(artPiece);
                 artPiece.Click();
-                Wait.Until(d => d.FindElements(By.CssSelector(".tag")).Count > 0);
-                var tags = Driver.FindElements(By.CssSelector(".tag")).Select(e => e.Text).ToList();
+                
+                var tags = Wait.Until(d => {
+                        try {
+                                var found = d.FindElements(By.CssSelector(".tag"))
+                                        .Where(t => !t.GetAttribute("class").Contains("tag-add") && t.Displayed)
+                                        .Select(t => t.Text)
+                                        .Where(text => !string.IsNullOrEmpty(text))
+                                        .ToList();
+                                return found.Count > 0 ? found : null;
+                        } catch (StaleElementReferenceException) {
+                                return null;
+                        }
+                });
+
                 Wait.Until(d => d.FindElement(By.Id("details-back"))).Click();
                 return tags;
 

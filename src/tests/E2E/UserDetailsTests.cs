@@ -22,7 +22,8 @@ public class UserDetailsTests(WebDriverInitializer initializer, SharedPerTestCla
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
 
                 Wait.Until(d => d.FindElement(By.Id("art-piece-details-artist"))).Click();
-                Wait.Until(d => d.FindElement(By.Id("user-details-view-profile"))).Click();
+                Wait.Until(d => d.FindElements(By.Id("user-details-view-profile"))
+                        .FirstOrDefault(e => e.Displayed && e.Enabled)).Click();
 
                 Wait.Until(d => d.Url.Contains("/Artists/SomeArtist"));
         }
@@ -42,7 +43,8 @@ public class UserDetailsTests(WebDriverInitializer initializer, SharedPerTestCla
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("artPieceDetailsModal")));
 
                 Wait.Until(d => d.FindElement(By.ClassName("review-reviewer-name"))).Click();
-                Wait.Until(d => d.FindElement(By.Id("user-details-view-profile"))).Click();
+                Wait.Until(d => d.FindElements(By.Id("user-details-view-profile"))
+                        .FirstOrDefault(e => e.Displayed && e.Enabled)).Click();
 
                 Wait.Until(d => d.Url.Contains("/Reviewers/SomeUser123"));
         }
