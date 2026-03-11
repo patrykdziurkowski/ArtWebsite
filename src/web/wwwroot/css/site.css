@@ -150,6 +150,11 @@ header {
         color: var(--bs-primary);
 }
 
+div.custom-modal-content {
+        background: var(--bs-body-bg);
+        border-radius: 0.375rem;
+}
+
 #sidebar-backdrop {
     position: fixed;
     top: 0;

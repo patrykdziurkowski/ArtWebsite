@@ -206,6 +206,11 @@
         color: var(--bs-body-color);
         fill: var(--bs-body-color);
     }
+
+    #pan-tool i {
+        vertical-align: middle;
+        font-size: 22px;
+    }
 </style>
 
 @section Scripts
@@ -272,45 +277,138 @@
 
             let imgEditor = new ImageEditor('#image-editor-container', buttons, []);
 
+            let isUndoRedoing = false;
+
+            imgEditor.canvas.on('object:added', (e) => {
+                const type = e.target?.type;
+                if (type === 'textbox' || type === 'i-text' || type === 'text') {
+                    document.querySelector('#image-editor-container #select')?.click();
+                }
+                
+                if (!isUndoRedoing && type === 'path') {
+                    imgEditor.history.push(JSON.stringify(imgEditor.canvas.toJSON()));
+                }
+            });
+
+            imgEditor.canvas.on('object:removed', () => {
+                if (isUndoRedoing) return;
+                imgEditor.history.push(JSON.stringify(imgEditor.canvas.toJSON()));
+            });
+
+            imgEditor.undo = () => {
+                try {
+                    const undoList = imgEditor.history.getValues().undo;
+                    if (undoList.length > 1) {
+                        imgEditor.history.undo();
+                        const newTop = imgEditor.history.getValues().undo;
+                        const current = newTop[newTop.length - 1];
+                        if (current) {
+                            isUndoRedoing = true;
+                            imgEditor.canvas.loadFromJSON(JSON.parse(current), () => {
+                                imgEditor.canvas.renderAll();
+                                isUndoRedoing = false;
+                            });
+                        }
+                    }
+                } catch (_) { console.error("undo failed"); }
+            };
+
+            imgEditor.redo = () => {
+                try {
+                    const redoList = imgEditor.history.getValues().redo;
+                    if (redoList.length) {
+                        const current = redoList[redoList.length - 1];
+                        imgEditor.history.redo();
+                        if (current) {
+                            isUndoRedoing = true;
+                            imgEditor.canvas.loadFromJSON(JSON.parse(current), () => {
+                                imgEditor.canvas.renderAll();
+                                isUndoRedoing = false;
+                            });
+                        }
+                    }
+                } catch (_) { console.error("redo failed"); }
+            };
+
             const canvasHolder = document.getElementById('canvas-holder');
+
+            document.querySelector("#image-editor-container #select").classList.add('active');
+
+            const toolbar = document.querySelector('#toolbar .main-buttons');
+            const panBtn = document.createElement('button');
+            panBtn.id = 'pan-tool';
+            panBtn.title = 'Pan';
+            panBtn.innerHTML = '<i class="bi bi-arrows-move"></i>';
+            toolbar.appendChild(panBtn);
+
+            let isPanMode = false;
             let isPanning = false;
             let lastPosX = 0;
             let lastPosY = 0;
 
-            document.querySelector("#image-editor-container #select").classList.add('active');
+            function deactivatePan() {
+                isPanMode = false;
+                isPanning = false;
+                panBtn.classList.remove('active');
+            }
 
-            canvasHolder.addEventListener('mousedown', function(e) {
-                if (e.button === 2) {
-                    isPanning = true;
-                    lastPosX = e.clientX;
-                    lastPosY = e.clientY;
-                    e.preventDefault();
+            function activatePan() {
+                isPanMode = true;
+                panBtn.classList.add('active');
+                document.querySelectorAll('#toolbar button:not(#pan-tool)').forEach(btn => btn.classList.remove('active'));
+                imgEditor.canvas.isDrawingMode = false;
+                imgEditor.canvas.selection = false;
+                imgEditor.canvas.forEachObject(obj => obj.selectable = false);
+            }
+
+            panBtn.addEventListener('click', () => {
+                isPanMode ? deactivatePan() : activatePan();
+            });
+
+            document.querySelector('#toolbar').addEventListener('click', (e) => {
+                const btn = e.target.closest('button');
+                if (btn && btn.id !== 'pan-tool') {
+                    deactivatePan();
                 }
             });
 
-            canvasHolder.addEventListener('mousemove', function(e) {
-                if (isPanning) {
-                    const deltaX = e.clientX - lastPosX;
-                    const deltaY = e.clientY - lastPosY;
-                    
-                    canvasHolder.scrollLeft -= deltaX;
-                    canvasHolder.scrollTop -= deltaY;
-                    
-                    lastPosX = e.clientX;
-                    lastPosY = e.clientY;
-                }
-            });
-
-            document.addEventListener('mouseup', function(e) {
-                if (isPanning) {
-                    isPanning = false;
-                }
-            });
-
-            canvasHolder.addEventListener('contextmenu', function(e) {
+            canvasHolder.addEventListener('mousedown', (e) => {
+                if (!isPanMode) return;
+                isPanning = true;
+                lastPosX = e.clientX;
+                lastPosY = e.clientY;
                 e.preventDefault();
-                return false;
             });
+
+            canvasHolder.addEventListener('mousemove', (e) => {
+                if (!isPanMode || !isPanning) return;
+                canvasHolder.scrollLeft -= e.clientX - lastPosX;
+                canvasHolder.scrollTop -= e.clientY - lastPosY;
+                lastPosX = e.clientX;
+                lastPosY = e.clientY;
+            });
+
+            document.addEventListener('mouseup', () => isPanning = false);
+
+            canvasHolder.addEventListener('touchstart', (e) => {
+                if (!isPanMode || e.touches.length !== 1) return;
+                isPanning = true;
+                lastPosX = e.touches[0].clientX;
+                lastPosY = e.touches[0].clientY;
+            }, { passive: true });
+
+            canvasHolder.addEventListener('touchmove', (e) => {
+                if (!isPanMode || !isPanning || e.touches.length !== 1) return;
+                canvasHolder.scrollLeft -= e.touches[0].clientX - lastPosX;
+                canvasHolder.scrollTop -= e.touches[0].clientY - lastPosY;
+                lastPosX = e.touches[0].clientX;
+                lastPosY = e.touches[0].clientY;
+                e.preventDefault();
+            }, { passive: false });
+
+            document.addEventListener('touchend', () => isPanning = false);
+
+            canvasHolder.addEventListener('contextmenu', (e) => e.preventDefault());
 
             document.querySelector('#image-input').onchange = async (e) => {
                 const file = e.target.files[0];
@@ -326,6 +424,8 @@
                             $(document.querySelector('#input-width')).change();
 
                             canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+                            imgEditor.history.clear();
+                            imgEditor.history.push(JSON.stringify(imgEditor.canvas.toJSON()));
 
                             validImageLoaded = true;
                             step1.style.display = 'none';
@@ -346,6 +446,8 @@
 
                 canvas.backgroundColor = 'white';
                 canvas.renderAll();
+                imgEditor.history.clear();
+                imgEditor.history.push(JSON.stringify(imgEditor.canvas.toJSON()));
 
                 validImageLoaded = true;
                 step1.style.display = 'none';
