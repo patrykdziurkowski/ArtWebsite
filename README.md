@@ -5,7 +5,8 @@
 2. Install Docker and Docker Compose.
 3. (Optional) Apply migrations to the database by running `docker compose up db-migrations --build`.
 4. Copy `.env.default`, rename it to `.env`, and fill out the required environment variables as seen below.
-5. Run `docker compose up --build`.
+5. Make sure the Docker Engine service is running.
+6. Run `docker compose up --build` to run the development build or `docker compose -f docker-compose.yml up --build` for the deployment build.
 
 ## Run tests
 Unlike in the deployment scenario, tests are run on the host's machine and require extra setup. This will vary between platforms but you will generally need to do things described below.

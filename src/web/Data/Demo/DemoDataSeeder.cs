@@ -16,7 +16,6 @@ namespace web.Data.Demo;
 /// for presentation purposes.
 /// </summary>
 public class DemoDataSeeder(
-    IHostEnvironment environment,
     ApplicationDbContext dbContext,
     UploadArtPieceCommand uploadArtPieceCommand,
     ReviewArtPieceCommand reviewArtPieceCommand,
@@ -106,11 +105,6 @@ public class DemoDataSeeder(
 
     public async Task ExecuteAsync()
     {
-        if (!environment.IsDevelopment())
-        {
-            throw new InvalidOperationException("Attempted to seed demo data into a non-development application build.");
-        }
-
         for (int i = 0; i < 25; i++)
         {
             await CreateArtist(i);

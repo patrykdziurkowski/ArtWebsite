@@ -34,6 +34,7 @@ public class RegisterArtPieceServedCommand(ApplicationDbContext dbContext)
                 {
                         artPieceServed.Date = date.Value;
                         artPieceServed.ArtPieceId = artPieceId;
+                        artPieceServed.WasSkipped = false;
                 }
 
                 await dbContext.SaveChangesAsync();

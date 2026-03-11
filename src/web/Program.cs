@@ -78,8 +78,8 @@ services.AddAntiforgery(options =>
     options.HeaderName = "X-CSRF-TOKEN";
     options.Cookie.Name = "X-CSRF-TOKEN";
     options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() 
-        ? CookieSecurePolicy.None
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment() || seedDataRequested
+        ? CookieSecurePolicy.SameAsRequest
         : CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
@@ -201,7 +201,7 @@ using (IServiceScope scope = app.Services.CreateScope())
         bool rootUserCreated = await CreateRootUserIfNotPresentAsync(rootUserName, rootPassword, rootEmail, scope);
         bool firstTimeStartup = rootUserCreated;
 
-        if (firstTimeStartup && app.Environment.IsDevelopment() && seedDataRequested)
+        if (firstTimeStartup && seedDataRequested)
         {
                 DemoDataSeeder demoDataSeeder = scope.ServiceProvider.GetRequiredService<DemoDataSeeder>();
                 await demoDataSeeder.ExecuteAsync();

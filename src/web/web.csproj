@@ -42,4 +42,12 @@
     <Folder Include="wwwroot/lib/bootstrap/dist/icons/fonts/" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="Data/Demo/sample-image-1.jpg" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Data/Demo/sample-image-2.jpg" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Data/Demo/sample-image-3.jpg" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Data/Demo/sample-image-4.jpg" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Data/Demo/sample-image-5.jpg" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
