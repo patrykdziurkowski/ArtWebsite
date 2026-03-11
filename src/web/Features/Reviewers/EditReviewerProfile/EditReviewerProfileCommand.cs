@@ -8,6 +8,7 @@ namespace web.Features.Reviewers.EditReviewerProfile;
 public class EditReviewerProfileCommand(
         ApplicationDbContext dbContext,
         UserManager<IdentityUser<Guid>> userManager,
+        SignInManager<IdentityUser<Guid>> signInManager,
         ImageManager imageManager,
         ReviewerRepository reviewerRepository)
 {
@@ -19,6 +20,8 @@ public class EditReviewerProfileCommand(
         {
                 Reviewer reviewer = await reviewerRepository.GetByIdAsync(reviewerId)
                         ?? throw new InvalidOperationException("No reviewer with the given id found.");
+                IdentityUser<Guid> reviewerUser = await userManager.FindByIdAsync(reviewer.UserId.ToString())
+                                ?? throw new InvalidOperationException("No user found for reviewer with the given id.");
                 if (await reviewerRepository.GetByNameAsync(newName) is not null)
                 {
                         return Result.Fail("The given reviewer name is already taken.");
@@ -37,8 +40,6 @@ public class EditReviewerProfileCommand(
 
                 if (reviewer.Name != newName)
                 {
-                        IdentityUser<Guid> reviewerUser = await userManager.FindByIdAsync(reviewer.UserId.ToString())
-                                ?? throw new InvalidOperationException("No user found for reviewer with the given id.");
                         reviewer.Name = newName;
                         reviewerUser.UserName = newName;
                 }
@@ -53,6 +54,8 @@ public class EditReviewerProfileCommand(
                 }
 
                 await dbContext.SaveChangesAsync();
+                await signInManager.RefreshSignInAsync(reviewerUser);
+                
                 return Result.Ok();
         }
 }

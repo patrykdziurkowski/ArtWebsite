@@ -293,6 +293,7 @@
                     const noImagesH1 = document.createElement('h1');
                     noImagesH1.textContent = 'No more images to review.';
                     artContainer.appendChild(noImagesH1);
+                    document.querySelector('main > div.container > .art-piece-tags').remove();
                     document.querySelector('#artPieceControls').classList.add('d-none');
                     return null;
                 }
@@ -304,6 +305,7 @@
                     const noImagesH1 = document.createElement('h1');
                     noImagesH1.textContent = 'No more images to review.';
                     artContainer.appendChild(noImagesH1);
+                    document.querySelector('main > div.container > .art-piece-tags').remove();
                     document.querySelector('#artPieceControls').classList.add('d-none');
                     return null;
                 }
