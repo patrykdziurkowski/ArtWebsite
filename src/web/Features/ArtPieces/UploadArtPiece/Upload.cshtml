@@ -15,6 +15,7 @@
                     <i class="bi bi-file-earmark-plus"></i> New
                 </button>
                 <input type="file" class="d-none" id="image-input" name="Image" accept="image/*" />
+                <span id="image-input-error" class="text-danger small d-block mt-2"></span>
                 <p class="text-muted mt-3 mb-0">Select an image or start with a blank canvas</p>
             </div>
         </div>
@@ -412,28 +413,39 @@
 
             document.querySelector('#image-input').onchange = async (e) => {
                 const file = e.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(event) {
-                        fabric.Image.fromURL(event.target.result, function(img) {
-                            const canvas = imgEditor.canvas;
-                            
-                            document.querySelector('#input-height').value = img.height;
-                            $(document.querySelector('#input-height')).change();
-                            document.querySelector('#input-width').value = img.width;
-                            $(document.querySelector('#input-width')).change();
+                if (!file) return;
 
-                            canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-                            imgEditor.history.clear();
-                            imgEditor.history.push(JSON.stringify(imgEditor.canvas.toJSON()));
-
-                            validImageLoaded = true;
-                            step1.style.display = 'none';
-                            step2.style.display = 'block';
-                        });
-                    };
-                    reader.readAsDataURL(file);
+                const imageError = document.getElementById('image-input-error');
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    imageError.innerText = 'Please select a valid image file (JPEG, PNG, or WebP).';
+                    e.target.value = '';
+                    return;
                 }
+
+                imageError.innerText = '';
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    fabric.Image.fromURL(event.target.result, function(img) {
+                        const canvas = imgEditor.canvas;
+                        
+                        document.querySelector('#input-height').value = img.height;
+                        $(document.querySelector('#input-height')).change();
+                        document.querySelector('#input-width').value = img.width;
+                        $(document.querySelector('#input-width')).change();
+
+                        canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+                        imgEditor.history.clear();
+                        imgEditor.history.push(JSON.stringify(imgEditor.canvas.toJSON()));
+
+                        validImageLoaded = true;
+                        step1.style.display = 'none';
+                        step2.style.display = 'block';
+                    });
+                };
+                reader.readAsDataURL(file);
+                
             };
 
             document.getElementById('blank-canvas-btn').onclick = () => {

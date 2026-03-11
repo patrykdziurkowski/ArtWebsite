@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.IdentityModel.Tokens;
+using SixLabors.ImageSharp;
 
 namespace web.Features.Images;
 
@@ -36,6 +37,15 @@ public class SupportedImageAttribute : ValidationAttribute
                 if (SupportedImageExtensions.Contains(extension) == false)
                 {
                         ErrorMessage = $"Given file is not of supported type: {string.Join(" ", SupportedImageExtensions)}";
+                        return false;
+                }
+
+                const int MIN_WIDTH = 10;
+                const int MIN_HEIGHT = 10;
+                using var image = Image.Load(formFile.OpenReadStream());
+                if (image.Width < MIN_WIDTH || image.Height < MIN_HEIGHT)
+                {
+                        ErrorMessage = $"Image must be at least {MIN_WIDTH}x{MIN_HEIGHT} pixels.";
                         return false;
                 }
 

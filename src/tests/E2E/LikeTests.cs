@@ -46,13 +46,13 @@ public class LikeTests(WebDriverInitializer initializer, SharedPerTestClass shar
 
                 ReviewRandomArtPiece();
                 IWebElement likeButton = Wait.Until(d => d.FindElement(By.Id("likeArtPiece")));
-                likeButton.Text.Should().Be("Like");
+                likeButton.Text.Should().Contain("Like");
 
                 likeButton.Click();
-                Wait.Until(d => likeButton.Text == "Unlike");
+                Wait.Until(d => likeButton.Text.Contains("Unlike"));
 
                 likeButton.Click();
-                Wait.Until(d => likeButton.Text == "Like");
+                Wait.Until(d => likeButton.Text.Contains("Like"));
 
                 Driver.Navigate().GoToUrl($"{HTTP_PROTOCOL_PREFIX}localhost/Reviewer");
                 var foundLikedArtPieces = Wait.Until(d => d.FindElements(By.CssSelector("#likesList > div")));

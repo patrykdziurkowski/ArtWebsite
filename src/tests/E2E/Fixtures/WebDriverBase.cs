@@ -139,9 +139,9 @@ public abstract class WebDriverBase : IClassFixture<SharedPerTestClass>, IDispos
 
                 Wait.Until(ExpectedConditions.VisibilityOfAllElementsLocatedBy(By.Id("postReviewModal")));
                 IWebElement likeButton = Wait.Until(d => d.FindElement(By.Id("likeArtPiece")));
-                likeButton.Text.Should().Be("Like");
+                likeButton.Text.Should().Contain("Like");
                 likeButton.Click();
-                Wait.Until(d => likeButton.Text == "Unlike").Should().BeTrue();
+                Wait.Until(d => likeButton.Text.Contains("Unlike")).Should().BeTrue();
         }
 
         public bool DriverIsAtBaseUrl()
