@@ -24,13 +24,8 @@
             <div class="navbar navbar-expand-sm navbar-toggleable-sm box-shadow w-100">
                 <div class="container-fluid d-flex align-items-center">
                     <div class="d-flex align-items-center" style="flex: 1;">
-                        <button class="btn btn-outline-secondary d-md-none" id="toggleSidebar">☰</button>
+                        <button class="btn btn-outline-secondary d-lg-none" id="toggleSidebar">☰</button>
                         <a class="navbar-brand" asp-controller="Home" asp-action="Index">criti<span class="site-name-highlight">cue</span></a>
-                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                            data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false"
-                            aria-label="Toggle navigation">
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
                         <div class="d-none d-md-flex">
                             <partial name="../Authentication/_LoginPartial" />
                         </div>
@@ -87,11 +82,11 @@
                     </nav>
                 </div>
 
-                <main role="main" class="p-3 col-lg-9 col-xl-6">
+                <main role="main" class="p-3 col-lg-6">
                     @RenderBody()
                 </main>
 
-                <div class="d-none d-md-block col-3 bg-body-secondary sidebar-fixed p-4">
+                <div class="d-none d-lg-block col-3 bg-body-secondary sidebar-fixed p-4">
                     <partial name="../Missions/_DailyMissionPartial" />
                 </div>
             </div>

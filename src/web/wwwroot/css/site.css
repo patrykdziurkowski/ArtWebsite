@@ -168,13 +168,6 @@ header {
     pointer-events: auto;
 }
 
-
-@media (min-width: 1200px) {    
-    .d-xl-block.sidebar-fixed {
-        width: 25%;
-    }
-}
-
 @media (max-width: 991px) {
         .sidebar-fixed {
                 position: relative;
@@ -236,7 +229,7 @@ header {
         }
 }
 
-@media (max-width: 1140px) {
+@media (max-width: 991px) {
         #sidebar {
                 transform: translateX(-200%);
                 position: fixed;
