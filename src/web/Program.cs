@@ -180,9 +180,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
         app.UseDeveloperExceptionPage();
-        using IServiceScope scope = app.Services.CreateScope();
-        ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await dbContext.Database.MigrateAsync();
 }
 else
 {
@@ -190,6 +187,12 @@ else
         // The default HSTS value is 30 days. You may want to change this
         // for production scenarios, see https://aka.ms/aspnetcore-hsts.
         app.UseHsts();
+}
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+        ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        await dbContext.Database.MigrateAsync(); 
 }
 
 using (IServiceScope scope = app.Services.CreateScope())
