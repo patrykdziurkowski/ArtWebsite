@@ -277,6 +277,8 @@
             let lastPosX = 0;
             let lastPosY = 0;
 
+            document.querySelector("#image-editor-container #select").classList.add('active');
+
             canvasHolder.addEventListener('mousedown', function(e) {
                 if (e.button === 2) {
                     isPanning = true;
