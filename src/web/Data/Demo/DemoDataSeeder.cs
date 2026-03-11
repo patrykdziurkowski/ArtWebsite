@@ -126,7 +126,12 @@ public class DemoDataSeeder(
     {
         string artistName = _artistNames[index];
 
-        IdentityUser<Guid> user = new(artistName);
+        IdentityUser<Guid> user = new(artistName)
+        {
+            Email = $"artist{index}@criticue.com",
+            NormalizedEmail = $"artist{index}@criticue.com",
+            EmailConfirmed = true,
+        };
         await userManager.CreateAsync(user, "Password123!");
         
         dbContext.Reviewers.Add(new Reviewer

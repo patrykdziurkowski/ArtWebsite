@@ -38,6 +38,7 @@
     <Folder Include="wwwroot/img/" />
     <Folder Include="wwwroot/js/" />
     <Folder Include="Data/Demo" />
+    <Folder Include="wwwroot/lib/bootstrap/dist/icons/fonts/" />
   </ItemGroup>
 
 </Project>
