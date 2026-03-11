@@ -215,9 +215,15 @@
             textarea.rows = 4;
             textarea.value = this.description;
             formDiv.appendChild(textarea);
-            
+
             const buttonDiv = document.createElement('div');
             buttonDiv.className = 'd-flex gap-2';
+
+            const errorSpan = document.createElement('span');
+            errorSpan.className = 'text-danger small';
+            errorSpan.id = 'edit-description-error';
+            formDiv.appendChild(errorSpan);
+            formDiv.appendChild(buttonDiv);
             
             const saveButton = document.createElement('button');
             saveButton.id = 'edit-art-piece-save';
@@ -242,6 +248,8 @@
             
             saveButton.addEventListener('click', async () => {
                 const newDescription = document.querySelector('#edit-art-piece-description').value;
+                const errorSpan = document.querySelector('#edit-description-error');
+
                 const response = await fetch(`/api/artpieces/${this.artPieceId}`, {
                     method: 'PUT',
                     headers: {
@@ -251,8 +259,10 @@
                         description: newDescription
                     })
                 });
-                if (response.status !== 200) {
-                    console.error('Unable to edit art piece: ', response, await response.json());
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    errorSpan.innerText = data.errors?.Description?.[0] ?? 'Failed to save description.';
                     return;
                 }
                 
@@ -391,10 +401,11 @@
             });
 
             if (!response.ok) {
-                document.querySelector('#ratingError').innerText = "Could not edit this review.";
+                const data = await response.json();
+                document.querySelector('#ratingError').innerText = data.errors?.Comment?.[0] ?? data.errors?.Rating?.[0] ?? 'Could not edit this review.';
                 return;
             }
-
+            
             document.querySelector('#ratingError').innerText = "";
             this.#hideAllReviewEdits();
             reviewElement.querySelector('.review-rating').innerText = formData.rating;

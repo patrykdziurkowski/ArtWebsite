@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using web.Features.Artists;
 using web.Features.ArtPieces.DeleteArtPiece;
 using web.Features.ArtPieces.EditArtPiece;
 using web.Features.ArtPieces.LoadArtPieces;
+using web.Features.ArtPieces.UploadArtPiece;
 using web.Features.Browse;
 using web.Features.Browse.ByTag;
 using web.Features.Browse.Index;
@@ -21,6 +23,8 @@ public class ArtPieceApiController(
         ArtPieceByTagQuery artPiecesByTagQuery,
         EditArtPieceCommand editArtPieceCommand,
         DeleteArtPieceCommand deleteArtPieceCommand,
+        UploadArtPieceCommand uploadArtPieceCommand,
+        UserManager<IdentityUser<Guid>> userManager,
         ArtPieceDetailsQuery artPieceDetailsQuery,
         RegisterArtPieceServedCommand registerArtPieceServedCommand) : ControllerBase
 {
@@ -49,6 +53,18 @@ public class ArtPieceApiController(
                 ArtPieceDto artPiece = await artPieceDetailsQuery.ExecuteAsync(
                         GetUserId(), new ArtPieceId() { Value = artPieceId });
                 return Ok(artPiece);
+        }
+
+        [HttpPost("/api/artpieces")]
+        public async Task<ActionResult> Upload(UploadArtPieceModel model)
+        {
+                if (await IsArtistAsync() == false)
+                {
+                        return RedirectToAction(nameof(ArtistController.Index), "Artist");
+                }
+
+                await uploadArtPieceCommand.ExecuteAsync(model.Image, model.Description, GetUserId());
+                return RedirectToAction(nameof(BrowseController.Index), "Browse");
         }
 
         [HttpGet("/api/artists/{artistId}/artpieces/")]
@@ -82,5 +98,16 @@ public class ArtPieceApiController(
                 string idClaim = User.FindFirstValue(ClaimTypes.NameIdentifier)
                         ?? throw new UnauthorizedAccessException("Could not find the user's id in class when expected.");
                 return Guid.Parse(idClaim);
+        }
+
+        private async Task<bool> IsArtistAsync()
+        {
+                IdentityUser<Guid>? user = await userManager.GetUserAsync(User);
+                if (user is null)
+                {
+                        return false;
+                }
+
+                return await userManager.IsInRoleAsync(user, Constants.ARTIST_ROLE);
         }
 }

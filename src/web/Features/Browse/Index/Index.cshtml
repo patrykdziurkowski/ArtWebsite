@@ -109,7 +109,7 @@
                             <input type="radio" id="star1" name="Rating" asp-for="ReviewForm.Rating" value="1">
                             <label for="star1">&#9733;</label>
                         </div>
-                        <span asp-validation-for="ReviewForm.Rating" class="text-danger small d-block text-center"></span>
+                        <span id="ratingValidation" class="text-danger small d-block text-center"></span>
                     </div>
                     
                     <input type="hidden" name="artPieceId" value="">
@@ -377,6 +377,16 @@
             async function review(e) {
                 e.preventDefault();
                 const form = new FormData(e.target);
+
+                const ratingInput = document.querySelector('input[name="Rating"]:checked');
+                const ratingError = document.querySelector('#reviewForm span[data-valmsg-for="ReviewForm.Rating"], .rating + span');
+
+                if (!ratingInput) {
+                    document.querySelector('#reviewForm .rating ~ span').innerText = 'Please select a rating.';
+                    return;
+                }
+
+                document.querySelector('#ratingValidation').innerText = '';
 
                 const data = {
                     comment: form.get('comment'),

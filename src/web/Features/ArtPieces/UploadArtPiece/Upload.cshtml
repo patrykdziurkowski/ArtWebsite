@@ -59,7 +59,7 @@
                                     name="Description" 
                                     rows="4"
                                     placeholder="Tell us about your art piece..."></textarea>
-                        <span asp-validation-for="Description" class="text-danger"></span>
+                        <span data-valmsg-for="Description" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="card-footer border-0 p-3 text-end">
@@ -467,9 +467,6 @@
             document.querySelector('#upload-form').onsubmit = async (e) => {
                 e.preventDefault();
 
-                const fileInput = document.querySelector('#image-input');
-                const file = fileInput.files[0];
-                
                 if (!validImageLoaded) {
                     alert('Please upload an image or create a blank canvas first');
                     return;
@@ -486,7 +483,21 @@
                 container.items.add(newFile);
                 document.querySelector('#image-input-hidden').files = container.files;
 
-                e.target.submit();
+                const formData = new FormData(e.target);
+
+                const response = await fetch("/api/artpieces", {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    const descriptionSpan = document.querySelector('span[data-valmsg-for="Description"]');
+                    descriptionSpan.innerText = data.errors?.Description?.[0] ?? 'Please provide a description.';
+                    return;
+                }
+
+                window.location.href = response.url;
             };
         });
     </script>

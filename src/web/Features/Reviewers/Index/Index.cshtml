@@ -67,11 +67,11 @@
                     <div class="mb-4">
                         <label for="Name" class="form-label fw-semibold">Reviewer Name</label>
                         <input type="text" 
-                               class="form-control form-control-lg" 
-                               value="@Model.Name" 
-                               name="Name" 
-                               placeholder="Your reviewer name">
-                        <span asp-validation-for="Name" class="text-danger small"></span>
+                            class="form-control form-control-lg" 
+                            value="@Model.Name" 
+                            name="Name" 
+                            placeholder="Your reviewer name">
+                        <span id="nameValidation" class="text-danger small"></span>
                     </div>
                     <div class="mb-3">
                         <label for="image-input" class="form-label fw-semibold">Profile Picture</label>
@@ -107,14 +107,19 @@
                     body: form,
                 });
 
-                if (response.status !== 200) {
+                if (response.status === 400) {
                     const data = await response.json();
-
-                    const validationErrorsText = document.querySelector('#editForm *[name="name"] + span');
-                    validationErrorsText.innerText = data.errors.Name;
-
+                    document.querySelector('#nameValidation').innerText = data.errors?.Name?.[0] ?? 'Invalid name.';
                     return;
                 }
+
+                if (response.status === 409) {
+                    const data = await response.json();
+                    document.querySelector('#nameValidation').innerText = data.errors?.Name?.[0] ?? 'Name already taken.';
+                    return;
+                }
+
+                document.querySelector('#nameValidation').innerText = '';
 
                 document.querySelector('#reviewerName').innerText = form.get('Name');
                 document.querySelector('#editProfileModal .btn-close').click();

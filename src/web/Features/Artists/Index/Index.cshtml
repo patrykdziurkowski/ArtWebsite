@@ -141,9 +141,10 @@
                     const data = await response.json();
 
                     const validationErrorsText = document.querySelector('#editForm *[name="Name"] + span');
-                    validationErrorsText.innerText = data.errors.Name;
+                    validationErrorsText.innerText = data.errors?.Name?.[0] ?? '';
+
                     const validationErrorsText2 = document.querySelector('#editForm *[name="Summary"] + span');
-                    validationErrorsText2.innerText = data.errors.Summary;
+                    validationErrorsText2.innerText = data.errors?.Summary?.[0] ?? '';
 
                     return;
                 }
